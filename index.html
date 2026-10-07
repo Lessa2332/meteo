@@ -1,0 +1,2990 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#16212B">
+<meta name="description" content="Метеощоденник — шкільний щоденник погоди. Безкоштовно, без реєстрації, працює офлайн, дані залишаються на пристрої.">
+<meta name="color-scheme" content="light">
+<title>Метеощоденник</title>
+<link id="manifest" rel="manifest">
+<link id="icon" rel="icon">
+<link id="apple-icon" rel="apple-touch-icon">
+
+<style>
+/* ─────────── design tokens ─────────── */
+:root{
+  --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  --mono: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace;
+
+  --bg:#EDF1F5;
+  --surface:#FFFFFF;
+  --surface-2:#F5F8FA;
+  --surface-3:#EAF0F5;
+  --ink:#16212B;
+  --ink-2:#56646F;
+  --ink-3:#8B98A3;
+  --line:#DCE3EA;
+  --line-2:#ECF0F4;
+
+  --signal:#B24C10;
+  --signal-soft:#FCEEDF;
+  --danger:#A83328;
+  --danger-soft:#FBE9E6;
+  --ok:#2E6B45;
+  --focus:#1F5FA8;
+
+  --r-lg:16px;
+  --r-md:10px;
+  --r-sm:6px;
+
+  --sh-1:0 1px 2px rgba(22,33,43,.05), 0 2px 8px rgba(22,33,43,.05);
+  --sh-2:0 1px 2px rgba(22,33,43,.06), 0 12px 28px rgba(22,33,43,.10);
+}
+
+/* ─────────── reset ─────────── */
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;
+  font-family:var(--font);
+  font-size:16px;
+  line-height:1.5;
+  color:var(--ink);
+  background:var(--bg);
+  min-height:100dvh;
+  -webkit-font-smoothing:antialiased;
+}
+img,svg{display:block;max-width:100%}
+button{font:inherit;color:inherit}
+input,select,textarea{font:inherit;color:inherit}
+h1,h2,h3,p,ul,ol,dl,dd,figure{margin:0}
+ul,ol{padding:0;list-style:none}
+table{border-collapse:collapse;width:100%}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px;border-radius:4px}
+
+/* ─────────── a11y modes ─────────── */
+html.lg{font-size:19px}
+html.hc{
+  --bg:#FFFFFF; --surface:#FFFFFF; --surface-2:#FFFFFF; --surface-3:#F2F2F2;
+  --ink:#000; --ink-2:#1A1A1A; --ink-3:#333;
+  --line:#000; --line-2:#666;
+  --signal:#8A2A00; --focus:#0000CC;
+}
+html.hc .card,html.hc .topbar,html.hc dialog{border:1px solid #000}
+html.rf{letter-spacing:.035em;word-spacing:.12em;line-height:1.75}
+html.simple .chart-card,html.simple .stats-card,html.simple .rose-card{display:none}
+
+/* ─────────── ДИТЯЧИЙ РЕЖИМ (типово увімкнено) ─────────── */
+html.kid{font-size:17px}
+html.kid .brand-sub,
+html.kid .coords,
+html.kid .cal-hint,
+html.kid #chart-legend,
+html.kid .rose-hint,
+html.kid details.data-details,
+html.kid .legend-ticks,
+html.kid .tech-only{display:none}
+html.kid .cal .day{
+  min-height:78px;aspect-ratio:auto;
+  border-radius:14px;padding:10px;
+}
+html.kid .cal .day .d{font-size:1.15rem}
+html.kid .cal .day .s{font-size:1.7rem;right:10px;top:8px}
+html.kid .cal .day .v{font-size:1.05rem;font-weight:800}
+html.kid .btn{min-height:52px;font-size:1rem;border-radius:14px}
+html.kid .btn-sm{min-height:44px}
+html.kid .btn-icon{width:52px;height:52px;font-size:1.3rem}
+html.kid .chip-face{min-width:88px;padding:12px 14px;border-radius:14px}
+html.kid .chip-face .emo{font-size:2.1rem}
+html.kid .chip-face .lbl{font-size:.82rem;font-weight:600}
+html.kid .card h2{font-size:.85rem;letter-spacing:.08em}
+
+/* ─────────── layout ─────────── */
+.shell{
+  max-width:1180px;margin:0 auto;
+  padding:14px;
+  padding-left:max(14px,env(safe-area-inset-left));
+  padding-right:max(14px,env(safe-area-inset-right));
+  padding-bottom:max(20px,env(safe-area-inset-bottom));
+}
+@media (min-width:720px){.shell{padding:20px}}
+
+.skip{
+  position:absolute;left:-9999px;top:8px;
+  background:var(--ink);color:#fff;padding:10px 16px;border-radius:var(--r-md);
+  text-decoration:none;font-weight:600;z-index:1000;
+}
+.skip:focus{left:8px}
+
+.banner{
+  background:var(--signal-soft);border:1px solid #F0D3B0;color:#5C2A08;
+  padding:12px 16px;border-radius:var(--r-md);margin-bottom:14px;font-size:.9rem;
+  display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+}
+.banner[hidden]{display:none}
+.banner .spacer{margin-left:auto}
+
+/* ─────────── topbar ─────────── */
+.topbar{
+  display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+  background:var(--surface);border-radius:var(--r-lg);
+  padding:12px 16px;box-shadow:var(--sh-1);margin-bottom:14px;
+  padding-top:max(12px,env(safe-area-inset-top));
+}
+.brand{display:flex;align-items:baseline;gap:8px;margin-right:auto;flex-wrap:wrap}
+.brand-mark{font-size:1.35rem;font-weight:800;letter-spacing:-.02em}
+.brand-dot{
+  width:10px;height:10px;border-radius:50%;
+  background:linear-gradient(135deg,#E0603A,#F3E27B 55%,#3B6FC4);
+  align-self:center;
+}
+.brand-sub{font-size:.78rem;color:var(--ink-3);display:none}
+@media (min-width:560px){.brand-sub{display:inline}}
+
+.top-actions{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+
+.lang-switch{
+  display:inline-flex;background:var(--surface-2);border-radius:var(--r-md);
+  padding:2px;gap:2px;
+}
+.lang-switch button{
+  border:0;background:transparent;border-radius:6px;
+  padding:8px 12px;font-size:.82rem;font-weight:600;letter-spacing:.03em;
+  color:var(--ink-2);cursor:pointer;min-height:38px;
+}
+.lang-switch button[aria-pressed="true"]{
+  background:var(--surface);color:var(--ink);box-shadow:var(--sh-1);
+}
+
+/* ─────────── buttons ─────────── */
+.btn{
+  display:inline-flex;align-items:center;gap:7px;
+  min-height:40px;padding:0 16px;
+  border:1px solid var(--line);background:var(--surface);color:var(--ink);
+  border-radius:var(--r-md);font-weight:600;font-size:.9rem;
+  cursor:pointer;transition:background .12s,border-color .12s,transform .06s;
+  text-decoration:none;white-space:nowrap;
+}
+.btn:hover{background:var(--surface-2);border-color:#C7D0D8}
+.btn:active{transform:translateY(1px)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn-primary{background:var(--ink);border-color:var(--ink);color:#fff}
+.btn-primary:hover{background:#0B1620;border-color:#0B1620}
+.btn-signal{background:var(--signal);border-color:var(--signal);color:#fff}
+.btn-signal:hover{background:#933C0A;border-color:#933C0A}
+.btn-ghost{background:transparent;border-color:transparent}
+.btn-ghost:hover{background:var(--surface-2)}
+.btn-danger{color:var(--danger);border-color:#EBC8C3}
+.btn-danger:hover{background:var(--danger-soft);border-color:#DEB4AD}
+.btn-icon{width:40px;padding:0;justify-content:center}
+.btn-sm{min-height:34px;padding:0 12px;font-size:.82rem;border-radius:var(--r-sm)}
+.btn-block{width:100%;justify-content:center}
+
+/* ─────────── place strip ─────────── */
+.place-strip{
+  display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+  background:var(--surface);border-radius:var(--r-lg);padding:12px 16px;
+  box-shadow:var(--sh-1);margin-bottom:14px;
+}
+.place-strip .loc{margin-right:auto;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.place-strip .name{font-weight:700;font-size:1.05rem}
+.place-strip .coords{font-family:var(--mono);font-size:.78rem;color:var(--ink-3)}
+
+/* ─────────── calendar card ─────────── */
+.cal-card{
+  background:var(--surface);border-radius:var(--r-lg);
+  padding:16px;box-shadow:var(--sh-1);margin-bottom:14px;
+}
+.cal-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.cal-title{font-size:1.5rem;font-weight:800;letter-spacing:-.02em;margin-right:auto}
+@media (min-width:720px){.cal-title{font-size:1.75rem}}
+
+.view-switch{
+  display:inline-flex;background:var(--surface-2);border-radius:var(--r-md);
+  padding:3px;gap:3px;margin-right:auto;
+}
+.view-switch button{
+  border:0;background:transparent;border-radius:8px;padding:8px 14px;
+  font-size:.85rem;font-weight:600;color:var(--ink-2);cursor:pointer;min-height:38px;
+}
+.view-switch button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:var(--sh-1)}
+
+.cal-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.cal{min-width:320px;border-spacing:4px;border-collapse:separate}
+.cal th{
+  font-size:.72rem;font-weight:600;color:var(--ink-3);
+  letter-spacing:.04em;padding:4px 0;
+}
+.cal th abbr{text-decoration:none;cursor:help}
+.cal td{padding:0}
+.cal .day{
+  display:flex;flex-direction:column;align-items:flex-start;justify-content:space-between;
+  width:100%;aspect-ratio:1/1.08;min-height:56px;
+  border:1px solid var(--line-2);border-radius:var(--r-sm);
+  background:var(--surface);padding:6px 7px;
+  cursor:pointer;text-align:left;position:relative;
+  transition:transform .08s,border-color .12s;
+}
+.cal .day:hover:not(:disabled){border-color:#B9C4CE;transform:translateY(-1px)}
+.cal .day:disabled{opacity:.35;cursor:not-allowed}
+.cal .day .d{font-size:.85rem;font-weight:600;color:var(--ink-2);line-height:1}
+.cal .day .s{font-size:1rem;line-height:1;position:absolute;right:6px;top:5px}
+.cal .day .v{font-size:.82rem;font-weight:700;line-height:1;align-self:flex-end}
+.cal .day.has{background:var(--bg-cell,var(--surface));border-color:transparent;color:var(--fg-cell,var(--ink))}
+.cal .day.has .d{color:inherit;opacity:.85}
+.cal .day.today{box-shadow:inset 0 0 0 2px var(--signal)}
+.cal .day.today .d{color:var(--signal);font-weight:800}
+.cal .day.has.today .d{color:inherit}
+
+.legend{margin-top:14px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.legend-caption{font-size:.78rem;color:var(--ink-3);letter-spacing:.02em}
+.legend-bar{
+  flex:1;min-width:180px;height:10px;border-radius:5px;
+  position:relative;border:1px solid var(--line);
+}
+.legend-ticks{position:relative;height:18px;flex:1;min-width:180px;margin-top:-4px}
+.legend-ticks span{
+  position:absolute;transform:translateX(-50%);
+  font-family:var(--mono);font-size:.7rem;color:var(--ink-3);
+}
+.cal-hint{font-size:.82rem;color:var(--ink-3);margin-top:10px}
+
+/* ─────────── action bar ─────────── */
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.actions .spacer{margin-left:auto}
+
+/* ─────────── two column ─────────── */
+.two{display:grid;gap:14px;grid-template-columns:1fr}
+@media (min-width:960px){
+  .two{grid-template-columns:minmax(0,1.35fr) minmax(280px,340px)}
+}
+.card{
+  background:var(--surface);border-radius:var(--r-lg);
+  padding:16px;box-shadow:var(--sh-1);
+}
+.card h2{
+  font-size:.72rem;font-weight:700;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-3);margin-bottom:12px;
+}
+.stack > * + *{margin-top:14px}
+
+/* ─────────── chart ─────────── */
+.chart-svg{width:100%;height:auto;display:block}
+.ch-grid line{stroke:var(--line-2);stroke-width:1}
+.ch-y{font-family:var(--mono);font-size:11px;fill:var(--ink-3)}
+.ch-x text{font-family:var(--mono);font-size:11px;fill:var(--ink-3)}
+.ch-freeze{stroke:#4A9BD4;stroke-width:1;stroke-dasharray:3 4;opacity:.8}
+.ch-mine{fill:none;stroke:var(--ink);stroke-width:2.4;stroke-linejoin:round;stroke-linecap:round}
+.ch-dot{stroke:#fff;stroke-width:1.6}
+.ch-real{fill:none;stroke:#C25A12;stroke-width:2;stroke-dasharray:5 4;stroke-linejoin:round}
+.ch-real-dot{fill:#C25A12;stroke:#fff;stroke-width:1.4}
+.chart-legend{
+  display:flex;gap:16px;flex-wrap:wrap;
+  font-size:.78rem;color:var(--ink-2);margin-top:10px;
+}
+.chart-legend li{display:inline-flex;align-items:center;gap:7px}
+.lg-line{width:20px;height:2px;background:var(--ink);border-radius:1px}
+.lg-dash{width:20px;height:0;border-top:2px dashed #C25A12}
+.lg-freeze{width:20px;height:0;border-top:2px dotted #4A9BD4}
+.chart-empty{font-size:.9rem;color:var(--ink-3);padding:40px 0;text-align:center}
+
+details.data-details{margin-top:14px;border-top:1px solid var(--line-2);padding-top:10px}
+details.data-details summary{
+  cursor:pointer;font-size:.82rem;color:var(--ink-2);font-weight:600;list-style:none;
+}
+details.data-details summary::-webkit-details-marker{display:none}
+details.data-details summary::before{content:"▸ ";display:inline-block;transition:transform .15s}
+details.data-details[open] summary::before{content:"▾ "}
+
+table.data{font-size:.82rem;margin-top:10px}
+table.data th,table.data td{
+  padding:6px 8px;text-align:left;border-bottom:1px solid var(--line-2);vertical-align:top;
+}
+table.data th{
+  font-weight:600;font-size:.72rem;letter-spacing:.05em;
+  text-transform:uppercase;color:var(--ink-3);
+}
+table.data tbody tr:hover{background:var(--surface-2)}
+
+/* ─────────── stats ─────────── */
+.mean{
+  display:flex;flex-direction:column;gap:2px;
+  padding:14px 16px;border-radius:var(--r-md);
+  background:var(--bg-cell,var(--surface-3));color:var(--fg-cell,var(--ink));
+}
+.mean-num{font-size:1.75rem;font-weight:800;letter-spacing:-.02em;line-height:1}
+.mean-lbl{font-size:.78rem;opacity:.8}
+dl.stats{display:grid;grid-template-columns:1fr auto;gap:6px 12px;font-size:.85rem;margin-top:14px}
+dl.stats dt{color:var(--ink-2)}
+dl.stats dd{margin:0;font-weight:600;text-align:right;font-variant-numeric:tabular-nums}
+
+/* ─────────── wind rose ─────────── */
+.rose-svg{width:100%;height:auto;max-width:240px;margin:0 auto}
+.rose-ring{fill:none;stroke:var(--line-2);stroke-width:1}
+.rose-axis{stroke:var(--line-2);stroke-width:1}
+.rose-lbl{font-family:var(--mono);font-size:9px;fill:var(--ink-2);font-weight:600}
+.rose-lbl.minor{fill:var(--ink-3);font-weight:400}
+.rose-shape{fill:rgba(31,95,168,.28);stroke:#1F5FA8;stroke-width:1.5;stroke-linejoin:round}
+.rose-count{font-family:var(--mono);font-size:10px;fill:#1F5FA8;font-weight:700}
+.rose-hint{font-size:.78rem;color:var(--ink-3);text-align:center;margin-top:8px}
+
+/* ─────────── badges ─────────── */
+.badges{display:flex;gap:8px;flex-wrap:wrap}
+.badge{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:9px 14px;border-radius:999px;
+  background:var(--surface-2);border:1px solid var(--line);
+  font-size:.85rem;font-weight:600;color:var(--ink-3);opacity:.55;
+}
+.badge.got{opacity:1;background:#F1F8F2;border-color:#CFE6D4;color:var(--ok)}
+.b-emo{font-size:1.2rem;line-height:1}
+.b-txt small{display:block;font-weight:400;font-size:.7rem;opacity:.75}
+#badges-next{font-size:.82rem;color:var(--ink-3);margin-top:10px}
+
+/* ─────────── footer ─────────── */
+.foot{margin-top:20px;padding:16px;text-align:center;font-size:.8rem;color:var(--ink-3)}
+.foot a{color:var(--ink-2)}
+
+/* ─────────── dialogs ─────────── */
+dialog{
+  border:0;border-radius:var(--r-lg);padding:0;
+  max-width:min(560px,calc(100vw - 24px));
+  width:100%;background:var(--surface);color:var(--ink);
+  box-shadow:var(--sh-2);
+}
+dialog::backdrop{background:rgba(22,33,43,.42);backdrop-filter:blur(2px)}
+dialog.wide{max-width:min(720px,calc(100vw - 24px))}
+.dlg-head{display:flex;align-items:center;gap:10px;padding:16px 20px 0}
+.dlg-title{font-size:1.2rem;font-weight:700;letter-spacing:-.01em;margin-right:auto}
+.dlg-body{padding:14px 20px 20px}
+.dlg-foot{
+  padding:12px 20px;border-top:1px solid var(--line-2);
+  display:flex;gap:8px;flex-wrap:wrap;background:var(--surface-2);
+  border-radius:0 0 var(--r-lg) var(--r-lg);
+}
+.dlg-foot .spacer{margin-left:auto}
+
+.field{margin-bottom:14px}
+.field:last-child{margin-bottom:0}
+.field label{display:block;font-size:.88rem;font-weight:600;color:var(--ink-2);margin-bottom:6px}
+.field .hint{font-size:.78rem;color:var(--ink-3);font-weight:400;margin-top:4px}
+.field input[type=text],.field input[type=number],.field input[type=time],
+.field select,.field textarea{
+  width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:var(--r-md);
+  background:var(--surface);color:var(--ink);
+}
+.field textarea{resize:vertical;min-height:60px}
+.field input:focus,.field select:focus,.field textarea:focus{
+  outline:2px solid var(--focus);outline-offset:-1px;border-color:transparent;
+}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.row > *{flex:1;min-width:120px}
+
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{cursor:pointer;position:relative}
+.chip input{position:absolute;opacity:0;pointer-events:none}
+.chip-face{
+  display:inline-flex;flex-direction:column;align-items:center;gap:2px;
+  padding:8px 10px;min-width:64px;
+  border:1px solid var(--line);border-radius:var(--r-md);
+  background:var(--surface);transition:border-color .1s,background .1s;
+}
+.chip-face .emo{font-size:1.35rem;line-height:1}
+.chip-face .lbl{font-size:.7rem;color:var(--ink-2);letter-spacing:.02em;text-align:center}
+.chip input:checked + .chip-face{
+  border-color:var(--ink);background:var(--surface-2);
+  box-shadow:inset 0 0 0 1px var(--ink);
+}
+.chip input:focus-visible + .chip-face{outline:2px solid var(--focus);outline-offset:2px}
+
+.real-box{
+  margin-top:14px;padding:12px 14px;background:var(--surface-2);
+  border-radius:var(--r-md);border:1px solid var(--line-2);
+}
+.real-box h3{font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin:0 0 8px}
+.real-box table{font-size:.8rem}
+.real-box th,.real-box td{padding:5px 8px;border-bottom:1px solid var(--line-2);text-align:left}
+.real-box tbody tr:last-child th,.real-box tbody tr:last-child td{border-bottom:0}
+.real-box th[scope=row]{font-weight:600;color:var(--ink-2)}
+.real-box thead th{font-size:.68rem;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-3)}
+.real-note{font-size:.75rem;color:var(--ink-3);margin-top:8px;line-height:1.5}
+
+.results{display:flex;flex-direction:column;gap:6px;margin-top:10px;max-height:280px;overflow-y:auto}
+.result{
+  display:flex;flex-direction:column;gap:2px;align-items:flex-start;
+  padding:12px 14px;border:1px solid var(--line);border-radius:var(--r-md);
+  background:var(--surface);cursor:pointer;text-align:left;width:100%;
+}
+.result:hover{background:var(--surface-2);border-color:#C7D0D8}
+.result strong{font-size:.95rem}
+.result span{font-size:.8rem;color:var(--ink-2)}
+.result small{font-family:var(--mono);font-size:.72rem;color:var(--ink-3)}
+
+.profiles{display:flex;flex-direction:column;gap:8px}
+.prow{
+  display:flex;align-items:center;gap:12px;
+  padding:10px 12px;border:1px solid var(--line);border-radius:var(--r-md);
+  background:var(--surface);
+}
+.prow.on{border-color:var(--ink);background:var(--surface-2)}
+.prow .av{font-size:1.6rem;line-height:1}
+.prow .pname{flex:1;min-width:0}
+.prow .pname strong{display:block;font-size:.95rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.prow .pname small{font-size:.75rem;color:var(--ink-3)}
+
+.settings-group{margin-bottom:20px}
+.settings-group:last-child{margin-bottom:0}
+.settings-group h3{
+  font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--ink-3);margin-bottom:10px;
+}
+.switch-row{
+  display:flex;align-items:flex-start;gap:12px;
+  padding:10px 0;border-bottom:1px solid var(--line-2);
+}
+.switch-row:last-child{border-bottom:0}
+.switch-row input{flex:0 0 auto;margin-top:4px;width:20px;height:20px}
+.switch-row label{flex:1;font-size:.9rem;cursor:pointer}
+.switch-row label strong{display:block;font-weight:600}
+.switch-row label small{display:block;color:var(--ink-3);font-size:.78rem;margin-top:2px}
+
+.seg{display:inline-flex;background:var(--surface-2);border-radius:var(--r-md);padding:3px;gap:3px}
+.seg label{cursor:pointer;position:relative}
+.seg input{position:absolute;opacity:0;pointer-events:none}
+.seg span{display:inline-block;padding:8px 16px;border-radius:8px;font-size:.88rem;font-weight:600;color:var(--ink-2);min-height:38px}
+.seg input:checked + span{background:var(--surface);color:var(--ink);box-shadow:var(--sh-1)}
+.seg input:focus-visible + span{outline:2px solid var(--focus);outline-offset:1px}
+
+.privacy p{font-size:.88rem;color:var(--ink-2);margin-bottom:10px;line-height:1.6}
+.privacy p:last-child{margin-bottom:0}
+.privacy strong{color:var(--ink)}
+
+/* ─────────── onboarding ─────────── */
+#onboard{
+  position:fixed;inset:0;z-index:1500;
+  background:linear-gradient(160deg,#EDF1F5 0%,#DCE6F2 100%);
+  display:flex;align-items:center;justify-content:center;
+  padding:20px;overflow-y:auto;
+}
+#onboard[hidden]{display:none}
+.onb-card{
+  width:100%;max-width:520px;background:var(--surface);
+  border-radius:20px;box-shadow:var(--sh-2);
+  padding:28px 24px;
+}
+.onb-logo{
+  display:flex;align-items:center;gap:12px;justify-content:center;
+  margin-bottom:8px;
+}
+.onb-logo .dot{
+  width:14px;height:14px;border-radius:50%;
+  background:linear-gradient(135deg,#E0603A,#F3E27B 55%,#3B6FC4);
+}
+.onb-logo h1{font-size:1.7rem;font-weight:800;letter-spacing:-.02em}
+.onb-sub{text-align:center;color:var(--ink-3);font-size:.9rem;margin-bottom:22px}
+.onb-step{display:none}
+.onb-step.active{display:block}
+.onb-step h2{font-size:1.15rem;font-weight:700;margin-bottom:6px}
+.onb-step p.hint{font-size:.88rem;color:var(--ink-2);margin-bottom:16px}
+.onb-foot{
+  display:flex;gap:10px;margin-top:22px;
+}
+.onb-foot .btn{flex:1;justify-content:center;min-height:52px}
+.onb-dots{display:flex;gap:6px;justify-content:center;margin-top:16px}
+.onb-dots span{width:8px;height:8px;border-radius:50%;background:var(--line)}
+.onb-dots span.on{background:var(--ink)}
+
+/* ─────────── toast ─────────── */
+#toast{
+  position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);
+  max-width:min(520px,calc(100vw - 32px));
+  background:var(--ink);color:#fff;padding:14px 20px;border-radius:var(--r-md);
+  font-size:.92rem;box-shadow:var(--sh-2);
+  opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;
+  z-index:2000;
+}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+
+/* ─────────── print ─────────── */
+#print-report{display:none}
+@media print{
+  @page{margin:14mm}
+  body{background:#fff}
+  #onboard,#toast,dialog,.banner,.actions,.topbar,.place-strip,.cal-card,
+  .chart-card,.stats-card,.rose-card,.badges-card,.foot,.skip{display:none !important}
+  #print-report{display:block;color:#000;font-size:11pt}
+  #print-report h1{font-size:18pt;margin-bottom:4pt;font-weight:700}
+  #print-report .pmeta{font-size:9pt;color:#333;margin-bottom:12pt}
+  #print-report .chart-svg{width:100%;height:auto;max-height:70mm;margin:6pt 0}
+  #print-report table.data{font-size:9pt;margin-top:8pt}
+  #print-report table.data th,#print-report table.data td{
+    border-bottom:1px solid #999;padding:3pt 5pt;
+  }
+  #print-report dl.stats{font-size:9.5pt;margin-top:8pt}
+}
+
+/* ─────────── touch ─────────── */
+html{-webkit-tap-highlight-color:transparent}
+button,a,.day,.chip-face,.result,label,summary{touch-action:manipulation}
+
+@media (max-width:640px){
+  .shell{padding:10px}
+  .btn{min-height:46px}
+  .btn-sm{min-height:38px}
+  .btn-icon{width:46px;height:46px}
+  .cal{border-spacing:3px}
+  .cal .day{min-height:66px;padding:8px}
+  .cal .day .d{font-size:1rem}
+  .cal .day .s{font-size:1.15rem;right:8px;top:8px}
+  .cal .day .v{font-size:.95rem}
+  .cal-title{font-size:1.35rem}
+  .chip-face{padding:10px 12px;min-width:72px}
+  .chip-face .emo{font-size:1.6rem}
+  .field input,.field select,.field textarea{min-height:46px;font-size:16px}
+  dialog{
+    max-width:100%;width:100vw;max-height:92dvh;margin:0;
+    border-radius:16px 16px 0 0;inset:auto 0 0 0;
+  }
+  .dlg-body{padding:12px 16px;overflow-y:auto}
+  .dlg-foot{
+    padding:12px 16px max(12px,env(safe-area-inset-bottom));
+    position:sticky;bottom:0;
+  }
+  .dlg-foot .btn{flex:1;justify-content:center}
+  .dlg-foot .spacer{display:none}
+  .actions{gap:6px}
+  .actions .btn{flex:1 1 calc(50% - 3px);justify-content:center;min-height:48px}
+  .actions .spacer{display:none}
+  #btn-teacher{flex-basis:100%}
+}
+
+@media (min-width:1200px) and (pointer:coarse){
+  .cal .day{min-height:88px;aspect-ratio:auto;padding:10px}
+  .cal .day .d{font-size:1.15rem}
+  .cal .day .s{font-size:1.6rem}
+  .cal .day .v{font-size:1.15rem}
+  .btn{min-height:48px}
+  .btn-icon{width:48px;height:48px}
+}
+
+@media (prefers-reduced-motion: reduce){
+  *{transition-duration:.01ms !important;animation-duration:.01ms !important}
+}
+</style>
+</head>
+<body>
+
+<a class="skip" href="#main" data-i18n="skip">Skip to content</a>
+
+<!-- ═══════════ ONBOARDING (створення акаунта) ═══════════ -->
+<div id="onboard" hidden>
+  <div class="onb-card">
+    <div class="onb-logo">
+      <span class="dot" aria-hidden="true"></span>
+      <h1 id="onb-title">Метеощоденник</h1>
+    </div>
+    <p class="onb-sub" id="onb-sub">Твій щоденник погоди</p>
+
+    <!-- Крок 1: мова -->
+    <div class="onb-step active" data-step="0">
+      <h2 data-i18n="onb.langTitle">Обери мову</h2>
+      <p class="hint" data-i18n="onb.langHint">Мову можна змінити будь-коли.</p>
+      <div class="lang-switch" role="group" style="margin:0 auto">
+        <button type="button" data-lang="uk" aria-pressed="true">Українська</button>
+        <button type="button" data-lang="en" aria-pressed="false">English</button>
+      </div>
+    </div>
+
+    <!-- Крок 2: ім'я -->
+    <div class="onb-step" data-step="1">
+      <h2 data-i18n="onb.nameTitle">Як тебе звати?</h2>
+      <p class="hint" data-i18n="onb.nameHint">Напиши ім’я або псевдонім. Прізвище не потрібне.</p>
+      <div class="field">
+        <label for="onb-name" data-i18n="onb.nameLabel">Ім’я або псевдонім</label>
+        <input type="text" id="onb-name" maxlength="40" autocomplete="off" placeholder="Марійка">
+      </div>
+      <div class="field">
+        <label for="onb-class" data-i18n="onb.classLabel">Клас (необов’язково)</label>
+        <input type="text" id="onb-class" maxlength="10" autocomplete="off" placeholder="3-А">
+      </div>
+    </div>
+
+    <!-- Крок 3: аватар -->
+    <div class="onb-step" data-step="2">
+      <h2 data-i18n="onb.avatarTitle">Обери аватар</h2>
+      <p class="hint" data-i18n="onb.avatarHint">Натисни на того, хто тобі подобається.</p>
+      <div class="chips" id="onb-avatar-chips" role="radiogroup" aria-label="Avatar"></div>
+    </div>
+
+    <!-- Крок 4: місто -->
+    <div class="onb-step" data-step="3">
+      <h2 data-i18n="onb.cityTitle">Де ти спостерігаєш погоду?</h2>
+      <p class="hint" data-i18n="onb.cityHint">Напиши назву свого міста або села.</p>
+      <div class="field">
+        <label for="onb-city" data-i18n="onb.cityLabel">Місто або село</label>
+        <div class="row">
+          <input type="text" id="onb-city" autocomplete="off" placeholder="Київ" style="flex:2">
+          <button type="button" class="btn btn-primary" id="onb-city-search" style="flex:0 0 auto" data-i18n="onb.search">Знайти</button>
+        </div>
+      </div>
+      <button type="button" class="btn btn-sm btn-block" id="onb-geo" style="margin-top:6px" data-i18n="onb.geo">📍 Визначити моє місце</button>
+      <p class="hint" id="onb-city-status" style="margin-top:10px"></p>
+      <div class="results" id="onb-city-results"></div>
+      <p class="real-note" data-i18n="onb.cityPrivacy" style="margin-top:14px"></p>
+    </div>
+
+    <div class="onb-foot">
+      <button type="button" class="btn" id="onb-back" data-i18n="onb.back" hidden>← Назад</button>
+      <button type="button" class="btn btn-primary" id="onb-next" data-i18n="onb.next">Далі →</button>
+    </div>
+    <div class="onb-dots" id="onb-dots" aria-hidden="true"></div>
+  </div>
+</div>
+
+<div class="shell" id="app-shell" hidden>
+
+  <div class="banner" id="banner-storage" role="alert" hidden>
+    <span data-i18n="banner.storage"></span>
+  </div>
+
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-dot" aria-hidden="true"></span>
+      <span class="brand-mark" id="brand-mark">Метеощоденник</span>
+      <span class="brand-sub" id="brand-sub" data-i18n="app.author"></span>
+    </div>
+
+    <div class="top-actions">
+      <div class="lang-switch" role="group" data-i18n-attr="aria-label:lang.label">
+        <button type="button" data-lang="uk" aria-pressed="false">UK</button>
+        <button type="button" data-lang="en" aria-pressed="false">EN</button>
+      </div>
+      <button type="button" class="btn" id="btn-profile">
+        <span id="profile-avatar" aria-hidden="true">🦊</span>
+        <span id="profile-name">…</span>
+      </button>
+      <button type="button" class="btn btn-icon" id="btn-settings" data-i18n-attr="aria-label:settings.open" title="Settings">⚙</button>
+    </div>
+  </header>
+
+  <main id="main">
+
+    <section class="place-strip" aria-labelledby="place-name">
+      <div class="loc">
+        <span class="name" id="place-name">…</span>
+        <span class="coords" id="place-coords"></span>
+      </div>
+      <button type="button" class="btn btn-sm" id="btn-place" data-i18n="place.change"></button>
+    </section>
+
+    <section class="cal-card" aria-labelledby="month-title">
+      <div class="cal-head">
+        <div class="view-switch" role="group" aria-label="View">
+          <button type="button" id="view-my" aria-pressed="true" data-i18n="view.mine"></button>
+          <button type="button" id="view-class" aria-pressed="false" data-i18n="view.class"></button>
+        </div>
+        <button type="button" class="btn btn-icon" id="btn-prev" data-i18n-attr="aria-label:month.prev">←</button>
+        <h2 class="cal-title" id="month-title">—</h2>
+        <button type="button" class="btn btn-icon" id="btn-next" data-i18n-attr="aria-label:month.next">→</button>
+        <button type="button" class="btn btn-sm" id="btn-today" data-i18n="month.today"></button>
+      </div>
+
+      <p class="hint" id="cal-caption" style="font-size:.78rem;color:var(--ink-3);margin-bottom:10px"></p>
+
+      <div class="cal-wrap">
+        <table class="cal" id="cal-table">
+          <caption class="skip" id="cal-caption-table"></caption>
+          <thead><tr id="cal-head-row"></tr></thead>
+          <tbody id="cal-body"></tbody>
+        </table>
+      </div>
+
+      <div class="legend" aria-labelledby="legend-caption">
+        <span class="legend-caption" id="legend-caption"></span>
+        <div class="legend-bar" id="legend-bar" role="img" aria-hidden="true"></div>
+        <div class="legend-ticks" id="legend-ticks" aria-hidden="true"></div>
+      </div>
+
+      <p class="cal-hint" id="cal-hint"></p>
+    </section>
+
+    <div class="actions">
+      <button type="button" class="btn btn-signal" id="btn-compare" data-i18n="act.compare"></button>
+      <button type="button" class="btn" id="btn-export" data-i18n="act.export"></button>
+      <button type="button" class="btn" id="btn-import" data-i18n="act.import"></button>
+      <input type="file" id="file-import" accept=".weather,.json,application/json" multiple hidden>
+      <button type="button" class="btn" id="btn-print" data-i18n="act.print"></button>
+      <div class="spacer"></div>
+      <button type="button" class="btn" id="btn-teacher" data-i18n="act.teacher"></button>
+    </div>
+
+    <div class="two">
+      <div class="stack">
+        <section class="card chart-card" aria-labelledby="chart-title">
+          <h2 id="chart-title" data-i18n="chart.title"></h2>
+          <div id="chart" role="figure"></div>
+          <p class="chart-empty" id="chart-empty" data-i18n="chart.empty"></p>
+          <ul class="chart-legend" id="chart-legend"></ul>
+          <details class="data-details">
+            <summary data-i18n="chart.table"></summary>
+            <div id="chart-table"></div>
+          </details>
+        </section>
+
+        <section class="card badges-card" aria-labelledby="badges-title">
+          <h2 id="badges-title" data-i18n="badges.title"></h2>
+          <ul class="badges" id="badges"></ul>
+          <p id="badges-next"></p>
+        </section>
+      </div>
+
+      <aside class="stack">
+        <section class="card stats-card" aria-labelledby="stats-title">
+          <h2 id="stats-title" data-i18n="stats.title"></h2>
+          <div id="stats"></div>
+        </section>
+
+        <section class="card rose-card" aria-labelledby="rose-title">
+          <h2 id="rose-title" data-i18n="rose.title"></h2>
+          <div id="rose"></div>
+          <p class="rose-hint" id="rose-hint"></p>
+        </section>
+      </aside>
+    </div>
+
+  </main>
+
+  <footer class="foot">
+    <p id="foot-text"></p>
+    <p id="foot-author" data-i18n="app.author" style="margin-top:6px;font-weight:600;color:var(--ink-2)"></p>
+    <p style="margin-top:6px">
+      <button type="button" class="btn btn-sm btn-ghost" id="btn-privacy" data-i18n="privacy.open"></button>
+    </p>
+  </footer>
+
+</div>
+
+<!-- ─────────── day dialog ─────────── -->
+<dialog id="dlg-day" aria-labelledby="day-title">
+  <form id="day-form" method="dialog">
+    <div class="dlg-head">
+      <h2 class="dlg-title" id="day-title">—</h2>
+      <button type="button" class="btn btn-icon btn-ghost" data-close aria-label="Close">✕</button>
+    </div>
+    <div class="dlg-body">
+      <div class="row">
+        <div class="field">
+          <label for="f-temp" id="lbl-temp">Temperature</label>
+          <input type="number" id="f-temp" step="0.5" required inputmode="decimal" autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="f-time" data-i18n="day.time"></label>
+          <input type="time" id="f-time" autocomplete="off">
+          <p class="hint" data-i18n="day.timeHint"></p>
+        </div>
+      </div>
+
+      <div class="field">
+        <label id="lbl-sky" data-i18n="day.sky"></label>
+        <div class="chips" id="sky-chips" role="radiogroup" aria-labelledby="lbl-sky"></div>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label for="f-hum" data-i18n="day.hum"></label>
+          <input type="number" id="f-hum" min="0" max="100" step="1" inputmode="numeric" autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="f-wind" id="lbl-wind">Wind</label>
+          <input type="number" id="f-wind" min="0" step="0.1" inputmode="decimal" autocomplete="off">
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="f-dir" data-i18n="day.dir"></label>
+        <select id="f-dir"></select>
+      </div>
+
+      <div class="field">
+        <label id="lbl-mood" data-i18n="day.mood"></label>
+        <div class="chips" id="mood-chips" role="radiogroup" aria-labelledby="lbl-mood"></div>
+      </div>
+
+      <div class="field">
+        <label for="f-notes" data-i18n="day.notes"></label>
+        <textarea id="f-notes" maxlength="500" rows="2"></textarea>
+      </div>
+
+      <div class="real-box" id="real-box" hidden>
+        <h3 data-i18n="real.title"></h3>
+        <div id="real-table"></div>
+        <p class="real-note" data-i18n="real.note"></p>
+      </div>
+    </div>
+    <div class="dlg-foot">
+      <button type="button" class="btn btn-danger" id="btn-day-delete" data-i18n="day.delete"></button>
+      <div class="spacer"></div>
+      <button type="button" class="btn" data-close data-i18n="ui.cancel"></button>
+      <button type="submit" class="btn btn-primary" data-i18n="day.save"></button>
+    </div>
+  </form>
+</dialog>
+
+<!-- ─────────── place dialog ─────────── -->
+<dialog id="dlg-place" aria-labelledby="place-title">
+  <form id="place-form" method="dialog">
+    <div class="dlg-head">
+      <h2 class="dlg-title" id="place-title" data-i18n="place.title"></h2>
+      <button type="button" class="btn btn-icon btn-ghost" data-close aria-label="Close">✕</button>
+    </div>
+    <div class="dlg-body">
+      <div class="field">
+        <label for="place-q" data-i18n="place.label"></label>
+        <div class="row">
+          <input type="text" id="place-q" autocomplete="off" style="flex:2">
+          <button type="submit" class="btn btn-primary" data-i18n="place.search" style="flex:0 0 auto"></button>
+        </div>
+      </div>
+      <button type="button" class="btn btn-sm" id="btn-geo" data-i18n="place.geo"></button>
+      <p class="hint" id="place-status" style="margin-top:12px"></p>
+      <div class="results" id="place-results"></div>
+      <p class="real-note" data-i18n="place.privacy" style="margin-top:14px"></p>
+    </div>
+  </form>
+</dialog>
+
+<!-- ─────────── profile dialog ─────────── -->
+<dialog id="dlg-profile" class="wide" aria-labelledby="profile-title">
+  <div class="dlg-head">
+    <h2 class="dlg-title" id="profile-title" data-i18n="profile.title"></h2>
+    <button type="button" class="btn btn-icon btn-ghost" data-close aria-label="Close">✕</button>
+  </div>
+  <div class="dlg-body">
+    <p class="hint" data-i18n="profile.hint" style="margin-bottom:14px"></p>
+    <div class="profiles" id="profile-list"></div>
+    <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">
+      <button type="button" class="btn btn-primary" id="btn-profile-new" data-i18n="profile.new"></button>
+      <button type="button" class="btn" id="btn-class-import" data-i18n="class.import"></button>
+      <button type="button" class="btn" id="btn-class-export" data-i18n="class.export"></button>
+    </div>
+
+    <form id="profile-form" hidden method="dialog" style="margin-top:16px;padding-top:16px;border-top:1px solid var(--line-2)">
+      <h3 id="profile-form-title" style="font-size:.95rem;font-weight:700;margin-bottom:12px"></h3>
+      <div class="row">
+        <div class="field">
+          <label for="p-name" data-i18n="profile.name"></label>
+          <input type="text" id="p-name" maxlength="40" autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="p-class" data-i18n="profile.class"></label>
+          <input type="text" id="p-class" maxlength="10" autocomplete="off">
+        </div>
+      </div>
+      <div class="field">
+        <label id="lbl-avatar" data-i18n="profile.avatar"></label>
+        <div class="chips" id="avatar-chips" role="radiogroup" aria-labelledby="lbl-avatar"></div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
+        <button type="button" class="btn btn-danger" id="btn-profile-delete" data-i18n="profile.delete" hidden></button>
+        <div class="spacer" style="margin-left:auto"></div>
+        <button type="button" class="btn" id="btn-profile-cancel" data-i18n="ui.cancel"></button>
+        <button type="submit" class="btn btn-primary" data-i18n="profile.save"></button>
+      </div>
+    </form>
+  </div>
+</dialog>
+
+<!-- ─────────── settings dialog ─────────── -->
+<dialog id="dlg-settings" aria-labelledby="settings-title">
+  <div class="dlg-head">
+    <h2 class="dlg-title" id="settings-title" data-i18n="settings.title"></h2>
+    <button type="button" class="btn btn-icon btn-ghost" data-close aria-label="Close">✕</button>
+  </div>
+  <div class="dlg-body">
+    <div class="settings-group">
+      <h3 data-i18n="set.mode"></h3>
+      <div class="switch-row">
+        <input type="checkbox" id="set-kid">
+        <label for="set-kid">
+          <strong data-i18n="set.kid"></strong>
+          <small data-i18n="set.kid.hint"></small>
+        </label>
+      </div>
+    </div>
+
+    <div class="settings-group">
+      <h3 data-i18n="set.units"></h3>
+      <div class="seg" role="radiogroup" aria-label="Units">
+        <label><input type="radio" name="units" value="metric"><span data-i18n="set.metric"></span></label>
+        <label><input type="radio" name="units" value="imperial"><span data-i18n="set.imperial"></span></label>
+      </div>
+    </div>
+
+    <div class="settings-group">
+      <h3 data-i18n="set.a11y"></h3>
+      <div class="switch-row">
+        <input type="checkbox" id="set-hc">
+        <label for="set-hc"><strong data-i18n="set.contrast"></strong></label>
+      </div>
+      <div class="switch-row">
+        <input type="checkbox" id="set-large">
+        <label for="set-large"><strong data-i18n="set.large"></strong></label>
+      </div>
+      <div class="switch-row">
+        <input type="checkbox" id="set-readable">
+        <label for="set-readable"><strong data-i18n="set.readable"></strong><small data-i18n="set.readable.hint"></small></label>
+      </div>
+      <div class="switch-row">
+        <input type="checkbox" id="set-simple">
+        <label for="set-simple"><strong data-i18n="set.simple"></strong><small data-i18n="set.simple.hint"></small></label>
+      </div>
+    </div>
+
+    <div class="settings-group">
+      <h3 data-i18n="set.data"></h3>
+      <button type="button" class="btn btn-danger btn-block" id="btn-wipe" data-i18n="set.wipe"></button>
+    </div>
+  </div>
+</dialog>
+
+<!-- ─────────── confirm dialog ─────────── -->
+<dialog id="dlg-confirm" aria-labelledby="confirm-title">
+  <div class="dlg-head"><h2 class="dlg-title" id="confirm-title"></h2></div>
+  <div class="dlg-body"><p id="confirm-text" style="font-size:.92rem;color:var(--ink-2)"></p></div>
+  <div class="dlg-foot">
+    <button type="button" class="btn" id="confirm-cancel" data-i18n="ui.cancel"></button>
+    <button type="button" class="btn btn-danger" id="confirm-ok" data-i18n="ui.ok"></button>
+  </div>
+</dialog>
+
+<!-- ─────────── privacy dialog ─────────── -->
+<dialog id="dlg-privacy" aria-labelledby="privacy-title">
+  <div class="dlg-head">
+    <h2 class="dlg-title" id="privacy-title" data-i18n="privacy.title"></h2>
+    <button type="button" class="btn btn-icon btn-ghost" data-close aria-label="Close">✕</button>
+  </div>
+  <div class="dlg-body privacy">
+    <p data-i18n="privacy.local"></p>
+    <p data-i18n="privacy.network"></p>
+    <p data-i18n="privacy.children"></p>
+    <p data-i18n="privacy.credits"></p>
+  </div>
+</dialog>
+
+<!-- ─────────── teacher pack dialog ─────────── -->
+<dialog id="dlg-teacher" class="wide" aria-labelledby="teacher-title">
+  <div class="dlg-head">
+    <h2 class="dlg-title" id="teacher-title" data-i18n="teacher.title"></h2>
+    <button type="button" class="btn btn-icon btn-ghost" data-close aria-label="Close">✕</button>
+  </div>
+  <div class="dlg-body">
+    <p style="font-size:.92rem;color:var(--ink-2);margin-bottom:14px" data-i18n="teacher.intro"></p>
+    <ul style="display:flex;flex-direction:column;gap:10px">
+      <li><button type="button" class="btn btn-primary btn-block" id="btn-teacher-sheet" data-i18n="teacher.sheet"></button></li>
+      <li><button type="button" class="btn btn-block" id="btn-teacher-report" data-i18n="teacher.report"></button></li>
+      <li><button type="button" class="btn btn-block" id="btn-teacher-csv" data-i18n="teacher.csv"></button></li>
+    </ul>
+  </div>
+</dialog>
+
+<div id="toast" role="status" aria-live="polite"></div>
+<section id="print-report" aria-hidden="true"></section>
+
+<script>
+'use strict';
+/* ═════════════════════════════════════════════════════════════
+   Метеощоденник / Weather Journal
+   Авторка: Олеся Бохонок
+   Безкоштовно, без реклами, без акаунтів на сервері.
+   Дані — лише в localStorage цього браузера.
+   Зовнішні запити: Open-Meteo (пошук місця та погода).
+   ═════════════════════════════════════════════════════════════ */
+
+const APP_VERSION = '3.0.0';
+const STORE_KEY = 'meteojournal.v3';
+const MAX_RECORDS = 4000;
+const MAX_FILE_BYTES = 2 * 1024 * 1024;
+const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+const TIME_RE = /^([01]\d|2[0-3]):[0-5]\d$/;
+const TZ_RE = /^[A-Za-z0-9_+\-/]{1,40}$/;
+const RECENT_DAYS = 85;
+
+const API = {
+  forecast: 'https://api.open-meteo.com/v1/forecast',
+  archive:  'https://archive-api.open-meteo.com/v1/archive',
+  geocode:  'https://geocoding-api.open-meteo.com/v1/search'
+};
+
+const SKY = [
+  { k:'clear',  e:'☀️' }, { k:'partly', e:'🌤️' }, { k:'cloudy', e:'☁️' },
+  { k:'rain',   e:'🌧️' }, { k:'storm',  e:'⛈️' }, { k:'snow',   e:'❄️' }, { k:'fog', e:'🌫️' }
+];
+const MOOD = [
+  { k:'joy', e:'😀' }, { k:'ok', e:'😐' }, { k:'sad', e:'😢' }, { k:'wow', e:'🤩' }, { k:'sleepy', e:'😴' }
+];
+const AVATARS = ['🦊','🐱','🐶','🐼','🦄','🚀','🌈','🦉','🐢','🌻','🐧','🦋'];
+const SKY_KEYS  = SKY.map(s => s.k);
+const MOOD_KEYS = MOOD.map(s => s.k);
+const WET_SKY = new Set(['rain','storm','snow']);
+
+const DEFAULT_CITY = { name:'Київ', admin:'', country:'Україна', lat:50.45, lon:30.52, tz:'Europe/Kyiv' };
+
+const TEMP_STOPS = [
+  [-25,[42,63,154]],[-15,[59,111,196]],[-5,[111,168,220]],[0,[169,211,235]],
+  [5,[189,227,208]],[10,[220,235,160]],[15,[243,226,123]],[20,[247,190,91]],
+  [25,[242,144,63]],[30,[224,96,58]],[35,[178,58,72]]
+];
+const INK_RGB = [22,33,43];
+const WHITE_RGB = [255,255,255];
+
+const PROFILE_HUES = ['#1F5FA8','#B24C10','#2E6B45','#8A2A6B','#7A5A0F','#365B8A','#0F6B6B','#8A2A2A'];
+
+/* ───────────── i18n (uk + en) ───────────── */
+
+const I18N = {
+uk:{
+'app.title':'Метеощоденник — шкільний щоденник погоди',
+'app.shortName':'Метеощоденник',
+'app.tagline':'Твій щоденник погоди',
+'app.author':'Авторка: Олеся Бохонок',
+'skip':'Перейти до вмісту','lang.label':'Мова','settings.open':'Налаштування',
+'banner.storage':'Браузер не дозволяє зберігати дані. Збережи файл, інакше записи зникнуть після закриття вкладки.',
+'view.mine':'Мій щоденник','view.class':'Клас',
+'profile.btnLabel':'Профілі. Зараз: {name}','profile.default':'Мій щоденник',
+'profile.title':'Профілі на цьому пристрої',
+'profile.hint':'У кожного учня свій щоденник. Краще вказувати ім’я або псевдонім, без прізвища.',
+'profile.name':'Ім’я або псевдонім','profile.class':'Клас','profile.classLbl':'клас {cls}',
+'profile.records':['{n} запис','{n} записи','{n} записів'],
+'profile.avatar':'Аватар','profile.new':'Новий профіль','profile.newTitle':'Новий профіль',
+'profile.editTitle':'Змінити профіль','profile.edit':'Змінити','profile.save':'Зберегти профіль',
+'profile.delete':'Видалити профіль','profile.deleteTitle':'Видалити профіль?',
+'profile.deleteText':'Профіль «{name}» і всі його записи буде видалено з цього пристрою. Це не можна скасувати.',
+'profile.switch':'Обрати','profile.active':'Поточний',
+'class.import':'Додати файли учнів','class.export':'Зберегти клас одним файлом',
+'class.title':'Клас','class.hint':'Записів у класі: {n}, учнів: {p}.',
+'month.prev':'Попередній місяць','month.next':'Наступний місяць','month.today':'Сьогодні',
+'cal.caption':'Календар спостережень, {month}',
+'cal.cellEmpty':'{date}: запису немає','cal.cellFilled':'{date}: {temp}, {sky}',
+'cal.cellFuture':'{date}: цей день ще не настав',
+'cal.cellClass':'{date}: {n} записів, середня {temp}',
+'cal.hintEmpty':'Натисни на день, щоб записати погоду. Клітинка забарвиться за температурою.',
+'cal.hintSome':'Записів цього місяця: {n}. Натисни на день, щоб додати або змінити запис.',
+'cal.hintClass':'Класних записів цього місяця: {n}. Натисни на день, щоб побачити деталі.',
+'legend.caption':'Колір клітинки — температура, {unit}',
+'act.compare':'Порівняти з Open-Meteo','act.export':'Зберегти файл','act.import':'Відкрити файл',
+'act.print':'Друк / PDF','act.teacher':'Пакет учителя',
+'chart.title':'Температура за місяць','chart.empty':'Додай записи — тут з’явиться графік.',
+'chart.mine':'Твої спостереження','chart.real':'Open-Meteo (модель)','chart.freeze':'Точка замерзання',
+'chart.table':'Дані таблицею','chart.alt':'Графік температури, {month}. Записів: {n}, від {min} до {max}.',
+'th.day':'День','th.time':'Час','th.temp':'Температура','th.sky':'Небо','th.hum':'Вологість',
+'th.wind':'Вітер','th.real':'Open-Meteo','th.notes':'Нотатки',
+'place.title':'Місце спостережень','place.change':'Змінити місце','place.label':'Назва міста або села',
+'place.search':'Знайти','place.geo':'Визначити за геолокацією','place.short':'Введи щонайменше 2 літери.',
+'place.searching':'Шукаю…','place.none':'Нічого не знайдено. Спробуй іншу назву.',
+'place.err':'Не вдалося знайти місце. Перевір інтернет і спробуй ще раз.',
+'place.geoWait':'Визначаю місце…','place.geoErr':'Не вдалося визначити місце. Дозволь доступ або знайди місто за назвою.',
+'place.choose':'Обери місце зі списку:','place.myLoc':'Моє місцезнаходження',
+'place.noCoords':'Координат немає — обери місце, щоб порівнювати з Open-Meteo.',
+'place.privacy':'Для порівняння на сервер Open-Meteo надсилаються лише координати місця, округлені до ~1 км. Ім’я та клас нікуди не надсилаються.',
+'place.set':'Місце змінено: {name}.','coord.N':'пн. ш.','coord.S':'пд. ш.','coord.E':'сх. д.','coord.W':'зх. д.',
+'stats.title':'Місяць у цифрах','stats.empty':'Підсумок з’явиться, коли буде перший запис.',
+'stats.records':'Записів','stats.mean':'Середня температура','stats.max':'Найтепліший день',
+'stats.min':'Найхолодніший день','stats.amp':'Амплітуда температур','stats.wet':'Днів з опадами',
+'stats.wind':'Вітер найчастіше з','stats.mae':'Розбіжність з Open-Meteo',
+'rose.title':'Роза вітрів','rose.hint':'Скільки разів вітер дув з кожного напрямку.',
+'rose.empty':'Записуй напрям вітру — і тут з’явиться роза вітрів.','rose.alt':'Роза вітрів. {list}',
+'badges.title':'Досягнення','badge.b1':'Перший запис','badge.b7':'7 записів','badge.b20':'20 записів',
+'badge.locked':'ще не відкрито',
+'badge.next':['До наступного досягнення: ще {n} запис','До наступного досягнення: ще {n} записи','До наступного досягнення: ще {n} записів'],
+'badge.done':'Усі досягнення відкрито!',
+'day.time':'Час спостереження','day.timeHint':'Не знаєш часу — залиш порожнім: для порівняння візьмемо 09:00.',
+'day.temp':'Температура повітря, {unit}','day.sky':'Небо','day.hum':'Вологість повітря, %',
+'day.wind':'Швидкість вітру, {unit}','day.dir':'Вітер дме з','day.dirNone':'Штиль або не знаю',
+'day.mood':'Настрій (необов’язково)','day.notes':'Нотатки','day.save':'Зберегти',
+'day.delete':'Видалити запис','day.deleteTitle':'Видалити запис?',
+'day.deleteText':'Запис за {date} буде видалено.',
+'real.title':'Порівняння з Open-Meteo','real.param':'Що','real.mine':'Ти','real.model':'Модель',
+'real.diff':'Різниця','real.temp':'Температура','real.hum':'Вологість','real.wind':'Швидкість вітру',
+'real.dir':'Вітер з','real.sky':'Небо',
+'real.note':'Модель дає значення для клітинки сітки ~10 км. Розбіжність 1–2 °C — це нормально, і це привід подумати, чому вона виникла.',
+'cmp.running':'Отримую дані Open-Meteo…',
+'cmp.done':['Порівняно {n} запис.','Порівняно {n} записи.','Порівняно {n} записів.'],
+'cmp.missing':['Для {m} запису даних немає.','Для {m} записів даних немає.','Для {m} записів даних немає.'],
+'cmp.none':'Немає записів для порівняння: беруться лише минулі дні й сьогодні.',
+'cmp.noCoords':'Спершу обери місце спостережень.',
+'cmp.err':'Не вдалося отримати дані. Перевір інтернет і спробуй ще раз.',
+'io.exported':'Файл збережено: {name}','io.imported':'Додано профіль «{name}». Записів: {n}.',
+'io.fail':'Файл «{file}» не відкрито: {reason}.','io.tooBig':'він завеликий','io.notWl':'це не файл Метеощоденника',
+'io.empty':'у ньому немає коректних записів','io.readErr':'файл не вдалося прочитати',
+'settings.title':'Налаштування',
+'set.mode':'Режим','set.kid':'Дитячий режим','set.kid.hint':'Великі кнопки, прості слова, менше цифр',
+'set.units':'Одиниці','set.metric':'°C, м/с','set.imperial':'°F, mph',
+'set.a11y':'Зручність читання','set.contrast':'Високий контраст','set.large':'Великий текст',
+'set.readable':'Розбірливий шрифт','set.readable.hint':'Простий шрифт із більшими інтервалами',
+'set.simple':'Спрощений режим','set.simple.hint':'Ховає графік, статистику й розу вітрів',
+'set.data':'Дані','set.wipe':'Видалити всі дані з цього пристрою',
+'set.wipeTitle':'Видалити всі дані?',
+'set.wipeText':'Усі профілі й записи в цьому браузері буде видалено. Спершу збережи файли, якщо вони ще потрібні.',
+'ui.ok':'Так, видалити','ui.cancel':'Скасувати',
+'toast.saved':'Запис збережено.','toast.deleted':'Запис видалено.','toast.wiped':'Дані видалено.',
+'foot.text':'Метеощоденник {v}. Безкоштовно, без реєстрації, без реклами.',
+'print.title':'Метеощоденник','print.student':'Учень','print.class':'Клас','print.place':'Місце',
+'print.made':'Надруковано {date}','print.sheet':'Аркуш спостережень',
+'unit.c':'°C','unit.f':'°F','unit.ms':'м/с','unit.mph':'mph',
+'sky.clear':'Ясно','sky.partly':'Мінлива хмарність','sky.cloudy':'Хмарно','sky.rain':'Дощ',
+'sky.storm':'Гроза','sky.snow':'Сніг','sky.fog':'Туман',
+'mood.joy':'Радісно','mood.ok':'Спокійно','mood.sad':'Сумно','mood.wow':'Вау!','mood.sleepy':'Сонно',
+'dir.0':'Пн','dir.1':'ПнСх','dir.2':'Сх','dir.3':'ПдСх','dir.4':'Пд','dir.5':'ПдЗх','dir.6':'Зх','dir.7':'ПнЗх',
+'privacy.open':'Приватність','privacy.title':'Приватність',
+'privacy.local':'Записи, імена й клас зберігаються лише в цьому браузері. Ми не маємо сервера й не надсилаємо ці дані нікуди.',
+'privacy.network':'Єдині зовнішні запити — до Open-Meteo (пошук місця й погода). Вони містять лише координати, округлені до ~1 км. Ім’я, клас і нотатки не надсилаються.',
+'privacy.children':'Застосунок не має реклами, трекерів, аналітики та акаунтів на сервері. Для шкіл США та ЄС він сумісний з COPPA та GDPR за замовчуванням.',
+'privacy.credits':'Дані погоди — Open-Meteo. Пошук місць — Open-Meteo Geocoding. Обидва сервіси безкоштовні для некомерційного використання.',
+'teacher.title':'Пакет учителя','teacher.intro':'Матеріали для уроку й підсумків. Нічого не надсилається назовні — усе друкується або зберігається локально.',
+'teacher.sheet':'Надрукувати аркуш спостережень','teacher.report':'Надрукувати звіт за місяць',
+'teacher.csv':'Зберегти дані класу як CSV',
+/* онбординг */
+'onb.langTitle':'Обери мову','onb.langHint':'Мову можна змінити будь-коли.',
+'onb.nameTitle':'Як тебе звати?','onb.nameHint':'Напиши ім’я або псевдонім. Прізвище не потрібне.',
+'onb.nameLabel':'Ім’я або псевдонім','onb.classLabel':'Клас (необов’язково)',
+'onb.avatarTitle':'Обери аватар','onb.avatarHint':'Натисни на того, хто тобі подобається.',
+'onb.cityTitle':'Де ти спостерігаєш погоду?','onb.cityHint':'Напиши назву свого міста або села.',
+'onb.cityLabel':'Місто або село','onb.search':'Знайти','onb.geo':'📍 Визначити моє місце',
+'onb.cityPrivacy':'Для порівняння з Open-Meteo надсилаються лише координати, округлені до ~1 км. Ім’я та клас не надсилаються.',
+'onb.back':'← Назад','onb.next':'Далі →','onb.finish':'Почати! 🌟',
+'onb.needName':'Будь ласка, введи ім’я.','onb.needCity':'Обери місто зі списку.'
+},
+en:{
+'app.title':'Weather Journal — school weather diary',
+'app.shortName':'Weather Journal',
+'app.tagline':'Your weather diary',
+'app.author':'Created by Olesya Bokhonok',
+'skip':'Skip to content','lang.label':'Language','settings.open':'Settings',
+'banner.storage':'This browser does not allow saving data. Save a file, otherwise your entries will disappear when the tab is closed.',
+'view.mine':'My journal','view.class':'Class',
+'profile.btnLabel':'Profiles. Current: {name}','profile.default':'My journal',
+'profile.title':'Profiles on this device',
+'profile.hint':'Each student has their own journal. A first name or nickname is better than a full name.',
+'profile.name':'First name or nickname','profile.class':'Class','profile.classLbl':'class {cls}',
+'profile.records':['{n} entry','{n} entries'],
+'profile.avatar':'Avatar','profile.new':'New profile','profile.newTitle':'New profile',
+'profile.editTitle':'Edit profile','profile.edit':'Edit','profile.save':'Save profile',
+'profile.delete':'Delete profile','profile.deleteTitle':'Delete this profile?',
+'profile.deleteText':'The profile “{name}” and all its entries will be deleted from this device. This cannot be undone.',
+'profile.switch':'Select','profile.active':'Current',
+'class.import':'Add student files','class.export':'Save class as one file',
+'class.title':'Class','class.hint':'Class entries: {n}; students: {p}.',
+'month.prev':'Previous month','month.next':'Next month','month.today':'Today',
+'cal.caption':'Observation calendar, {month}',
+'cal.cellEmpty':'{date}: no entry','cal.cellFilled':'{date}: {temp}, {sky}',
+'cal.cellFuture':'{date}: this day has not come yet',
+'cal.cellClass':'{date}: {n} entries, mean {temp}',
+'cal.hintEmpty':'Tap a day to record the weather. The cell will be coloured by temperature.',
+'cal.hintSome':'Entries this month: {n}. Tap a day to add or edit an entry.',
+'cal.hintClass':'Class entries this month: {n}. Tap a day to see details.',
+'legend.caption':'Cell colour = temperature, {unit}',
+'act.compare':'Compare with Open-Meteo','act.export':'Save file','act.import':'Open file',
+'act.print':'Print / PDF','act.teacher':'Teacher pack',
+'chart.title':'Temperature this month','chart.empty':'Add entries and a chart will appear here.',
+'chart.mine':'Your observations','chart.real':'Open-Meteo (model)','chart.freeze':'Freezing point',
+'chart.table':'Data as a table','chart.alt':'Temperature chart, {month}. Entries: {n}, from {min} to {max}.',
+'th.day':'Day','th.time':'Time','th.temp':'Temperature','th.sky':'Sky','th.hum':'Humidity',
+'th.wind':'Wind','th.real':'Open-Meteo','th.notes':'Notes',
+'place.title':'Observation site','place.change':'Change place','place.label':'Name of a city or village',
+'place.search':'Search','place.geo':'Use my location','place.short':'Type at least 2 letters.',
+'place.searching':'Searching…','place.none':'Nothing found. Try another name.',
+'place.err':'Could not search for places. Check your connection and try again.',
+'place.geoWait':'Finding your location…','place.geoErr':'Could not get your location. Allow location access or search by name.',
+'place.choose':'Choose a place from the list:','place.myLoc':'My location',
+'place.noCoords':'No coordinates yet. Choose a place to compare with Open-Meteo.',
+'place.privacy':'To compare with Open-Meteo, only the place’s coordinates, rounded to about 1 km, are sent. Your name and class are never sent.',
+'place.set':'Place changed: {name}.','coord.N':'N','coord.S':'S','coord.E':'E','coord.W':'W',
+'stats.title':'The month in numbers','stats.empty':'A summary will appear after the first entry.',
+'stats.records':'Entries','stats.mean':'Mean temperature','stats.max':'Warmest day',
+'stats.min':'Coldest day','stats.amp':'Temperature range','stats.wet':'Days with precipitation',
+'stats.wind':'Wind most often from','stats.mae':'Difference from Open-Meteo',
+'rose.title':'Wind rose','rose.hint':'How many times the wind blew from each direction.',
+'rose.empty':'Record the wind direction and a wind rose will appear here.','rose.alt':'Wind rose. {list}',
+'badges.title':'Achievements','badge.b1':'First entry','badge.b7':'7 entries','badge.b20':'20 entries',
+'badge.locked':'not unlocked yet',
+'badge.next':['Next achievement: {n} more entry','Next achievement: {n} more entries'],
+'badge.done':'All achievements unlocked!',
+'day.time':'Time of observation','day.timeHint':'Not sure of the time? Leave it empty; 09:00 will be used.',
+'day.temp':'Air temperature, {unit}','day.sky':'Sky','day.hum':'Relative humidity, %',
+'day.wind':'Wind speed, {unit}','day.dir':'Wind blows from','day.dirNone':'Calm or not sure',
+'day.mood':'Mood (optional)','day.notes':'Notes','day.save':'Save',
+'day.delete':'Delete entry','day.deleteTitle':'Delete this entry?',
+'day.deleteText':'The entry for {date} will be deleted.',
+'real.title':'Comparison with Open-Meteo','real.param':'What','real.mine':'You','real.model':'Model',
+'real.diff':'Difference','real.temp':'Temperature','real.hum':'Humidity','real.wind':'Wind speed',
+'real.dir':'Wind from','real.sky':'Sky',
+'real.note':'The model gives a value for a grid cell about 10 km wide. A difference of 1–2 °C is normal, and a good reason to think about why it appears.',
+'cmp.running':'Getting Open-Meteo data…',
+'cmp.done':['Compared {n} entry.','Compared {n} entries.'],
+'cmp.missing':['No data for {m} entry.','No data for {m} entries.'],
+'cmp.none':'No entries to compare: only past days and today are used.',
+'cmp.noCoords':'Choose an observation site first.',
+'cmp.err':'Could not get the data. Check your connection and try again.',
+'io.exported':'File saved: {name}','io.imported':'Added profile “{name}”. Entries: {n}.',
+'io.fail':'File “{file}” was not opened: {reason}.','io.tooBig':'it is too large','io.notWl':'it is not a Weather Journal file',
+'io.empty':'it has no valid entries','io.readErr':'the file could not be read',
+'settings.title':'Settings',
+'set.mode':'Mode','set.kid':'Kid mode','set.kid.hint':'Big buttons, simple words, fewer numbers',
+'set.units':'Units','set.metric':'°C, m/s','set.imperial':'°F, mph',
+'set.a11y':'Reading comfort','set.contrast':'High contrast','set.large':'Large text',
+'set.readable':'Easy-to-read font','set.readable.hint':'A plain font with wider spacing',
+'set.simple':'Simple mode','set.simple.hint':'Hides the chart, statistics and wind rose',
+'set.data':'Data','set.wipe':'Delete all data from this device',
+'set.wipeTitle':'Delete all data?',
+'set.wipeText':'All profiles and entries in this browser will be deleted. Save files first if you still need them.',
+'ui.ok':'Yes, delete','ui.cancel':'Cancel',
+'toast.saved':'Entry saved.','toast.deleted':'Entry deleted.','toast.wiped':'Data deleted.',
+'foot.text':'Weather Journal {v}. Free, no sign-up, no ads.',
+'print.title':'Weather Journal','print.student':'Student','print.class':'Class','print.place':'Place',
+'print.made':'Printed {date}','print.sheet':'Observation sheet',
+'unit.c':'°C','unit.f':'°F','unit.ms':'m/s','unit.mph':'mph',
+'sky.clear':'Clear','sky.partly':'Partly cloudy','sky.cloudy':'Overcast','sky.rain':'Rain',
+'sky.storm':'Thunderstorm','sky.snow':'Snow','sky.fog':'Fog',
+'mood.joy':'Happy','mood.ok':'Calm','mood.sad':'Sad','mood.wow':'Wow!','mood.sleepy':'Sleepy',
+'dir.0':'N','dir.1':'NE','dir.2':'E','dir.3':'SE','dir.4':'S','dir.5':'SW','dir.6':'W','dir.7':'NW',
+'privacy.open':'Privacy','privacy.title':'Privacy',
+'privacy.local':'Entries, names and classes are stored only in this browser. There is no server; this data never leaves your device.',
+'privacy.network':'The only outbound requests go to Open-Meteo (place search and weather). They contain coordinates rounded to ~1 km. Names, classes and notes are never sent.',
+'privacy.children':'The app has no ads, trackers, analytics or server accounts. For US and EU schools it is COPPA- and GDPR-friendly by default.',
+'privacy.credits':'Weather data by Open-Meteo. Place search by Open-Meteo Geocoding. Both free for non-commercial use.',
+'teacher.title':'Teacher pack','teacher.intro':'Materials for a lesson and for monthly summaries. Nothing leaves the device — everything is printed or saved locally.',
+'teacher.sheet':'Print observation sheet','teacher.report':'Print monthly report',
+'teacher.csv':'Save class data as CSV',
+/* onboarding */
+'onb.langTitle':'Choose your language','onb.langHint':'You can change it any time.',
+'onb.nameTitle':'What is your name?','onb.nameHint':'Type a first name or nickname. No surname needed.',
+'onb.nameLabel':'First name or nickname','onb.classLabel':'Class (optional)',
+'onb.avatarTitle':'Pick an avatar','onb.avatarHint':'Tap the one you like.',
+'onb.cityTitle':'Where do you watch the weather?','onb.cityHint':'Type the name of your city or village.',
+'onb.cityLabel':'City or village','onb.search':'Search','onb.geo':'📍 Use my location',
+'onb.cityPrivacy':'To compare with Open-Meteo, only coordinates rounded to ~1 km are sent. Your name and class are never sent.',
+'onb.back':'← Back','onb.next':'Next →','onb.finish':'Start! 🌟',
+'onb.needName':'Please enter a name.','onb.needCity':'Choose a city from the list.'
+}
+};
+
+const L10N = {
+  uk:{ weekStart:1,
+    months:['Січень','Лютий','Березень','Квітень','Травень','Червень','Липень','Серпень','Вересень','Жовтень','Листопад','Грудень'],
+    weekdaysShort:['Нд','Пн','Вт','Ср','Чт','Пт','Сб'],
+    weekdaysLong:['неділя','понеділок','вівторок','середа','четвер','п’ятниця','субота'] },
+  en:{ weekStart:0,
+    months:['January','February','March','April','May','June','July','August','September','October','November','December'],
+    weekdaysShort:['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],
+    weekdaysLong:['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'] }
+};
+
+/* ───────────── helpers ───────────── */
+
+const $  = (s,r=document)=>r.querySelector(s);
+const $$ = (s,r=document)=>Array.from(r.querySelectorAll(s));
+
+function el(tag,props,...kids){
+  const n=document.createElement(tag);
+  if(props){
+    for(const[k,v]of Object.entries(props)){
+      if(v===null||v===undefined||v===false)continue;
+      if(k==='class')n.className=v;
+      else if(k==='text')n.textContent=v;
+      else if(k==='dataset')Object.assign(n.dataset,v);
+      else if(k.startsWith('on')&&typeof v==='function')n.addEventListener(k.slice(2),v);
+      else n.setAttribute(k,v===true?'':String(v));
+    }
+  }
+  for(const kid of kids.flat()){
+    if(kid===null||kid===undefined||kid===false)continue;
+    n.append(kid.nodeType?kid:document.createTextNode(String(kid)));
+  }
+  return n;
+}
+function svgEl(tag,attrs,...kids){
+  const n=document.createElementNS('http://www.w3.org/2000/svg',tag);
+  for(const[k,v]of Object.entries(attrs||{}))n.setAttribute(k,String(v));
+  for(const kid of kids.flat()){
+    if(kid===null||kid===undefined)continue;
+    n.append(kid.nodeType?kid:document.createTextNode(String(kid)));
+  }
+  return n;
+}
+const pad = n=>String(n).padStart(2,'0');
+const round = (x,d=0)=>{const f=10**d;return Math.round(x*f)/f;};
+const uid = ()=>'p'+Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+function num(v,min,max){
+  const n=typeof v==='number'?v:(typeof v==='string'&&v.trim()!==''?Number(v):NaN);
+  return Number.isFinite(n)&&n>=min&&n<=max?n:null;
+}
+function cleanStr(v,max){
+  return typeof v==='string'?v.replace(/[\u0000-\u001F\u007F]/g,' ').replace(/\s+/g,' ').trim().slice(0,max):'';
+}
+function cleanText(v,max){
+  return typeof v==='string'?v.replace(/[\u0000-\u0009\u000B-\u001F\u007F]/g,' ').trim().slice(0,max):'';
+}
+
+/* ───────────── state ───────────── */
+
+const state = {
+  store: null,
+  view: { y:2000, m:0 },
+  activeKey: null,
+  classView: false,
+  storageOk: true,
+  busy: false,
+  toastTimer: null,
+  editingProfile: null,
+  printMode: 'report',
+  onboarding: false,
+  onbStep: 0,
+  onbAvatar: AVATARS[0],
+  onbCity: null
+};
+
+const lang = ()=>state.store.lang;
+const P = ()=>state.store.profiles.find(p=>p.id===state.store.active);
+const imperial = ()=>state.store.units==='imperial';
+const kidMode = ()=>state.store.kidMode === true;
+
+function pluralIndex(l,n){
+  n=Math.abs(Number(n));
+  if(l==='uk'){
+    const m10=n%10,m100=n%100;
+    if(m10===1&&m100!==11)return 0;
+    if(m10>=2&&m10<=4&&!(m100>=12&&m100<=14))return 1;
+    return 2;
+  }
+  return n===1?0:1;
+}
+function t(key,params={}){
+  let v=I18N[lang()][key];
+  if(v===undefined)v=I18N.uk[key];
+  if(v===undefined)return key;
+  if(Array.isArray(v))v=v[Math.min(pluralIndex(lang(),params.n!==undefined?params.n:params.m),v.length-1)];
+  return v.replace(/\{(\w+)\}/g,(m,k)=>params[k]!==undefined?String(params[k]):m);
+}
+
+/* ───────────── units ───────────── */
+
+const toDispT    = c => imperial()?c*9/5+32:c;
+const fromDispT  = v => imperial()?(v-32)*5/9:v;
+const toDispDelta= d => imperial()?d*9/5:d;
+const toDispW    = ms=> imperial()?ms*2.2369363:ms;
+const fromDispW  = v => imperial()?v/2.2369363:v;
+const tempUnit   = ()=>t(imperial()?'unit.f':'unit.c');
+const windUnit   = ()=>t(imperial()?'unit.mph':'unit.ms');
+
+function fmtNum(x,d=1){
+  let v=round(x,d);
+  if(Object.is(v,-0))v=0;
+  return new Intl.NumberFormat(lang(),{maximumFractionDigits:d}).format(v);
+}
+const fmtTemp   = c=>`${fmtNum(toDispT(c))} ${tempUnit()}`;
+const fmtWind   = ms=>`${fmtNum(toDispW(ms))} ${windUnit()}`;
+const signed    = x=>(x>0?'+':'')+fmtNum(x);
+const dirName   = i=>t('dir.'+i);
+const dirFromDeg= deg=>Math.round((((deg%360)+360)%360)/45)%8;
+function fmtCoord(lat,lon){
+  return `${fmtNum(Math.abs(lat),2)}° ${t(lat>=0?'coord.N':'coord.S')}, ${fmtNum(Math.abs(lon),2)}° ${t(lon>=0?'coord.E':'coord.W')}`;
+}
+
+/* ───────────── colors ───────────── */
+
+function tempRGB(c){
+  const first=TEMP_STOPS[0],last=TEMP_STOPS[TEMP_STOPS.length-1];
+  if(c<=first[0])return first[1].slice();
+  if(c>=last[0])return last[1].slice();
+  for(let i=1;i<TEMP_STOPS.length;i++){
+    const[c1,rgb1]=TEMP_STOPS[i];
+    if(c<=c1){
+      const[c0,rgb0]=TEMP_STOPS[i-1];
+      const f=(c-c0)/(c1-c0);
+      return rgb0.map((v,j)=>Math.round(v+(rgb1[j]-v)*f));
+    }
+  }
+  return last[1].slice();
+}
+const rgbCss = rgb=>`rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`;
+function luminance(rgb){
+  const lin=rgb.map(v=>{const s=v/255;return s<=0.03928?s/12.92:Math.pow((s+0.055)/1.055,2.4);});
+  return 0.2126*lin[0]+0.7152*lin[1]+0.0722*lin[2];
+}
+function contrastRatio(a,b){
+  const la=luminance(a),lb=luminance(b);
+  return (Math.max(la,lb)+0.05)/(Math.min(la,lb)+0.05);
+}
+function readableOn(rgb){
+  return contrastRatio(rgb,INK_RGB)>=contrastRatio(rgb,WHITE_RGB)?INK_RGB:WHITE_RGB;
+}
+
+/* ───────────── dates ───────────── */
+
+const keyOf   = (y,m,d)=>`${y}-${pad(m+1)}-${pad(d)}`;
+const daysIn  = (y,m)=>new Date(y,m+1,0).getDate();
+function todayParts(){const n=new Date();return{y:n.getFullYear(),m:n.getMonth(),d:n.getDate()};}
+const todayKey= ()=>{const n=todayParts();return keyOf(n.y,n.m,n.d);};
+function parseKey(k){const[y,m,d]=k.split('-').map(Number);return{y,m:m-1,d};}
+function validDate(k){
+  if(!DATE_RE.test(k))return false;
+  const{y,m,d}=parseKey(k);
+  return y>=1990&&y<=2100&&m>=0&&m<=11&&d>=1&&d<=daysIn(y,m);
+}
+function addDays(k,n){const{y,m,d}=parseKey(k);const x=new Date(y,m,d+n);return keyOf(x.getFullYear(),x.getMonth(),x.getDate());}
+function longDate(k){
+  const{y,m,d}=parseKey(k);
+  return new Intl.DateTimeFormat(lang(),{weekday:'long',day:'numeric',month:'long',year:'numeric'}).format(new Date(y,m,d));
+}
+function shortDate(k){
+  const{y,m,d}=parseKey(k);
+  return new Intl.DateTimeFormat(lang(),{day:'numeric',month:'short'}).format(new Date(y,m,d));
+}
+const monthTitle = (y,m)=>`${L10N[lang()].months[m]} ${y}`;
+function nowHHMM(){const n=new Date();return `${pad(n.getHours())}:${pad(n.getMinutes())}`;}
+
+/* ───────────── storage ───────────── */
+
+function sanitizeCity(c){
+  if(!c||typeof c!=='object')return null;
+  const name=cleanStr(c.name,60);
+  if(!name)return null;
+  let lat=num(c.lat,-90,90),lon=num(c.lon,-180,180);
+  if(lat===null||lon===null){lat=null;lon=null;}else{lat=round(lat,2);lon=round(lon,2);}
+  return {name,admin:cleanStr(c.admin,60),country:cleanStr(c.country,60),lat,lon,
+    tz:typeof c.tz==='string'&&TZ_RE.test(c.tz)?c.tz:null};
+}
+function sanitizeReal(r){
+  if(!r||typeof r!=='object')return null;
+  const temp=num(r.temp,-90,60);
+  if(temp===null)return null;
+  return {
+    temp:round(temp,1),
+    hum:num(r.hum,0,100),
+    wind:num(r.wind,0,100),
+    dir:Number.isInteger(r.dir)&&r.dir>=0&&r.dir<=7?r.dir:null,
+    sky:SKY_KEYS.includes(r.sky)?r.sky:null,
+    at:cleanStr(r.at,30)
+  };
+}
+function sanitizeRecord(v){
+  if(!v||typeof v!=='object')return null;
+  const temp=num(v.temp,-90,60);
+  const sky=SKY_KEYS.includes(v.sky)?v.sky:null;
+  if(temp===null||!sky)return null;
+  const r={
+    temp:round(temp,2),sky,
+    t:typeof v.t==='string'&&TIME_RE.test(v.t)?v.t:null,
+    hum:num(v.hum,0,100),
+    wind:num(v.wind,0,100),
+    dir:Number.isInteger(v.dir)&&v.dir>=0&&v.dir<=7?v.dir:null,
+    mood:MOOD_KEYS.includes(v.mood)?v.mood:null,
+    notes:cleanText(v.notes,500)
+  };
+  const real=sanitizeReal(v.real);
+  if(real)r.real=real;
+  return r;
+}
+function sanitizeProfile(p,keepId){
+  if(!p||typeof p!=='object')return null;
+  const records={};let count=0;
+  if(p.records&&typeof p.records==='object'){
+    for(const[k,v]of Object.entries(p.records)){
+      if(count>=MAX_RECORDS)break;
+      if(!validDate(k))continue;
+      const r=sanitizeRecord(v);
+      if(r){records[k]=r;count++;}
+    }
+  }
+  return {
+    id: keepId&&typeof p.id==='string'&&/^[\w-]{1,40}$/.test(p.id)?p.id:uid(),
+    name: cleanStr(p.name,40),
+    cls:  cleanStr(p.cls,10),
+    avatar: AVATARS.includes(p.avatar)?p.avatar:AVATARS[0],
+    city: sanitizeCity(p.city)||Object.assign({},DEFAULT_CITY),
+    records
+  };
+}
+function sanitizeA11y(a){
+  a=a&&typeof a==='object'?a:{};
+  return {hc:a.hc===true,large:a.large===true,readable:a.readable===true,simple:a.simple===true};
+}
+function defaultStore(){
+  const prof=sanitizeProfile({name:'',cls:'',avatar:AVATARS[0],city:DEFAULT_CITY,records:{}});
+  return {
+    v:3,lang:'uk',units:'metric',
+    a11y:sanitizeA11y({simple:true}),
+    kidMode:true,
+    onboarded:false,
+    active:prof.id,
+    profiles:[prof]
+  };
+}
+function sanitizeStore(x){
+  if(!x||typeof x!=='object'||!Array.isArray(x.profiles))return null;
+  const profiles=x.profiles.map(p=>sanitizeProfile(p,true)).filter(Boolean);
+  if(!profiles.length)return null;
+  const v=Number(x.v);
+  if(v!==2&&v!==3)return null;
+  return {
+    v:3,
+    lang:x.lang==='en'?'en':'uk',
+    units:x.units==='imperial'?'imperial':'metric',
+    a11y:sanitizeA11y(x.a11y),
+    kidMode:x.kidMode!==false,
+    onboarded:x.onboarded===true,
+    active:profiles.some(p=>p.id===x.active)?x.active:profiles[0].id,
+    profiles
+  };
+}
+
+const V1_SKY = {'☀️':'clear','🌤️':'partly','☁️':'cloudy','🌧️':'rain','⛈️':'storm','❄️':'snow','🌫️':'fog'};
+const V1_MOOD= {'😀':'joy','😐':'ok','😢':'sad','🤩':'wow','😴':'sleepy'};
+const V1_DIR = {'Пн':0,'Сх':2,'Пд':4,'Зх':6};
+
+function convertV1({records,meta}){
+  meta=meta&&typeof meta==='object'?meta:{};
+  const out={};
+  if(records&&typeof records==='object'){
+    for(const[k,r]of Object.entries(records)){
+      const mt=/^(\d{4})-(\d{1,2})-(\d{1,2})$/.exec(k);
+      if(!mt||!r||typeof r!=='object')continue;
+      const key=`${mt[1]}-${pad(Number(mt[2]))}-${pad(Number(mt[3]))}`;
+      out[key]={
+        temp:r.temp,sky:V1_SKY[r.sky],t:null,hum:r.hum,wind:r.wind,
+        dir:V1_DIR[r.dir]===undefined?null:V1_DIR[r.dir],
+        mood:V1_MOOD[r.mood]||null,notes:r.notes
+      };
+    }
+  }
+  const cityName=cleanStr(meta.city,60);
+  const city=!cityName||cityName==='Київ'?DEFAULT_CITY:{name:cityName,lat:null,lon:null};
+  return sanitizeProfile({name:meta.name,cls:meta.class,avatar:meta.avatar,city,records:out},false);
+}
+function migrateV1(){
+  try{
+    const rawR=localStorage.getItem('wl_records');
+    const rawM=localStorage.getItem('wl_meta');
+    if(!rawR&&!rawM)return null;
+    const prof=convertV1({records:rawR?JSON.parse(rawR):{},meta:rawM?JSON.parse(rawM):{}});
+    if(!prof)return null;
+    const s=defaultStore();
+    s.profiles=[prof];s.active=prof.id;
+    const l=localStorage.getItem('wl_lang');
+    if(l&&I18N[l])s.lang=l;
+    try{
+      const a=JSON.parse(localStorage.getItem('wl_a11y')||'null');
+      if(a)s.a11y=sanitizeA11y({hc:a.highContrast,large:a.largeText,readable:a.dyslexicFont,simple:a.simplified});
+    }catch(e){}
+    return s;
+  }catch(e){return null;}
+}
+function loadStore(){
+  try{
+    const raw=localStorage.getItem(STORE_KEY);
+    if(raw){const s=sanitizeStore(JSON.parse(raw));if(s)return s;}
+  }catch(e){}
+  return migrateV1()||defaultStore();
+}
+function saveStore(){
+  try{
+    localStorage.setItem(STORE_KEY,JSON.stringify(state.store));
+    state.storageOk=true;
+  }catch(e){state.storageOk=false;}
+  const b=$('#banner-storage');if(b)b.hidden=state.storageOk;
+}
+
+/* ───────────── month computation ───────────── */
+
+function monthRecords(p,y,m){
+  const prefix=`${y}-${pad(m+1)}-`;
+  return Object.keys(p.records)
+    .filter(k=>k.startsWith(prefix))
+    .sort()
+    .map(k=>Object.assign({key:k,day:Number(k.slice(8))},p.records[k]));
+}
+function classMonthRecords(y,m){
+  const byDay={};
+  for(const p of state.store.profiles){
+    for(const r of monthRecords(p,y,m)){
+      if(!byDay[r.key])byDay[r.key]={key:r.key,day:r.day,entries:[]};
+      byDay[r.key].entries.push(Object.assign({profile:p.id},r));
+    }
+  }
+  return Object.values(byDay).sort((a,b)=>a.day-b.day).map(d=>{
+    const temps=d.entries.map(e=>e.temp);
+    const mean=temps.reduce((a,b)=>a+b,0)/temps.length;
+    const skyCount={};for(const e of d.entries)skyCount[e.sky]=(skyCount[e.sky]||0)+1;
+    const sky=Object.keys(skyCount).sort((a,b)=>skyCount[b]-skyCount[a])[0];
+    return {key:d.key,day:d.day,entries:d.entries,temp:mean,meanTemp:mean,sky,n:d.entries.length};
+  });
+}
+
+function computeStats(list){
+  if(!list.length)return null;
+  const temps=list.map(r=>r.temp);
+  const sum=temps.reduce((a,b)=>a+b,0);
+  let max=list[0],min=list[0];
+  for(const r of list){if(r.temp>max.temp)max=r;if(r.temp<min.temp)min=r;}
+  const wind=new Array(8).fill(0);
+  for(const r of list)if(r.dir!==null&&r.dir!==undefined)wind[r.dir]++;
+  const windMax=Math.max(...wind);
+  const cmp=list.filter(r=>r.real&&r.real.temp!==null);
+  return {
+    n:list.length,
+    mean:sum/list.length,
+    max:{v:max.temp,key:max.key},
+    min:{v:min.temp,key:min.key},
+    amp:max.temp-min.temp,
+    wet:list.filter(r=>WET_SKY.has(r.sky)).length,
+    wind,
+    windTop:windMax>0?wind.indexOf(windMax):null,
+    mae:cmp.length?cmp.reduce((a,r)=>a+Math.abs(r.temp-r.real.temp),0)/cmp.length:null,
+    cmpN:cmp.length
+  };
+}
+
+/* ───────────── dialogs / toast ───────────── */
+
+function openDialog(d){ if(typeof d.showModal==='function')d.showModal(); else d.setAttribute('open',''); }
+function closeDialog(d){
+  if(typeof d.close==='function')d.close();
+  else{d.removeAttribute('open');d.dispatchEvent(new Event('close'));}
+}
+function toast(msg){
+  const box=$('#toast');
+  box.textContent=msg;
+  box.classList.add('show');
+  clearTimeout(state.toastTimer);
+  state.toastTimer=setTimeout(()=>box.classList.remove('show'),5000);
+}
+function askConfirm(title,text,okLabel){
+  return new Promise(resolve=>{
+    const d=$('#dlg-confirm');
+    $('#confirm-title').textContent=title;
+    $('#confirm-text').textContent=text;
+    $('#confirm-ok').textContent=okLabel||t('ui.ok');
+    let done=false;
+    const okBtn=$('#confirm-ok'),cancelBtn=$('#confirm-cancel');
+    const finish=v=>{
+      if(done)return;done=true;
+      okBtn.removeEventListener('click',onOk);
+      cancelBtn.removeEventListener('click',onCancel);
+      d.removeEventListener('close',onCancel);
+      if(d.open)closeDialog(d);
+      resolve(v);
+    };
+    const onOk=()=>finish(true);
+    const onCancel=()=>finish(false);
+    okBtn.addEventListener('click',onOk);
+    cancelBtn.addEventListener('click',onCancel);
+    d.addEventListener('close',onCancel);
+    openDialog(d);
+    cancelBtn.focus();
+  });
+}
+
+/* ───────────── static apply ───────────── */
+
+function applyStatic(){
+  const l=lang();
+  document.documentElement.lang=l;
+  document.title=t('app.title');
+  for(const n of $$('[data-i18n]'))n.textContent=t(n.dataset.i18n);
+  for(const n of $$('[data-i18n-attr]')){
+    for(const pair of n.dataset.i18nAttr.split(';')){
+      const[attr,key]=pair.split(':');
+      if(attr&&key)n.setAttribute(attr.trim(),t(key.trim()));
+    }
+  }
+  for(const b of $$('[data-lang]'))b.setAttribute('aria-pressed',String(b.dataset.lang===l));
+  const foot=$('#foot-text');if(foot)foot.textContent=t('foot.text',{v:APP_VERSION});
+  const bm=$('#brand-mark');if(bm)bm.textContent=t('app.shortName');
+  const onbTitle=$('#onb-title');if(onbTitle)onbTitle.textContent=t('app.shortName');
+  const onbSub=$('#onb-sub');if(onbSub)onbSub.textContent=t('app.tagline');
+}
+function applyA11y(){
+  const a=state.store.a11y,root=document.documentElement;
+  root.classList.toggle('hc',a.hc);
+  root.classList.toggle('lg',a.large);
+  root.classList.toggle('rf',a.readable);
+  root.classList.toggle('simple',a.simple);
+  root.classList.toggle('kid',kidMode());
+}
+function buildChips(){
+  const chipGroup=(box,name,items,labelKey,required)=>{
+    if(!box)return;
+    box.replaceChildren(...items.map(it=>el('label',{class:'chip'},
+      el('input',{type:'radio',name,value:it.k,required:required||false}),
+      el('span',{class:'chip-face'},
+        el('span',{class:'emo','aria-hidden':'true',text:it.e}),
+        el('span',{class:'lbl',text:t(labelKey+it.k)})))));
+  };
+  chipGroup($('#sky-chips'),'sky',SKY,'sky.',true);
+  chipGroup($('#mood-chips'),'mood',MOOD,'mood.',false);
+
+  const dir=$('#f-dir');
+  if(dir){
+    dir.replaceChildren(
+      el('option',{value:'',text:t('day.dirNone')}),
+      ...Array.from({length:8},(_,i)=>el('option',{value:String(i),text:dirName(i)})));
+  }
+  const av=$('#avatar-chips');
+  if(av){
+    av.replaceChildren(...AVATARS.map(a=>el('label',{class:'chip'},
+      el('input',{type:'radio',name:'avatar',value:a,'aria-label':a}),
+      el('span',{class:'chip-face'},el('span',{class:'emo','aria-hidden':'true',text:a})))));
+  }
+  const onbAv=$('#onb-avatar-chips');
+  if(onbAv){
+    onbAv.replaceChildren(...AVATARS.map(a=>el('label',{class:'chip'},
+      el('input',{type:'radio',name:'onb-avatar',value:a,'aria-label':a,checked:a===state.onbAvatar}),
+      el('span',{class:'chip-face'},el('span',{class:'emo','aria-hidden':'true',text:a})))));
+  }
+}
+
+/* ───────────── rendering ───────────── */
+
+function renderHeader(){
+  const p=P();
+  const name=p.name||t('profile.default');
+  const av=$('#profile-avatar'),nm=$('#profile-name'),btn=$('#btn-profile');
+  if(av)av.textContent=p.avatar;
+  if(nm)nm.textContent=name;
+  if(btn)btn.setAttribute('aria-label',t('profile.btnLabel',{name}));
+}
+function renderPlace(){
+  const c=P().city;
+  const n=$('#place-name'),co=$('#place-coords');
+  if(n)n.textContent=c.name;
+  if(co)co.textContent=c.lat===null?t('place.noCoords'):fmtCoord(c.lat,c.lon);
+}
+function renderLegend(){
+  const cap=$('#legend-caption');
+  if(cap)cap.textContent=t('legend.caption',{unit:tempUnit()});
+  const bar=$('#legend-bar');
+  const lo=TEMP_STOPS[0][0],hi=TEMP_STOPS[TEMP_STOPS.length-1][0];
+  if(bar){
+    const stops=TEMP_STOPS.map(([c,rgb])=>`${rgbCss(rgb)} ${round((c-lo)/(hi-lo)*100,1)}%`);
+    bar.style.background=`linear-gradient(to right, ${stops.join(', ')})`;
+  }
+  const ticks=$('#legend-ticks');
+  if(ticks){
+    ticks.replaceChildren();
+    for(const c of [-20,-10,0,10,20,30]){
+      const s=el('span',{text:fmtNum(toDispT(c),0)});
+      s.style.left=`${(c-lo)/(hi-lo)*100}%`;
+      ticks.append(s);
+    }
+  }
+}
+
+function renderMonth(){
+  const p=P(),{y,m}=state.view,L=L10N[lang()];
+  const dim=daysIn(y,m),today=todayParts(),tk=keyOf(today.y,today.m,today.d);
+  const title=monthTitle(y,m);
+  $('#month-title').textContent=title;
+  const cap=$('#cal-caption');
+  if(cap)cap.textContent=t('cal.caption',{month:title.toLowerCase()});
+  const capT=$('#cal-caption-table');
+  if(capT)capT.textContent=t('cal.caption',{month:title.toLowerCase()});
+
+  const headRow=$('#cal-head-row');
+  headRow.replaceChildren();
+  for(let i=0;i<7;i++){
+    const idx=(L.weekStart+i)%7;
+    headRow.append(el('th',{scope:'col'},
+      el('abbr',{title:L.weekdaysLong[idx],text:L.weekdaysShort[idx]})));
+  }
+
+  const offset=(new Date(y,m,1).getDay()-L.weekStart+7)%7;
+  const cells=[];
+  for(let i=0;i<offset;i++)cells.push(el('td',{'aria-hidden':'true'}));
+
+  const classData=state.classView?classMonthRecords(y,m):null;
+  const classByDay=classData?Object.fromEntries(classData.map(d=>[d.key,d])):null;
+
+  for(let d=1;d<=dim;d++){
+    const key=keyOf(y,m,d);
+    const rec=p.records[key];
+    const cls=classByDay?classByDay[key]:null;
+    const future=key>tk;
+
+    let temp,sky,n;
+    let ariaLabel;
+
+    if(state.classView){
+      if(cls){
+        temp=cls.temp;sky=cls.sky;n=cls.n;
+        ariaLabel=t('cal.cellClass',{date:longDate(key),n,temp:fmtTemp(temp)});
+      }else{
+        ariaLabel=future?t('cal.cellFuture',{date:longDate(key)}):t('cal.cellEmpty',{date:longDate(key)});
+      }
+    }else{
+      if(rec){
+        temp=rec.temp;sky=rec.sky;
+        ariaLabel=t('cal.cellFilled',{date:longDate(key),temp:fmtTemp(temp),sky:t('sky.'+sky)});
+      }else{
+        ariaLabel=future?t('cal.cellFuture',{date:longDate(key)}):t('cal.cellEmpty',{date:longDate(key)});
+      }
+    }
+
+    const btn=el('button',{
+      type:'button',class:'day',dataset:{date:key},
+      disabled:future,
+      'aria-current':key===tk?'date':null,
+      'aria-label':ariaLabel
+    },el('span',{class:'d','aria-hidden':'true',text:d}));
+
+    if(key===tk)btn.classList.add('today');
+    if(temp!==undefined&&temp!==null){
+      const rgb=tempRGB(temp);
+      btn.classList.add('has');
+      btn.style.setProperty('--bg-cell',rgbCss(rgb));
+      btn.style.setProperty('--fg-cell',rgbCss(readableOn(rgb)));
+      const skyObj=SKY.find(s=>s.k===sky);
+      btn.append(
+        el('span',{class:'s','aria-hidden':'true',text:skyObj?skyObj.e:''}),
+        el('span',{class:'v','aria-hidden':'true',text:`${fmtNum(toDispT(temp))}°`})
+      );
+    }
+    cells.push(el('td',null,btn));
+  }
+  while(cells.length%7)cells.push(el('td',{'aria-hidden':'true'}));
+  const rows=[];
+  for(let i=0;i<cells.length;i+=7)rows.push(el('tr',null,cells.slice(i,i+7)));
+  $('#cal-body').replaceChildren(...rows);
+
+  const isCurrent=y>today.y||(y===today.y&&m>=today.m);
+  $('#btn-next').disabled=isCurrent;
+
+  const n=state.classView
+    ? classMonthRecords(y,m).reduce((a,d)=>a+d.n,0)
+    : monthRecords(p,y,m).length;
+  const hint=$('#cal-hint');
+  if(hint){
+    hint.textContent=state.classView
+      ? t('cal.hintClass',{n})
+      : (n?t('cal.hintSome',{n}):t('cal.hintEmpty'));
+  }
+}
+
+function niceStep(range){
+  const raw=range/4;
+  for(const s of [1,2,5,10,20,50])if(s>=raw)return s;
+  return 100;
+}
+
+function renderChart(){
+  const p=P(),{y,m}=state.view;
+  const dim=daysIn(y,m);
+  const box=$('#chart');
+  if(!box)return;
+  box.replaceChildren();
+  const legendBox=$('#chart-legend');
+  if(legendBox)legendBox.replaceChildren();
+  const tableBox=$('#chart-table');
+  if(tableBox)tableBox.replaceChildren();
+
+  let list, series;
+  if(state.classView){
+    const cls=classMonthRecords(y,m);
+    if(!cls.length){$('#chart-empty').hidden=false;return;}
+    $('#chart-empty').hidden=true;
+    list=cls.map(d=>({key:d.key,day:d.day,temp:d.temp,sky:d.sky,entries:d.entries,n:d.n}));
+    series=state.store.profiles
+      .map((prof,i)=>{
+        const recs=monthRecords(prof,y,m);
+        return recs.length?{profile:prof,recs,hue:PROFILE_HUES[i%PROFILE_HUES.length]}:null;
+      }).filter(Boolean);
+  }else{
+    list=monthRecords(p,y,m);
+    if(!list.length){$('#chart-empty').hidden=false;return;}
+    $('#chart-empty').hidden=true;
+    series=null;
+  }
+
+  const vals=[];
+  for(const r of list){vals.push(toDispT(r.temp));if(r.real)vals.push(toDispT(r.real.temp));}
+  if(series)for(const s of series)for(const r of s.recs)vals.push(toDispT(r.temp));
+
+  let lo=Math.min(...vals),hi=Math.max(...vals);
+  const step=niceStep(hi-lo||10);
+  lo=Math.floor((lo-1)/step)*step;
+  hi=Math.ceil((hi+1)/step)*step;
+
+  const W=640,H=270,ML=46,MR=14,MT=14,MB=34;
+  const X=d=>ML+(dim>1?(d-1)/(dim-1):0.5)*(W-ML-MR);
+  const Y=v=>MT+(hi-v)/(hi-lo)*(H-MT-MB);
+
+  const minC=Math.min(...list.map(r=>r.temp));
+  const maxC=Math.max(...list.map(r=>r.temp));
+  const s=svgEl('svg',{
+    viewBox:`0 0 ${W} ${H}`,role:'img',class:'chart-svg',
+    'aria-label':t('chart.alt',{month:monthTitle(y,m).toLowerCase(),n:list.length,min:fmtTemp(minC),max:fmtTemp(maxC)})
+  });
+
+  const grid=svgEl('g',{class:'ch-grid'});
+  for(let v=lo;v<=hi+1e-9;v+=step){
+    grid.append(
+      svgEl('line',{x1:ML,x2:W-MR,y1:Y(v),y2:Y(v)}),
+      svgEl('text',{x:ML-8,y:Y(v),class:'ch-y','text-anchor':'end','dominant-baseline':'middle'},fmtNum(v,0))
+    );
+  }
+  s.append(grid);
+
+  const fz=imperial()?32:0;
+  if(fz>lo&&fz<hi)s.append(svgEl('line',{x1:ML,x2:W-MR,y1:Y(fz),y2:Y(fz),class:'ch-freeze'}));
+
+  const xs=svgEl('g',{class:'ch-x'});
+  for(let d=1;d<=dim;d++){
+    if(d===1||d%5===0)xs.append(svgEl('text',{x:X(d),y:H-12,'text-anchor':'middle'},d));
+  }
+  s.append(xs);
+
+  const line=pts=>pts.map(([d,v])=>`${round(X(d),1)},${round(Y(v),1)}`).join(' ');
+
+  if(series){
+    for(const ser of series){
+      if(ser.recs.length>1){
+        s.append(svgEl('polyline',{
+          points:line(ser.recs.map(r=>[r.day,toDispT(r.temp)])),
+          fill:'none',stroke:ser.hue,'stroke-width':1.6,'stroke-linejoin':'round',opacity:.55
+        }));
+      }
+      for(const r of ser.recs){
+        s.append(svgEl('circle',{cx:round(X(r.day),1),cy:round(Y(toDispT(r.temp)),1),r:3,fill:ser.hue,opacity:.7},
+          svgEl('title',null,`${shortDate(r.key)} · ${ser.profile.name||t('profile.default')}: ${fmtTemp(r.temp)}`)));
+      }
+    }
+  }
+
+  if(list.length>1){
+    s.append(svgEl('polyline',{points:line(list.map(r=>[r.day,toDispT(r.temp)])),class:'ch-mine'}));
+  }
+
+  const real=list.filter(r=>r.real);
+  if(real.length>1){
+    s.append(svgEl('polyline',{points:line(real.map(r=>[r.day,toDispT(r.real.temp)])),class:'ch-real'}));
+  }
+  for(const r of real){
+    s.append(svgEl('circle',{cx:round(X(r.day),1),cy:round(Y(toDispT(r.real.temp)),1),r:3.5,class:'ch-real-dot'}));
+  }
+
+  for(const r of list){
+    const title=state.classView
+      ? `${shortDate(r.key)}: ${t('class.title')} × ${r.n}, ${fmtTemp(r.temp)}`
+      : `${shortDate(r.key)}: ${fmtTemp(r.temp)}`;
+    s.append(svgEl('circle',{
+      cx:round(X(r.day),1),cy:round(Y(toDispT(r.temp)),1),r:5.5,class:'ch-dot',
+      fill:rgbCss(tempRGB(r.temp))
+    },svgEl('title',null,title)));
+  }
+  box.append(s);
+
+  if(legendBox){
+    legendBox.append(el('li',null,el('span',{class:'lg-line','aria-hidden':'true'}),
+      state.classView?t('view.class'):t('chart.mine')));
+    if(real.length)legendBox.append(el('li',null,el('span',{class:'lg-dash','aria-hidden':'true'}),t('chart.real')));
+    if(fz>lo&&fz<hi)legendBox.append(el('li',null,el('span',{class:'lg-freeze','aria-hidden':'true'}),t('chart.freeze')));
+  }
+
+  if(tableBox)tableBox.append(buildRecordsTable(list,false));
+}
+
+function buildRecordsTable(list,withNotes){
+  const hasReal=list.some(r=>r.real);
+  const head=[t('th.day'),t('th.time'),t('th.temp'),t('th.sky'),t('th.hum'),t('th.wind')];
+  if(hasReal)head.push(t('th.real'));
+  if(withNotes)head.push(t('th.notes'));
+  const rows=list.map(r=>{
+    const skyObj=SKY.find(s=>s.k===r.sky);
+    const cells=[
+      shortDate(r.key),r.t||'—',fmtTemp(r.temp),
+      `${skyObj?skyObj.e:''} ${t('sky.'+r.sky)}`,
+      r.hum===null||r.hum===undefined?'—':`${fmtNum(r.hum,0)} %`,
+      (r.wind===null||r.wind===undefined)&&(r.dir===null||r.dir===undefined)
+        ?'—'
+        :[r.dir===null||r.dir===undefined?'':dirName(r.dir),
+          r.wind===null||r.wind===undefined?'':fmtWind(r.wind)].filter(Boolean).join(', ')
+    ];
+    if(hasReal)cells.push(r.real?fmtTemp(r.real.temp):'—');
+    if(withNotes)cells.push(r.notes||'');
+    return el('tr',null,cells.map(c=>el('td',{text:c})));
+  });
+  return el('table',{class:'data'},
+    el('thead',null,el('tr',null,head.map(h=>el('th',{scope:'col',text:h})))),
+    el('tbody',null,rows));
+}
+
+function buildStatsList(s){
+  const dl=el('dl',{class:'stats'});
+  const row=(label,value)=>dl.append(el('dt',{text:label}),el('dd',{text:value}));
+  row(t('stats.records'),String(s.n));
+  row(t('stats.max'),`${fmtTemp(s.max.v)}, ${shortDate(s.max.key)}`);
+  row(t('stats.min'),`${fmtTemp(s.min.v)}, ${shortDate(s.min.key)}`);
+  row(t('stats.amp'),`${fmtNum(toDispDelta(s.amp))} ${tempUnit()}`);
+  row(t('stats.wet'),String(s.wet));
+  if(s.windTop!==null)row(t('stats.wind'),dirName(s.windTop));
+  if(s.mae!==null)row(t('stats.mae'),`${fmtNum(toDispDelta(s.mae))} ${tempUnit()}`);
+  return dl;
+}
+
+function renderStats(){
+  const p=P(),{y,m}=state.view;
+  const box=$('#stats');
+  if(!box)return;
+  box.replaceChildren();
+
+  let list,s;
+  if(state.classView){
+    const cls=classMonthRecords(y,m);
+    if(!cls.length){box.append(el('p',{class:'hint',text:t('stats.empty')}));return;}
+    list=cls.flatMap(d=>d.entries);s=computeStats(list);
+  }else{
+    list=monthRecords(p,y,m);
+    if(!list.length){box.append(el('p',{class:'hint',text:t('stats.empty')}));return;}
+    s=computeStats(list);
+  }
+
+  const rgb=tempRGB(s.mean);
+  const mean=el('div',{class:'mean'},
+    el('span',{class:'mean-num',text:fmtTemp(s.mean)}),
+    el('span',{class:'mean-lbl',text:t('stats.mean')}));
+  mean.style.setProperty('--bg-cell',rgbCss(rgb));
+  mean.style.setProperty('--fg-cell',rgbCss(readableOn(rgb)));
+  box.append(mean,buildStatsList(s));
+}
+
+function renderRose(){
+  const p=P(),{y,m}=state.view;
+  const box=$('#rose');
+  const hint=$('#rose-hint');
+  if(!box)return;
+  box.replaceChildren();
+
+  let list;
+  if(state.classView)list=classMonthRecords(y,m).flatMap(d=>d.entries);
+  else list=monthRecords(p,y,m);
+
+  const counts=new Array(8).fill(0);
+  for(const r of list)if(r.dir!==null&&r.dir!==undefined)counts[r.dir]++;
+  const max=Math.max(...counts);
+  if(max===0){if(hint)hint.textContent=t('rose.empty');return;}
+  if(hint)hint.textContent=t('rose.hint');
+
+  const C=110,R=72;
+  const pt=(i,r)=>{const a=i*Math.PI/4;return[round(C+r*Math.sin(a),1),round(C-r*Math.cos(a),1)];};
+  const listText=counts.map((c,i)=>c?`${dirName(i)}: ${c}`:null).filter(Boolean).join(', ');
+  const s=svgEl('svg',{viewBox:'0 0 220 220',role:'img',class:'rose-svg','aria-label':t('rose.alt',{list:listText})});
+
+  for(const f of [0.5,1])s.append(svgEl('circle',{cx:C,cy:C,r:R*f,class:'rose-ring'}));
+
+  for(let i=0;i<8;i++){
+    const[x,yy]=pt(i,R),[lx,ly]=pt(i,R+17);
+    s.append(
+      svgEl('line',{x1:C,y1:C,x2:x,y2:yy,class:'rose-axis'}),
+      svgEl('text',{x:lx,y:ly,class:i%2?'rose-lbl minor':'rose-lbl','text-anchor':'middle','dominant-baseline':'middle'},dirName(i))
+    );
+  }
+
+  const nonZero=counts.filter(c=>c>0).length;
+
+  for(let i=0;i<8;i++){
+    if(counts[i]===0)continue;
+    const[x,yy]=pt(i,R*counts[i]/max);
+    s.append(svgEl('line',{
+      x1:C,y1:C,x2:x,y2:yy,
+      stroke:'#1F5FA8','stroke-width':2.5,
+      'stroke-linecap':'round',opacity:.85
+    }));
+  }
+
+  if(nonZero>=3){
+    s.append(svgEl('polygon',{
+      points:counts.map((c,i)=>pt(i,R*c/max).join(',')).join(' '),
+      class:'rose-shape'
+    }));
+  }
+
+  for(let i=0;i<8;i++){
+    if(counts[i]===0)continue;
+    const[x,yy]=pt(i,R*counts[i]/max);
+    s.append(svgEl('circle',{cx:x,cy:yy,r:4,fill:'#1F5FA8',stroke:'#fff','stroke-width':1.8}));
+  }
+
+  for(let i=0;i<8;i++){
+    if(counts[i]===0)continue;
+    const lr=R*counts[i]/max+13;
+    const[lx,ly]=pt(i,lr);
+    s.append(svgEl('text',{
+      x:lx,y:ly,
+      'text-anchor':'middle','dominant-baseline':'middle',
+      class:'rose-count'
+    },String(counts[i])));
+  }
+
+  box.append(s);
+}
+
+const BADGES=[{n:1,e:'🌱',k:'badge.b1'},{n:7,e:'⭐',k:'badge.b7'},{n:20,e:'👑',k:'badge.b20'}];
+
+function renderBadges(){
+  const total=Object.keys(P().records).length;
+  const ul=$('#badges');
+  if(ul){
+    ul.replaceChildren(...BADGES.map(b=>{
+      const got=total>=b.n;
+      return el('li',{class:got?'badge got':'badge'},
+        el('span',{class:'b-emo','aria-hidden':'true',text:b.e}),
+        el('span',{class:'b-txt'},
+          t(b.k),
+          got?'':el('small',{text:t('badge.locked')})));
+    }));
+  }
+  const next=BADGES.find(b=>total<b.n);
+  const nx=$('#badges-next');
+  if(nx)nx.textContent=next?t('badge.next',{n:next.n-total}):t('badge.done');
+}
+
+function renderSettingsState(){
+  for(const r of $$('input[name="units"]'))r.checked=r.value===state.store.units;
+  const a=state.store.a11y;
+  const hc=$('#set-hc');if(hc)hc.checked=a.hc;
+  const lg=$('#set-large');if(lg)lg.checked=a.large;
+  const rd=$('#set-readable');if(rd)rd.checked=a.readable;
+  const sp=$('#set-simple');if(sp)sp.checked=a.simple;
+  const kd=$('#set-kid');if(kd)kd.checked=kidMode();
+}
+
+function renderViewSwitch(){
+  const my=$('#view-my'),cl=$('#view-class');
+  if(my)my.setAttribute('aria-pressed',String(!state.classView));
+  if(cl)cl.setAttribute('aria-pressed',String(state.classView));
+}
+
+function renderAll(){
+  renderHeader();
+  renderPlace();
+  renderLegend();
+  renderViewSwitch();
+  renderMonth();
+  renderChart();
+  renderStats();
+  renderRose();
+  renderBadges();
+  renderSettingsState();
+}
+
+/* ───────────── day dialog ───────────── */
+
+function fillDayLabels(){
+  const lt=$('#lbl-temp'),lw=$('#lbl-wind');
+  if(lt)lt.textContent=t('day.temp',{unit:tempUnit()});
+  if(lw)lw.textContent=t('day.wind',{unit:windUnit()});
+  const temp=$('#f-temp'),wind=$('#f-wind');
+  if(temp){temp.min=String(round(toDispT(-60),1));temp.max=String(round(toDispT(60),1));}
+  if(wind){wind.max=String(Math.floor(toDispW(60)*10)/10);}
+}
+function setRadio(name,value){
+  for(const r of $$(`input[name="${name}"]`,$('#day-form')))r.checked=r.value===value;
+}
+function renderRealTable(rec){
+  const box=$('#real-box');
+  if(!box)return;
+  if(!rec||!rec.real){box.hidden=true;return;}
+  const re=rec.real,tb=$('#real-table');
+  const rows=[];
+  const add=(label,mine,model,diff)=>rows.push(el('tr',null,
+    el('th',{scope:'row',text:label}),el('td',{text:mine}),el('td',{text:model}),el('td',{text:diff})));
+  add(t('real.temp'),fmtTemp(rec.temp),fmtTemp(re.temp),signed(toDispDelta(rec.temp-re.temp)));
+  if(re.hum!==null)add(t('real.hum'),
+    rec.hum===null||rec.hum===undefined?'—':`${fmtNum(rec.hum,0)} %`,
+    `${fmtNum(re.hum,0)} %`,
+    rec.hum===null||rec.hum===undefined?'—':signed(rec.hum-re.hum));
+  if(re.wind!==null)add(t('real.wind'),
+    rec.wind===null||rec.wind===undefined?'—':fmtWind(rec.wind),
+    fmtWind(re.wind),
+    rec.wind===null||rec.wind===undefined?'—':signed(toDispW(rec.wind)-toDispW(re.wind)));
+  if(re.dir!==null)add(t('real.dir'),
+    rec.dir===null||rec.dir===undefined?'—':dirName(rec.dir),
+    dirName(re.dir),'');
+  if(re.sky)add(t('real.sky'),t('sky.'+rec.sky),t('sky.'+re.sky),'');
+
+  tb.replaceChildren(
+    el('thead',null,el('tr',null,
+      el('th',{scope:'col',text:t('real.param')}),
+      el('th',{scope:'col',text:t('real.mine')}),
+      el('th',{scope:'col',text:t('real.model')}),
+      el('th',{scope:'col',text:t('real.diff')}))),
+    el('tbody',null,rows));
+  box.hidden=false;
+}
+function openDay(key){
+  const rec=P().records[key]||null;
+  state.activeKey=key;
+  $('#day-title').textContent=longDate(key);
+  fillDayLabels();
+  $('#f-temp').value=rec?String(round(toDispT(rec.temp),1)):'';
+  $('#f-time').value=rec?(rec.t||''):(key===todayKey()?nowHHMM():'09:00');
+  $('#f-hum').value=rec&&rec.hum!==null?String(rec.hum):'';
+  $('#f-wind').value=rec&&rec.wind!==null?String(round(toDispW(rec.wind),1)):'';
+  $('#f-dir').value=rec&&rec.dir!==null?String(rec.dir):'';
+  $('#f-notes').value=rec?rec.notes:'';
+  setRadio('sky',rec?rec.sky:'');
+  setRadio('mood',rec&&rec.mood?rec.mood:'');
+  $('#btn-day-delete').hidden=!rec;
+  renderRealTable(rec);
+  openDialog($('#dlg-day'));
+}
+function readDayForm(){
+  const p=P(),key=state.activeKey,prev=p.records[key]||null;
+  const tempDisp=parseFloat($('#f-temp').value);
+  if(!Number.isFinite(tempDisp))return null;
+  const skyEl=$('input[name="sky"]:checked',$('#day-form'));
+  if(!skyEl)return null;
+  const moodEl=$('input[name="mood"]:checked',$('#day-form'));
+  const humRaw=$('#f-hum').value.trim(),windRaw=$('#f-wind').value.trim(),dirRaw=$('#f-dir').value;
+  const time=$('#f-time').value;
+  const rec=sanitizeRecord({
+    temp:fromDispT(tempDisp),
+    sky:skyEl.value,
+    t:TIME_RE.test(time)?time:null,
+    hum:humRaw===''?null:Number(humRaw),
+    wind:windRaw===''?null:fromDispW(Number(windRaw)),
+    dir:dirRaw===''?null:Number(dirRaw),
+    mood:moodEl?moodEl.value:null,
+    notes:$('#f-notes').value
+  });
+  if(!rec)return null;
+  if(prev&&prev.real&&prev.t===rec.t)rec.real=prev.real;
+  return rec;
+}
+function saveDay(e){
+  e.preventDefault();
+  const form=$('#day-form');
+  if(typeof form.reportValidity==='function'&&!form.reportValidity())return;
+  const rec=readDayForm();
+  if(!rec)return;
+  P().records[state.activeKey]=rec;
+  saveStore();
+  closeDialog($('#dlg-day'));
+  renderAll();
+  toast(t('toast.saved'));
+}
+async function deleteDay(){
+  const key=state.activeKey;
+  const ok=await askConfirm(t('day.deleteTitle'),t('day.deleteText',{date:longDate(key)}),t('ui.ok'));
+  if(!ok)return;
+  delete P().records[key];
+  saveStore();
+  closeDialog($('#dlg-day'));
+  renderAll();
+  toast(t('toast.deleted'));
+}
+function focusDay(key){
+  const b=key&&$(`.day[data-date="${key}"]`);
+  if(b&&!b.disabled)b.focus();
+}
+
+/* ───────────── open-meteo ───────────── */
+
+async function getJson(url){
+  const ctrl=new AbortController();
+  const timer=setTimeout(()=>ctrl.abort(),20000);
+  try{
+    const res=await fetch(url,{signal:ctrl.signal});
+    if(!res.ok)throw new Error('HTTP '+res.status);
+    return await res.json();
+  }finally{clearTimeout(timer);}
+}
+function skyFromCode(c){
+  if(c===0)return'clear';
+  if(c===1||c===2)return'partly';
+  if(c===3)return'cloudy';
+  if(c===45||c===48)return'fog';
+  if((c>=51&&c<=67)||(c>=80&&c<=82))return'rain';
+  if((c>=71&&c<=77)||c===85||c===86)return'snow';
+  if(c>=95&&c<=99)return'storm';
+  return null;
+}
+async function fetchHourly(city,keys){
+  const cutoff=addDays(todayKey(),-RECENT_DAYS);
+  const groups=[
+    [API.archive,keys.filter(k=>k<cutoff)],
+    [API.forecast,keys.filter(k=>k>=cutoff)]
+  ];
+  const hourly={};
+  for(const[base,ks]of groups){
+    if(!ks.length)continue;
+    const params=new URLSearchParams({
+      latitude:String(city.lat),longitude:String(city.lon),
+      hourly:'temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m,wind_direction_10m',
+      wind_speed_unit:'ms',timezone:'auto',
+      start_date:ks[0],end_date:ks[ks.length-1]
+    });
+    const data=await getJson(`${base}?${params}`);
+    const h=data&&data.hourly;
+    if(!h||!Array.isArray(h.time))throw new Error('bad response');
+    h.time.forEach((tm,i)=>{
+      hourly[tm]={
+        temp:h.temperature_2m?h.temperature_2m[i]:null,
+        hum:h.relative_humidity_2m?h.relative_humidity_2m[i]:null,
+        wind:h.wind_speed_10m?h.wind_speed_10m[i]:null,
+        deg:h.wind_direction_10m?h.wind_direction_10m[i]:null,
+        code:h.weather_code?h.weather_code[i]:null
+      };
+    });
+  }
+  return hourly;
+}
+function hourSlot(key,time){
+  let[h,mi]=(time||'09:00').split(':').map(Number);
+  if(mi>=30)h+=1;
+  if(h>23)h=23;
+  return `${key}T${pad(h)}:00`;
+}
+function pickReal(hourly,rec){
+  const v=hourly[hourSlot(rec.key,rec.t)];
+  if(!v||typeof v.temp!=='number')return null;
+  const wind=typeof v.wind==='number'?round(v.wind,1):null;
+  return sanitizeReal({
+    temp:v.temp,
+    hum:typeof v.hum==='number'?Math.round(v.hum):null,
+    wind,
+    dir:typeof v.deg==='number'&&wind!==null&&wind>=0.3?dirFromDeg(v.deg):null,
+    sky:typeof v.code==='number'?skyFromCode(v.code):null,
+    at:new Date().toISOString()
+  });
+}
+function setBusy(on){
+  state.busy=on;
+  const b=$('#btn-compare');
+  if(b){b.disabled=on;b.setAttribute('aria-busy',String(on));}
+}
+async function compareMonth(){
+  if(state.busy)return;
+  const p=P(),{y,m}=state.view,tk=todayKey();
+  if(p.city.lat===null){toast(t('cmp.noCoords'));openPlace();return;}
+  const list=monthRecords(p,y,m).filter(r=>r.key<=tk);
+  if(!list.length){toast(t('cmp.none'));return;}
+  setBusy(true);
+  toast(t('cmp.running'));
+  try{
+    const hourly=await fetchHourly(p.city,list.map(r=>r.key));
+    let ok=0;
+    for(const r of list){
+      const real=pickReal(hourly,r);
+      if(real){p.records[r.key].real=real;ok++;}
+    }
+    saveStore();renderAll();
+    const missing=list.length-ok;
+    toast(ok?t('cmp.done',{n:ok})+(missing?' '+t('cmp.missing',{m:missing}):''):t('cmp.err'));
+  }catch(e){toast(t('cmp.err'));}
+  finally{setBusy(false);}
+}
+
+/* ───────────── place ───────────── */
+
+function openPlace(){
+  $('#place-q').value='';
+  $('#place-status').textContent='';
+  $('#place-results').replaceChildren();
+  openDialog($('#dlg-place'));
+}
+function setCity(raw){
+  const city=sanitizeCity(raw);
+  if(!city)return;
+  P().city=city;
+  saveStore();
+  closeDialog($('#dlg-place'));
+  renderAll();
+  toast(t('place.set',{name:city.name}));
+}
+async function searchPlaces(e){
+  e.preventDefault();
+  const q=$('#place-q').value.trim(),status=$('#place-status'),list=$('#place-results');
+  list.replaceChildren();
+  if(q.length<2){status.textContent=t('place.short');return;}
+  status.textContent=t('place.searching');
+  try{
+    const params=new URLSearchParams({name:q,count:'8',language:lang(),format:'json'});
+    const data=await getJson(`${API.geocode}?${params}`);
+    const found=(data&&Array.isArray(data.results)?data.results:[])
+      .map(r=>({name:r.name,admin:r.admin1,country:r.country,lat:r.latitude,lon:r.longitude,tz:r.timezone}))
+      .map(sanitizeCity).filter(c=>c&&c.lat!==null);
+    if(!found.length){status.textContent=t('place.none');return;}
+    status.textContent=t('place.choose');
+    list.replaceChildren(...found.map(c=>el('li',null,
+      el('button',{type:'button',class:'result',onclick:()=>setCity(c)},
+        el('strong',{text:c.name}),
+        el('span',{text:[c.admin,c.country].filter(Boolean).join(', ')}),
+        el('small',{text:fmtCoord(c.lat,c.lon)})))));
+  }catch(err){status.textContent=t('place.err');}
+}
+function useGeolocation(){
+  const status=$('#place-status');
+  if(!navigator.geolocation){status.textContent=t('place.geoErr');return;}
+  status.textContent=t('place.geoWait');
+  navigator.geolocation.getCurrentPosition(
+    pos=>setCity({name:t('place.myLoc'),admin:'',country:'',lat:pos.coords.latitude,lon:pos.coords.longitude,tz:null}),
+    ()=>{status.textContent=t('place.geoErr');},
+    {timeout:12000,maximumAge:600000});
+}
+
+/* ───────────── profiles ───────────── */
+
+const profileLabel=p=>p.name||t('profile.default');
+
+function renderProfileList(){
+  const ul=$('#profile-list');
+  if(!ul)return;
+  ul.replaceChildren(...state.store.profiles.map(p=>{
+    const active=p.id===state.store.active;
+    const meta=[p.cls?t('profile.classLbl',{cls:p.cls}):'',
+      t('profile.records',{n:Object.keys(p.records).length})].filter(Boolean).join(', ');
+    return el('li',{class:active?'prow on':'prow'},
+      el('span',{class:'av','aria-hidden':'true',text:p.avatar}),
+      el('span',{class:'pname'},el('strong',{text:profileLabel(p)}),el('small',{text:meta})),
+      el('button',{
+        type:'button',class:'btn btn-sm',disabled:active,
+        text:active?t('profile.active'):t('profile.switch'),
+        onclick:()=>{state.store.active=p.id;saveStore();closeDialog($('#dlg-profile'));renderAll();}
+      }),
+      el('button',{type:'button',class:'btn btn-sm',text:t('profile.edit'),onclick:()=>showProfileForm(p.id)}));
+  }));
+}
+function showProfileForm(id){
+  const p=id?state.store.profiles.find(x=>x.id===id):null;
+  state.editingProfile=p?p.id:null;
+  $('#profile-form-title').textContent=t(p?'profile.editTitle':'profile.newTitle');
+  $('#p-name').value=p?p.name:'';
+  $('#p-class').value=p?p.cls:'';
+  for(const r of $$('input[name="avatar"]',$('#profile-form')))
+    r.checked=r.value===(p?p.avatar:AVATARS[0]);
+  $('#btn-profile-delete').hidden=!p;
+  $('#profile-form').hidden=false;
+  $('#p-name').focus();
+}
+function saveProfile(e){
+  e.preventDefault();
+  const av=$('input[name="avatar"]:checked',$('#profile-form'));
+  const fields={name:$('#p-name').value,cls:$('#p-class').value,avatar:av?av.value:AVATARS[0]};
+  if(state.editingProfile){
+    const p=state.store.profiles.find(x=>x.id===state.editingProfile);
+    Object.assign(p,sanitizeProfile(Object.assign({},p,fields),true));
+  }else{
+    const np=sanitizeProfile(Object.assign({city:P().city,records:{}},fields),false);
+    state.store.profiles.push(np);
+    state.store.active=np.id;
+  }
+  saveStore();
+  $('#profile-form').hidden=true;
+  renderProfileList();
+  renderAll();
+}
+async function deleteProfile(){
+  const p=state.store.profiles.find(x=>x.id===state.editingProfile);
+  if(!p)return;
+  const ok=await askConfirm(t('profile.deleteTitle'),t('profile.deleteText',{name:profileLabel(p)}),t('ui.ok'));
+  if(!ok)return;
+  state.store.profiles=state.store.profiles.filter(x=>x.id!==p.id);
+  if(!state.store.profiles.length)state.store.profiles.push(defaultStore().profiles[0]);
+  if(!state.store.profiles.some(x=>x.id===state.store.active))
+    state.store.active=state.store.profiles[0].id;
+  saveStore();
+  $('#profile-form').hidden=true;
+  renderProfileList();
+  renderAll();
+}
+
+/* ───────────── settings ───────────── */
+
+async function wipeAll(){
+  const ok=await askConfirm(t('set.wipeTitle'),t('set.wipeText'),t('ui.ok'));
+  if(!ok)return;
+  try{
+    for(const k of [STORE_KEY,'wl_records','wl_meta','wl_lang','wl_a11y','wl_kid_seen'])
+      localStorage.removeItem(k);
+  }catch(e){}
+  state.store=defaultStore();
+  state.store.onboarded=false;
+  saveStore();
+  closeDialog($('#dlg-settings'));
+  applyA11y();applyStatic();buildChips();
+  showOnboarding();
+}
+
+/* ───────────── io ───────────── */
+
+const slug=s=>s.replace(/[^\p{L}\p{N}_-]+/gu,'_').replace(/^_+|_+$/g,'');
+
+function downloadJSON(payload,name){
+  const url=URL.createObjectURL(new Blob([JSON.stringify(payload,null,1)],{type:'application/json'}));
+  const a=el('a',{href:url,download:name});
+  document.body.append(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),2000);
+}
+function exportProfile(){
+  const p=P();
+  const payload={
+    app:'MeteoJournal',schema:3,version:APP_VERSION,exported:new Date().toISOString(),
+    profile:{name:p.name,cls:p.cls,avatar:p.avatar,city:p.city,records:p.records}
+  };
+  const name=`MeteoJournal_${slug(p.name)||'journal'}_${todayKey()}.weather`;
+  downloadJSON(payload,name);
+  toast(t('io.exported',{name}));
+}
+function exportClass(){
+  const payload={
+    app:'MeteoJournal',schema:3,version:APP_VERSION,exported:new Date().toISOString(),
+    class:{profiles:state.store.profiles.map(p=>({name:p.name,cls:p.cls,avatar:p.avatar,city:p.city,records:p.records}))}
+  };
+  const name=`MeteoJournal_class_${todayKey()}.weather`;
+  downloadJSON(payload,name);
+  toast(t('io.exported',{name}));
+}
+function readFile(f){
+  return new Promise((resolve,reject)=>{
+    const r=new FileReader();
+    r.onload=()=>resolve(String(r.result));
+    r.onerror=()=>reject(r.error);
+    r.readAsText(f);
+  });
+}
+function profileFromFile(data){
+  if(!data||typeof data!=='object')return null;
+  if((data.app==='MeteoJournal'||data.app==='WeatherLab')&&data.profile)
+    return sanitizeProfile(data.profile,false);
+  if(data.records&&data.meta)return convertV1(data);
+  return null;
+}
+function classFromFile(data){
+  if(!data||typeof data!=='object')return null;
+  if((data.app==='MeteoJournal'||data.app==='WeatherLab')&&data.class&&Array.isArray(data.class.profiles))
+    return data.class.profiles.map(p=>sanitizeProfile(p,false)).filter(Boolean);
+  return null;
+}
+async function importFiles(files){
+  const messages=[];
+  for(const f of files){
+    try{
+      if(f.size>MAX_FILE_BYTES){messages.push(t('io.fail',{file:f.name,reason:t('io.tooBig')}));continue;}
+      let data;
+      try{data=JSON.parse(await readFile(f));}
+      catch(e){messages.push(t('io.fail',{file:f.name,reason:t('io.notWl')}));continue;}
+
+      const cls=classFromFile(data);
+      if(cls){
+        let added=0;
+        for(const prof of cls){
+          const n=Object.keys(prof.records).length;
+          if(!n)continue;
+          state.store.profiles.push(prof);
+          state.store.active=prof.id;
+          added+=n;
+        }
+        messages.push(t('io.imported',{name:f.name,n:added}));
+        continue;
+      }
+
+      const prof=profileFromFile(data);
+      if(!prof){messages.push(t('io.fail',{file:f.name,reason:t('io.notWl')}));continue;}
+      const n=Object.keys(prof.records).length;
+      if(!n){messages.push(t('io.fail',{file:f.name,reason:t('io.empty')}));continue;}
+      state.store.profiles.push(prof);
+      state.store.active=prof.id;
+      messages.push(t('io.imported',{name:profileLabel(prof),n}));
+    }catch(e){
+      messages.push(t('io.fail',{file:f.name,reason:t('io.readErr')}));
+    }
+  }
+  saveStore();
+  renderAll();
+  renderProfileList();
+  if(messages.length)toast(messages.join(' '));
+}
+
+/* ───────────── print ───────────── */
+
+function renderPrint(){
+  const box=$('#print-report'),p=P(),{y,m}=state.view;
+  box.replaceChildren();
+
+  if(state.printMode==='sheet'){
+    const dim=daysIn(y,m);
+    const head=[t('th.day'),t('th.time'),t('th.temp'),t('th.sky'),t('th.hum'),t('th.wind'),t('th.notes')];
+    const rows=[];
+    for(let d=1;d<=dim;d++){
+      const key=keyOf(y,m,d);
+      const rec=p.records[key];
+      rows.push(el('tr',null,[
+        el('td',{text:String(d)}),
+        el('td',{text:rec&&rec.t?rec.t:''}),
+        el('td',{text:rec?fmtTemp(rec.temp):''}),
+        el('td',{text:rec?t('sky.'+rec.sky):''}),
+        el('td',{text:rec&&rec.hum!==null?`${fmtNum(rec.hum,0)} %`:''}),
+        el('td',{text:rec&&rec.wind!==null?fmtWind(rec.wind):''}),
+        el('td',{text:rec?rec.notes:''})
+      ]));
+    }
+    box.append(
+      el('h1',{text:`${t('print.sheet')} — ${monthTitle(y,m)}`}),
+      el('p',{class:'pmeta',text:[
+        `${t('print.student')}: ${profileLabel(p)}`,
+        p.cls?`${t('print.class')}: ${p.cls}`:'',
+        `${t('print.place')}: ${p.city.name}`,
+        t('print.made',{date:longDate(todayKey())})
+      ].filter(Boolean).join(' · ')}),
+      el('table',{class:'data'},
+        el('thead',null,el('tr',null,head.map(h=>el('th',{scope:'col',text:h})))),
+        el('tbody',null,rows))
+    );
+    return;
+  }
+
+  const list=monthRecords(p,y,m);
+  const meta=[`${t('print.student')}: ${profileLabel(p)}`];
+  if(p.cls)meta.push(`${t('print.class')}: ${p.cls}`);
+  meta.push(`${t('print.place')}: ${p.city.name}${p.city.lat===null?'':` (${fmtCoord(p.city.lat,p.city.lon)})`}`);
+  box.append(
+    el('h1',{text:`${t('print.title')}: ${monthTitle(y,m)}`}),
+    el('p',{class:'pmeta',text:meta.join('. ')})
+  );
+  if(!list.length){box.append(el('p',{text:t('chart.empty')}));return;}
+  const chart=$('#chart svg');
+  if(chart)box.append(chart.cloneNode(true));
+  box.append(
+    buildRecordsTable(list,true),
+    buildStatsList(computeStats(list)),
+    el('p',{class:'pmeta',text:t('print.made',{date:longDate(todayKey())})})
+  );
+}
+
+function exportCsv(){
+  const p=P(),{y,m}=state.view;
+  const list=monthRecords(p,y,m);
+  const sep=';';
+  const q=v=>{
+    const s=String(v==null?'':v);
+    return /[";\n\r]/.test(s)?`"${s.replace(/"/g,'""')}"`:s;
+  };
+  const head=['date','time','temp_c','sky','humidity_pct','wind_ms','wind_dir','notes'];
+  const lines=[head.join(sep)];
+  for(const r of list){
+    lines.push([
+      r.key,r.t||'',r.temp.toFixed(2),r.sky,
+      r.hum==null?'':r.hum,
+      r.wind==null?'':r.wind.toFixed(1),
+      r.dir==null?'':r.dir,
+      q(r.notes||'')
+    ].join(sep));
+  }
+  const csv='\uFEFF'+lines.join('\r\n');
+  const name=`MeteoJournal_${slug(profileLabel(p))||'journal'}_${y}-${pad(m+1)}.csv`;
+  const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
+  const a=el('a',{href:url,download:name});
+  document.body.append(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),2000);
+  toast(t('io.exported',{name}));
+}
+
+/* ───────────── onboarding ───────────── */
+
+function renderOnbDots(){
+  const box=$('#onb-dots');
+  if(!box)return;
+  box.replaceChildren(...[0,1,2,3].map(i=>el('span',{class:i===state.onbStep?'on':''})));
+}
+function showOnbStep(n){
+  state.onbStep=Math.max(0,Math.min(3,n));
+  for(const s of $$('.onb-step'))s.classList.toggle('active',Number(s.dataset.step)===state.onbStep);
+  $('#onb-back').hidden=state.onbStep===0;
+  const next=$('#onb-next');
+  next.textContent=state.onbStep===3?t('onb.finish'):t('onb.next');
+  renderOnbDots();
+  if(state.onbStep===1)setTimeout(()=>$('#onb-name').focus(),50);
+}
+function showOnboarding(){
+  state.onboarding=true;
+  state.onbStep=0;
+  state.onbAvatar=AVATARS[0];
+  state.onbCity=null;
+  $('#app-shell').hidden=true;
+  $('#onboard').hidden=false;
+  $('#onb-name').value='';
+  $('#onb-class').value='';
+  $('#onb-city').value='';
+  $('#onb-city-status').textContent='';
+  $('#onb-city-results').replaceChildren();
+  for(const b of $$('[data-lang]'))b.setAttribute('aria-pressed',String(b.dataset.lang===lang()));
+  buildChips();
+  showOnbStep(0);
+}
+function hideOnboarding(){
+  state.onboarding=false;
+  $('#onboard').hidden=true;
+  $('#app-shell').hidden=false;
+}
+async function searchOnbCity(){
+  const q=$('#onb-city').value.trim(),status=$('#onb-city-status'),list=$('#onb-city-results');
+  list.replaceChildren();
+  if(q.length<2){status.textContent=t('place.short');return;}
+  status.textContent=t('place.searching');
+  try{
+    const params=new URLSearchParams({name:q,count:'8',language:lang(),format:'json'});
+    const data=await getJson(`${API.geocode}?${params}`);
+    const found=(data&&Array.isArray(data.results)?data.results:[])
+      .map(r=>({name:r.name,admin:r.admin1,country:r.country,lat:r.latitude,lon:r.longitude,tz:r.timezone}))
+      .map(sanitizeCity).filter(c=>c&&c.lat!==null);
+    if(!found.length){status.textContent=t('place.none');return;}
+    status.textContent=t('place.choose');
+    list.replaceChildren(...found.map(c=>el('li',null,
+      el('button',{type:'button',class:'result',onclick:()=>{
+        state.onbCity=c;
+        $('#onb-city').value=c.name;
+        status.textContent=`✓ ${c.name}`;
+        list.replaceChildren();
+      }},
+        el('strong',{text:c.name}),
+        el('span',{text:[c.admin,c.country].filter(Boolean).join(', ')}),
+        el('small',{text:fmtCoord(c.lat,c.lon)})))));
+  }catch(err){status.textContent=t('place.err');}
+}
+function useOnbGeo(){
+  const status=$('#onb-city-status');
+  if(!navigator.geolocation){status.textContent=t('place.geoErr');return;}
+  status.textContent=t('place.geoWait');
+  navigator.geolocation.getCurrentPosition(
+    pos=>{
+      state.onbCity={name:t('place.myLoc'),admin:'',country:'',lat:round(pos.coords.latitude,2),lon:round(pos.coords.longitude,2),tz:null};
+      $('#onb-city').value=state.onbCity.name;
+      status.textContent=`✓ ${state.onbCity.name}`;
+    },
+    ()=>{status.textContent=t('place.geoErr');},
+    {timeout:12000,maximumAge:600000});
+}
+function onbNext(){
+  if(state.onbStep===1){
+    const name=$('#onb-name').value.trim();
+    if(!name){$('#onb-name').focus();$('#onb-name').setAttribute('aria-invalid','true');return;}
+    $('#onb-name').removeAttribute('aria-invalid');
+  }
+  if(state.onbStep===2){
+    const av=$('input[name="onb-avatar"]:checked');
+    if(av)state.onbAvatar=av.value;
+  }
+  if(state.onbStep===3){
+    const raw=$('#onb-city').value.trim();
+    let city=state.onbCity;
+    if(!city&&raw.length>=2){
+      // Спроба швидкого пошуку, якщо користувач не натиснув «Знайти»
+      toast(t('onb.needCity'));
+      $('#onb-city').focus();
+      return;
+    }
+    if(!city&&!raw){city=DEFAULT_CITY;}
+    finalizeOnboarding(city||DEFAULT_CITY);
+    return;
+  }
+  showOnbStep(state.onbStep+1);
+}
+function finalizeOnboarding(city){
+  const name=$('#onb-name').value.trim()||t('profile.default');
+  const cls=$('#onb-class').value.trim();
+  const p=P();
+  p.name=name;
+  p.cls=cls;
+  p.avatar=state.onbAvatar;
+  p.city=sanitizeCity(city)||DEFAULT_CITY;
+  state.store.onboarded=true;
+  saveStore();
+  hideOnboarding();
+  renderAll();
+  toast(t('place.set',{name:p.city.name}));
+}
+
+/* ───────────── events ───────────── */
+
+function setLang(l){
+  if(!I18N[l])return;
+  state.store.lang=l;
+  saveStore();
+  applyStatic();
+  buildChips();
+  installManifest();
+  if(state.onboarding){
+    for(const b of $$('[data-lang]'))b.setAttribute('aria-pressed',String(b.dataset.lang===l));
+    showOnbStep(state.onbStep);
+  }else{
+    renderAll();
+  }
+}
+function changeMonth(delta){
+  let{y,m}=state.view;
+  m+=delta;
+  while(m<0){m+=12;y--;}
+  while(m>11){m-=12;y++;}
+  state.view={y,m};
+  renderAll();
+}
+function bindEvents(){
+  for(const b of $$('[data-close]'))
+    b.addEventListener('click',()=>closeDialog(b.closest('dialog')));
+
+  for(const id of ['dlg-place','dlg-profile','dlg-settings','dlg-privacy','dlg-teacher']){
+    const d=$('#'+id);
+    if(!d)continue;
+    d.addEventListener('click',e=>{if(e.target===d)closeDialog(d);});
+  }
+  const dday=$('#dlg-day');
+  if(dday)dday.addEventListener('close',()=>{const k=state.activeKey;setTimeout(()=>focusDay(k),0);});
+
+  /* Онбординг */
+  $('#onb-next').addEventListener('click',onbNext);
+  $('#onb-back').addEventListener('click',()=>showOnbStep(state.onbStep-1));
+  $('#onb-city-search').addEventListener('click',searchOnbCity);
+  $('#onb-city').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();searchOnbCity();}});
+  $('#onb-geo').addEventListener('click',useOnbGeo);
+  $('#onb-city-results').addEventListener('click',()=>{});
+
+  /* Календар */
+  $('#btn-prev').addEventListener('click',()=>changeMonth(-1));
+  $('#btn-next').addEventListener('click',()=>changeMonth(1));
+  $('#btn-today').addEventListener('click',()=>{const n=todayParts();state.view={y:n.y,m:n.m};renderAll();});
+  $('#cal-body').addEventListener('click',e=>{
+    const b=e.target.closest('.day');
+    if(b&&!b.disabled)openDay(b.dataset.date);
+  });
+
+  $('#view-my').addEventListener('click',()=>{state.classView=false;renderAll();});
+  $('#view-class').addEventListener('click',()=>{state.classView=true;renderAll();});
+
+  $('#day-form').addEventListener('submit',saveDay);
+  $('#btn-day-delete').addEventListener('click',deleteDay);
+
+  $('#btn-compare').addEventListener('click',compareMonth);
+  $('#btn-export').addEventListener('click',exportProfile);
+  $('#btn-import').addEventListener('click',()=>$('#file-import').click());
+  $('#file-import').addEventListener('change',e=>{
+    const fs=Array.from(e.target.files);e.target.value='';importFiles(fs);
+  });
+  $('#btn-print').addEventListener('click',()=>{state.printMode='report';renderPrint();window.print();});
+  window.addEventListener('beforeprint',renderPrint);
+
+  $('#btn-place').addEventListener('click',openPlace);
+  $('#place-form').addEventListener('submit',searchPlaces);
+  $('#btn-geo').addEventListener('click',useGeolocation);
+
+  $('#btn-profile').addEventListener('click',()=>{
+    renderProfileList();
+    $('#profile-form').hidden=true;
+    openDialog($('#dlg-profile'));
+  });
+  $('#btn-profile-new').addEventListener('click',()=>showProfileForm(null));
+  $('#btn-profile-cancel').addEventListener('click',()=>{$('#profile-form').hidden=true;});
+  $('#profile-form').addEventListener('submit',saveProfile);
+  $('#btn-profile-delete').addEventListener('click',deleteProfile);
+  $('#btn-class-import').addEventListener('click',()=>{
+    closeDialog($('#dlg-profile'));
+    $('#file-import').click();
+  });
+  $('#btn-class-export').addEventListener('click',exportClass);
+
+  $('#btn-settings').addEventListener('click',()=>{renderSettingsState();openDialog($('#dlg-settings'));});
+  for(const r of $$('input[name="units"]'))
+    r.addEventListener('change',()=>{state.store.units=r.value;saveStore();renderAll();});
+  const toggles={'set-hc':'hc','set-large':'large','set-readable':'readable','set-simple':'simple'};
+  for(const[id,key]of Object.entries(toggles)){
+    const n=$('#'+id);
+    if(n)n.addEventListener('change',e=>{state.store.a11y[key]=e.target.checked;saveStore();applyA11y();});
+  }
+  const kd=$('#set-kid');
+  if(kd)kd.addEventListener('change',e=>{
+    state.store.kidMode=e.target.checked;
+    saveStore();applyA11y();renderAll();
+  });
+  $('#btn-wipe').addEventListener('click',wipeAll);
+  $('#btn-privacy').addEventListener('click',()=>openDialog($('#dlg-privacy')));
+
+  $('#btn-teacher').addEventListener('click',()=>openDialog($('#dlg-teacher')));
+  $('#btn-teacher-sheet').addEventListener('click',()=>{
+    closeDialog($('#dlg-teacher'));
+    state.printMode='sheet';renderPrint();window.print();
+  });
+  $('#btn-teacher-report').addEventListener('click',()=>{
+    closeDialog($('#dlg-teacher'));
+    state.printMode='report';renderPrint();window.print();
+  });
+  $('#btn-teacher-csv').addEventListener('click',()=>{
+    closeDialog($('#dlg-teacher'));
+    exportCsv();
+  });
+
+  for(const b of $$('[data-lang]'))
+    b.addEventListener('click',()=>setLang(b.dataset.lang));
+}
+
+/* ───────────── PWA manifest + icon ───────────── */
+
+function installManifest(){
+  const icon = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">'
+    +'<defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1">'
+    +'<stop offset="0" stop-color="#E0603A"/><stop offset="0.5" stop-color="#F3E27B"/>'
+    +'<stop offset="1" stop-color="#3B6FC4"/></linearGradient></defs>'
+    +'<rect width="512" height="512" rx="112" fill="url(#g)"/>'
+    +'<rect x="228" y="96" width="56" height="248" rx="28" fill="#fff"/>'
+    +'<circle cx="256" cy="362" r="72" fill="#fff"/>'
+    +'</svg>';
+  const iconUri='data:image/svg+xml;utf8,'+encodeURIComponent(icon);
+  const link=$('#icon');if(link)link.href=iconUri;
+  const al=$('#apple-icon');if(al)al.href=iconUri;
+
+  const manifest={
+    name: t('app.title'),
+    short_name: t('app.shortName'),
+    description: t('app.tagline')+' · '+t('app.author'),
+    start_url:'.',
+    scope:'.',
+    display:'standalone',
+    orientation:'any',
+    background_color:'#EDF1F5',
+    theme_color:'#16212B',
+    lang:lang(),
+    icons:[{src:iconUri,sizes:'192x192 512x512',type:'image/svg+xml',purpose:'any maskable'}]
+  };
+  const mLink=$('#manifest');
+  if(mLink)mLink.href='data:application/manifest+json,'+encodeURIComponent(JSON.stringify(manifest));
+}
+
+/* ───────────── init ───────────── */
+
+function init(){
+  state.store=loadStore();
+  const n=todayParts();
+  state.view={y:n.y,m:n.m};
+  bindEvents();
+  applyA11y();
+  applyStatic();
+  buildChips();
+  installManifest();
+  saveStore();
+
+  if(!state.store.onboarded){
+    showOnboarding();
+  }else{
+    hideOnboarding();
+    renderAll();
+  }
+
+  if('serviceWorker' in navigator&&location.protocol==='https:'){
+    navigator.serviceWorker.register('sw.js').catch(()=>{});
+  }
+}
+
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);
+else init();
+</script>
+</body>
+</html>
