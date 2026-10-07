@@ -42,7 +42,6 @@
   --sh-2:0 1px 2px rgba(22,33,43,.06), 0 12px 28px rgba(22,33,43,.10);
 }
 
-/* ─────────── reset ─────────── */
 *,*::before,*::after{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
 body{
@@ -63,7 +62,7 @@ ul,ol{padding:0;list-style:none}
 table{border-collapse:collapse;width:100%}
 :focus-visible{outline:2px solid var(--focus);outline-offset:2px;border-radius:4px}
 
-/* ─────────── a11y modes ─────────── */
+/* ─── a11y ─── */
 html.lg{font-size:19px}
 html.hc{
   --bg:#FFFFFF; --surface:#FFFFFF; --surface-2:#FFFFFF; --surface-3:#F2F2F2;
@@ -73,9 +72,8 @@ html.hc{
 }
 html.hc .card,html.hc .topbar,html.hc dialog{border:1px solid #000}
 html.rf{letter-spacing:.035em;word-spacing:.12em;line-height:1.75}
-html.simple .chart-card,html.simple .stats-card,html.simple .rose-card{display:none}
 
-/* ─────────── ДИТЯЧИЙ РЕЖИМ (типово) ─────────── */
+/* ─── ДИТЯЧИЙ РЕЖИМ ─── */
 html.kid{font-size:17px}
 html.kid .brand-sub,
 html.kid .coords,
@@ -83,8 +81,7 @@ html.kid .cal-hint,
 html.kid #chart-legend,
 html.kid .rose-hint,
 html.kid details.data-details,
-html.kid .legend-ticks,
-html.kid .tech-only{display:none}
+html.kid .legend-ticks{display:none}
 html.kid .cal .day{min-height:78px;aspect-ratio:auto;border-radius:14px;padding:10px}
 html.kid .cal .day .d{font-size:1.15rem}
 html.kid .cal .day .s{font-size:1.7rem;right:10px;top:8px}
@@ -97,7 +94,6 @@ html.kid .chip-face .emo{font-size:2.1rem}
 html.kid .chip-face .lbl{font-size:.82rem;font-weight:600}
 html.kid .card h2{font-size:.85rem;letter-spacing:.08em}
 
-/* ─────────── layout ─────────── */
 .shell{
   max-width:1180px;margin:0 auto;
   padding:14px;
@@ -121,7 +117,6 @@ html.kid .card h2{font-size:.85rem;letter-spacing:.08em}
 }
 .banner[hidden]{display:none}
 
-/* ─────────── topbar ─────────── */
 .topbar{
   display:flex;align-items:center;gap:12px;flex-wrap:wrap;
   background:var(--surface);border-radius:var(--r-lg);
@@ -153,7 +148,6 @@ html.kid .card h2{font-size:.85rem;letter-spacing:.08em}
   background:var(--surface);color:var(--ink);box-shadow:var(--sh-1);
 }
 
-/* ─────────── buttons ─────────── */
 .btn{
   display:inline-flex;align-items:center;gap:7px;
   min-height:40px;padding:0 16px;
@@ -177,7 +171,6 @@ html.kid .card h2{font-size:.85rem;letter-spacing:.08em}
 .btn-sm{min-height:34px;padding:0 12px;font-size:.82rem;border-radius:var(--r-sm)}
 .btn-block{width:100%;justify-content:center}
 
-/* ─────────── place strip ─────────── */
 .place-strip{
   display:flex;align-items:center;gap:12px;flex-wrap:wrap;
   background:var(--surface);border-radius:var(--r-lg);padding:12px 16px;
@@ -187,7 +180,6 @@ html.kid .card h2{font-size:.85rem;letter-spacing:.08em}
 .place-strip .name{font-weight:700;font-size:1.05rem}
 .place-strip .coords{font-family:var(--mono);font-size:.78rem;color:var(--ink-3)}
 
-/* ─────────── calendar card ─────────── */
 .cal-card{background:var(--surface);border-radius:var(--r-lg);padding:16px;box-shadow:var(--sh-1);margin-bottom:14px}
 .cal-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
 .cal-title{font-size:1.5rem;font-weight:800;letter-spacing:-.02em;margin-right:auto}
@@ -234,18 +226,15 @@ html.kid .card h2{font-size:.85rem;letter-spacing:.08em}
 .legend-ticks span{position:absolute;transform:translateX(-50%);font-family:var(--mono);font-size:.7rem;color:var(--ink-3)}
 .cal-hint{font-size:.82rem;color:var(--ink-3);margin-top:10px}
 
-/* ─────────── action bar ─────────── */
 .actions{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
 .actions .spacer{margin-left:auto}
 
-/* ─────────── two column ─────────── */
 .two{display:grid;gap:14px;grid-template-columns:1fr}
 @media (min-width:960px){.two{grid-template-columns:minmax(0,1.35fr) minmax(280px,340px)}}
 .card{background:var(--surface);border-radius:var(--r-lg);padding:16px;box-shadow:var(--sh-1)}
 .card h2{font-size:.72rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:12px}
 .stack > * + *{margin-top:14px}
 
-/* ─────────── chart ─────────── */
 .chart-svg{width:100%;height:auto;display:block}
 .ch-grid line{stroke:var(--line-2);stroke-width:1}
 .ch-y{font-family:var(--mono);font-size:11px;fill:var(--ink-3)}
@@ -273,7 +262,6 @@ table.data th,table.data td{padding:6px 8px;text-align:left;border-bottom:1px so
 table.data th{font-weight:600;font-size:.72rem;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-3)}
 table.data tbody tr:hover{background:var(--surface-2)}
 
-/* ─────────── stats ─────────── */
 .mean{
   display:flex;flex-direction:column;gap:2px;
   padding:14px 16px;border-radius:var(--r-md);
@@ -285,7 +273,6 @@ dl.stats{display:grid;grid-template-columns:1fr auto;gap:6px 12px;font-size:.85r
 dl.stats dt{color:var(--ink-2)}
 dl.stats dd{margin:0;font-weight:600;text-align:right;font-variant-numeric:tabular-nums}
 
-/* ─────────── wind rose ─────────── */
 .rose-svg{width:100%;height:auto;max-width:240px;margin:0 auto}
 .rose-ring{fill:none;stroke:var(--line-2);stroke-width:1}
 .rose-axis{stroke:var(--line-2);stroke-width:1}
@@ -295,7 +282,6 @@ dl.stats dd{margin:0;font-weight:600;text-align:right;font-variant-numeric:tabul
 .rose-count{font-family:var(--mono);font-size:10px;fill:#1F5FA8;font-weight:700}
 .rose-hint{font-size:.78rem;color:var(--ink-3);text-align:center;margin-top:8px}
 
-/* ─────────── badges ─────────── */
 .badges{display:flex;gap:8px;flex-wrap:wrap}
 .badge{
   display:inline-flex;align-items:center;gap:8px;
@@ -308,11 +294,9 @@ dl.stats dd{margin:0;font-weight:600;text-align:right;font-variant-numeric:tabul
 .b-txt small{display:block;font-weight:400;font-size:.7rem;opacity:.75}
 #badges-next{font-size:.82rem;color:var(--ink-3);margin-top:10px}
 
-/* ─────────── footer ─────────── */
 .foot{margin-top:20px;padding:16px;text-align:center;font-size:.8rem;color:var(--ink-3)}
 .foot a{color:var(--ink-2)}
 
-/* ─────────── dialogs ─────────── */
 dialog{
   border:0;border-radius:var(--r-lg);padding:0;
   max-width:min(560px,calc(100vw - 24px));
@@ -420,7 +404,7 @@ dialog.wide{max-width:min(720px,calc(100vw - 24px))}
 .privacy p:last-child{margin-bottom:0}
 .privacy strong{color:var(--ink)}
 
-/* ─────────── onboarding ─────────── */
+/* ─── onboarding ─── */
 #onboard{
   position:fixed;inset:0;z-index:1500;
   background:linear-gradient(160deg,#EDF1F5 0%,#DCE6F2 100%);
@@ -450,7 +434,6 @@ dialog.wide{max-width:min(720px,calc(100vw - 24px))}
 .onb-dots span{width:8px;height:8px;border-radius:50%;background:var(--line)}
 .onb-dots span.on{background:var(--ink)}
 
-/* ─────────── toast ─────────── */
 #toast{
   position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);
   max-width:min(520px,calc(100vw - 32px));
@@ -461,7 +444,6 @@ dialog.wide{max-width:min(720px,calc(100vw - 24px))}
 }
 #toast.show{opacity:1;transform:translate(-50%,0)}
 
-/* ─────────── print ─────────── */
 #print-report{display:none}
 @media print{
   @page{margin:14mm}
@@ -477,7 +459,6 @@ dialog.wide{max-width:min(720px,calc(100vw - 24px))}
   #print-report dl.stats{font-size:9.5pt;margin-top:8pt}
 }
 
-/* ─────────── touch ─────────── */
 html{-webkit-tap-highlight-color:transparent}
 button,a,.day,.chip-face,.result,label,summary,.np-btn,.dir-btn{touch-action:manipulation}
 
@@ -509,7 +490,6 @@ button,a,.day,.chip-face,.result,label,summary,.np-btn,.dir-btn{touch-action:man
   .actions{gap:6px}
   .actions .btn{flex:1 1 calc(50% - 3px);justify-content:center;min-height:48px}
   .actions .spacer{display:none}
-  #btn-teacher{flex-basis:100%}
 }
 
 @media (min-width:1200px) and (pointer:coarse){
@@ -521,7 +501,7 @@ button,a,.day,.chip-face,.result,label,summary,.np-btn,.dir-btn{touch-action:man
   .btn-icon{width:48px;height:48px}
 }
 
-/* ─────────── Числові поля зі стрілочками ▲▼ ─────────── */
+/* ─── Числові поля ▲▼ ─── */
 .numpad{
   display:grid;
   grid-template-columns:64px 1fr 64px auto;
@@ -589,7 +569,7 @@ button,a,.day,.chip-face,.result,label,summary,.np-btn,.dir-btn{touch-action:man
 
 .np-hidden{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
 
-/* ─────────── Компас напряму вітру ─────────── */
+/* ─── Компас ─── */
 .compass{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:4px}
 .dir-btn{
   min-height:56px;
@@ -686,7 +666,7 @@ html.kid .dir-btn .lbl{font-size:.92rem}
           <button type="button" class="btn btn-primary" id="onb-city-search" style="flex:0 0 auto" data-i18n="onb.search">Знайти</button>
         </div>
       </div>
-      <button type="button" class="btn btn-sm btn-block" id="onb-geo" style="margin-top:6px" data-i18n="onb.geo">📍 Визначити моє місце</button>
+      <button type="button" class="btn btn-sm btn-block" id="onb-geo" style="margin-top:6px" data-i18n="onb.geo">📍 Визначити моє місто</button>
       <p class="hint" id="onb-city-status" style="margin-top:10px"></p>
       <div class="results" id="onb-city-results"></div>
       <p class="real-note" data-i18n="onb.cityPrivacy" style="margin-top:14px"></p>
@@ -772,8 +752,6 @@ html.kid .dir-btn .lbl{font-size:.92rem}
       <button type="button" class="btn" id="btn-import" data-i18n="act.import"></button>
       <input type="file" id="file-import" accept=".weather,.json,application/json" multiple hidden>
       <button type="button" class="btn" id="btn-print" data-i18n="act.print"></button>
-      <div class="spacer"></div>
-      <button type="button" class="btn" id="btn-teacher" data-i18n="act.teacher"></button>
     </div>
 
     <div class="two">
@@ -822,7 +800,7 @@ html.kid .dir-btn .lbl{font-size:.92rem}
 
 </div>
 
-<!-- ─────────── day dialog ─────────── -->
+<!-- ─── day dialog ─── -->
 <dialog id="dlg-day" aria-labelledby="day-title">
   <form id="day-form" method="dialog">
     <div class="dlg-head">
@@ -831,7 +809,6 @@ html.kid .dir-btn .lbl{font-size:.92rem}
     </div>
     <div class="dlg-body">
 
-      <!-- ТЕМПЕРАТУРА -->
       <div class="field">
         <label id="lbl-temp" for="f-temp">Температура повітря</label>
         <div class="numpad" data-target="temp">
@@ -844,7 +821,6 @@ html.kid .dir-btn .lbl{font-size:.92rem}
         <p class="hint" data-i18n="day.tempHint"></p>
       </div>
 
-      <!-- ЧАС -->
       <div class="field">
         <label id="lbl-time" for="f-time" data-i18n="day.time"></label>
         <div class="numpad" data-target="time">
@@ -856,13 +832,11 @@ html.kid .dir-btn .lbl{font-size:.92rem}
         <p class="hint" data-i18n="day.timeHint"></p>
       </div>
 
-      <!-- НЕБО -->
       <div class="field">
         <label id="lbl-sky" data-i18n="day.sky"></label>
         <div class="chips" id="sky-chips" role="radiogroup" aria-labelledby="lbl-sky"></div>
       </div>
 
-      <!-- ВОЛОГІСТЬ -->
       <div class="field">
         <label id="lbl-hum" for="f-hum" data-i18n="day.humPlain"></label>
         <div class="numpad" data-target="hum">
@@ -874,7 +848,6 @@ html.kid .dir-btn .lbl{font-size:.92rem}
         <input type="number" id="f-hum" min="0" max="100" step="1" inputmode="numeric" autocomplete="off" class="np-hidden" aria-hidden="true" tabindex="-1">
       </div>
 
-      <!-- ВІТЕР -->
       <div class="field">
         <label id="lbl-wind" for="f-wind" data-i18n="day.windPlain"></label>
         <div class="numpad" data-target="wind">
@@ -886,20 +859,17 @@ html.kid .dir-btn .lbl{font-size:.92rem}
         <input type="number" id="f-wind" min="0" max="60" step="1" inputmode="decimal" autocomplete="off" class="np-hidden" aria-hidden="true" tabindex="-1">
       </div>
 
-      <!-- НАПРЯМ ВІТРУ -->
       <div class="field">
         <label id="lbl-dir" data-i18n="day.dir"></label>
         <div class="compass" id="dir-compass" role="radiogroup" aria-labelledby="lbl-dir"></div>
         <select id="f-dir" class="np-hidden" aria-hidden="true" tabindex="-1"></select>
       </div>
 
-      <!-- НАСТРІЙ -->
       <div class="field">
         <label id="lbl-mood" data-i18n="day.mood"></label>
         <div class="chips" id="mood-chips" role="radiogroup" aria-labelledby="lbl-mood"></div>
       </div>
 
-      <!-- НОТАТКИ -->
       <div class="field">
         <label for="f-notes" data-i18n="day.notes"></label>
         <textarea id="f-notes" maxlength="500" rows="2"></textarea>
@@ -920,7 +890,7 @@ html.kid .dir-btn .lbl{font-size:.92rem}
   </form>
 </dialog>
 
-<!-- ─────────── place dialog ─────────── -->
+<!-- ─── place dialog ─── -->
 <dialog id="dlg-place" aria-labelledby="place-title">
   <form id="place-form" method="dialog">
     <div class="dlg-head">
@@ -943,7 +913,7 @@ html.kid .dir-btn .lbl{font-size:.92rem}
   </form>
 </dialog>
 
-<!-- ─────────── profile dialog ─────────── -->
+<!-- ─── profile dialog ─── -->
 <dialog id="dlg-profile" class="wide" aria-labelledby="profile-title">
   <div class="dlg-head">
     <h2 class="dlg-title" id="profile-title" data-i18n="profile.title"></h2>
@@ -984,7 +954,7 @@ html.kid .dir-btn .lbl{font-size:.92rem}
   </div>
 </dialog>
 
-<!-- ─────────── settings dialog ─────────── -->
+<!-- ─── settings dialog ─── -->
 <dialog id="dlg-settings" aria-labelledby="settings-title">
   <div class="dlg-head">
     <h2 class="dlg-title" id="settings-title" data-i18n="settings.title"></h2>
@@ -1022,8 +992,8 @@ html.kid .dir-btn .lbl{font-size:.92rem}
         <label for="set-readable"><strong data-i18n="set.readable"></strong><small data-i18n="set.readable.hint"></small></label>
       </div>
       <div class="switch-row">
-        <input type="checkbox" id="set-simple">
-        <label for="set-simple"><strong data-i18n="set.simple"></strong><small data-i18n="set.simple.hint"></small></label>
+        <input type="checkbox" id="set-hideChart">
+        <label for="set-hideChart"><strong data-i18n="set.hideChart"></strong><small data-i18n="set.hideChart.hint"></small></label>
       </div>
     </div>
 
@@ -1034,7 +1004,7 @@ html.kid .dir-btn .lbl{font-size:.92rem}
   </div>
 </dialog>
 
-<!-- ─────────── confirm dialog ─────────── -->
+<!-- ─── confirm dialog ─── -->
 <dialog id="dlg-confirm" aria-labelledby="confirm-title">
   <div class="dlg-head"><h2 class="dlg-title" id="confirm-title"></h2></div>
   <div class="dlg-body"><p id="confirm-text" style="font-size:.92rem;color:var(--ink-2)"></p></div>
@@ -1044,7 +1014,7 @@ html.kid .dir-btn .lbl{font-size:.92rem}
   </div>
 </dialog>
 
-<!-- ─────────── privacy dialog ─────────── -->
+<!-- ─── privacy dialog ─── -->
 <dialog id="dlg-privacy" aria-labelledby="privacy-title">
   <div class="dlg-head">
     <h2 class="dlg-title" id="privacy-title" data-i18n="privacy.title"></h2>
@@ -1058,22 +1028,6 @@ html.kid .dir-btn .lbl{font-size:.92rem}
   </div>
 </dialog>
 
-<!-- ─────────── teacher pack dialog ─────────── -->
-<dialog id="dlg-teacher" class="wide" aria-labelledby="teacher-title">
-  <div class="dlg-head">
-    <h2 class="dlg-title" id="teacher-title" data-i18n="teacher.title"></h2>
-    <button type="button" class="btn btn-icon btn-ghost" data-close aria-label="Close">✕</button>
-  </div>
-  <div class="dlg-body">
-    <p style="font-size:.92rem;color:var(--ink-2);margin-bottom:14px" data-i18n="teacher.intro"></p>
-    <ul style="display:flex;flex-direction:column;gap:10px">
-      <li><button type="button" class="btn btn-primary btn-block" id="btn-teacher-sheet" data-i18n="teacher.sheet"></button></li>
-      <li><button type="button" class="btn btn-block" id="btn-teacher-report" data-i18n="teacher.report"></button></li>
-      <li><button type="button" class="btn btn-block" id="btn-teacher-csv" data-i18n="teacher.csv"></button></li>
-    </ul>
-  </div>
-</dialog>
-
 <div id="toast" role="status" aria-live="polite"></div>
 <section id="print-report" aria-hidden="true"></section>
 
@@ -1084,11 +1038,10 @@ html.kid .dir-btn .lbl{font-size:.92rem}
    Авторка: Олеся Бохонок
    Безкоштовно, без реклами, без серверних акаунтів.
    Дані — лише в localStorage цього браузера.
-   Зовнішні запити: Open-Meteo (пошук місця та погода).
+   Зовнішні запити: Open-Meteo (пошук місця, погода, реверс-геокодинг).
    ═════════════════════════════════════════════════════════════ */
 
-const APP_VERSION = '4.0.0';
-const STORE_KEY = 'meteojournal.v4';
+const STORE_KEY = 'meteojournal.v5';
 const MAX_RECORDS = 4000;
 const MAX_FILE_BYTES = 2 * 1024 * 1024;
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
@@ -1099,7 +1052,8 @@ const RECENT_DAYS = 85;
 const API = {
   forecast: 'https://api.open-meteo.com/v1/forecast',
   archive:  'https://archive-api.open-meteo.com/v1/archive',
-  geocode:  'https://geocoding-api.open-meteo.com/v1/search'
+  geocode:  'https://geocoding-api.open-meteo.com/v1/search',
+  reverse:  'https://geocoding-api.open-meteo.com/v1/search'
 };
 
 const SKY = [
@@ -1128,7 +1082,7 @@ const WHITE_RGB = [255,255,255];
 
 const PROFILE_HUES = ['#1F5FA8','#B24C10','#2E6B45','#8A2A6B','#7A5A0F','#365B8A','#0F6B6B','#8A2A2A'];
 
-/* ───────────── i18n ───────────── */
+/* ─── i18n ─── */
 
 const I18N = {
 uk:{
@@ -1161,23 +1115,24 @@ uk:{
 'cal.hintClass':'Класних записів цього місяця: {n}.',
 'legend.caption':'Колір клітинки — температура, {unit}',
 'act.compare':'Порівняти з Open-Meteo','act.export':'Зберегти файл','act.import':'Відкрити файл',
-'act.print':'Друк / PDF','act.teacher':'Пакет учителя',
+'act.print':'Друк / PDF',
 'chart.title':'Температура за місяць','chart.empty':'Додай записи — тут з’явиться графік.',
 'chart.mine':'Твої спостереження','chart.real':'Open-Meteo (модель)','chart.freeze':'Точка замерзання',
 'chart.table':'Дані таблицею','chart.alt':'Графік температури, {month}. Записів: {n}, від {min} до {max}.',
 'th.day':'День','th.time':'Час','th.temp':'Температура','th.sky':'Небо','th.hum':'Вологість',
 'th.wind':'Вітер','th.real':'Open-Meteo','th.notes':'Нотатки',
 'place.title':'Місце спостережень','place.change':'Змінити місце','place.label':'Назва міста або села',
-'place.search':'Знайти','place.geo':'Визначити за геолокацією','place.short':'Введи щонайменше 2 літери.',
+'place.search':'Знайти','place.geo':'📍 Визначити моє місто','place.short':'Введи щонайменше 2 літери.',
 'place.searching':'Шукаю…','place.none':'Нічого не знайдено. Спробуй іншу назву.',
 'place.err':'Не вдалося знайти місце. Перевір інтернет і спробуй ще раз.',
-'place.geoWait':'Визначаю місце…','place.geoErr':'Не вдалося визначити місце. Дозволь доступ або знайди місто за назвою.',
-'place.choose':'Обери місце зі списку:','place.myLoc':'Моє місцезнаходження',
+'place.geoWait':'Визначаю місто…','place.geoErr':'Не вдалося визначити місто. Дозволь доступ або знайди місто за назвою.',
+'place.geoNoName':'Не вдалося визначити назву міста. Знайди його вручну.',
+'place.choose':'Обери місце зі списку:',
 'place.noCoords':'Координат немає — обери місце, щоб порівнювати з Open-Meteo.',
 'place.privacy':'Для порівняння на сервер Open-Meteo надсилаються лише координати місця, округлені до ~1 км. Ім’я та клас нікуди не надсилаються.',
 'place.set':'Місце змінено: {name}.','coord.N':'пн. ш.','coord.S':'пд. ш.','coord.E':'сх. д.','coord.W':'зх. д.',
 'stats.title':'Місяць у цифрах','stats.empty':'Підсумок з’явиться, коли буде перший запис.',
-'stats.records':'Записів','stats.mean':'Середня температура','stats.max':'Найтепліший день',
+'stats.records':'Записів','stats.mean':'Середня температура','stats.max':'Найтепіший день',
 'stats.min':'Найхолодніший день','stats.amp':'Амплітуда температур','stats.wet':'Днів з опадами',
 'stats.wind':'Вітер найчастіше з','stats.mae':'Розбіжність з Open-Meteo',
 'rose.title':'Роза вітрів','rose.hint':'Скільки разів вітер дув з кожного напрямку.',
@@ -1211,13 +1166,13 @@ uk:{
 'set.units':'Одиниці','set.metric':'°C, м/с','set.imperial':'°F, mph',
 'set.a11y':'Зручність читання','set.contrast':'Високий контраст','set.large':'Великий текст',
 'set.readable':'Розбірливий шрифт','set.readable.hint':'Простий шрифт із більшими інтервалами',
-'set.simple':'Спрощений режим','set.simple.hint':'Ховає графік, статистику й розу вітрів',
+'set.hideChart':'Сховати графік і статистику','set.hideChart.hint':'Залишити лише календар',
 'set.data':'Дані','set.wipe':'Видалити всі дані з цього пристрою',
 'set.wipeTitle':'Видалити всі дані?',
 'set.wipeText':'Усі профілі й записи в цьому браузері буде видалено. Спершу збережи файли, якщо вони ще потрібні.',
 'ui.ok':'Так, видалити','ui.cancel':'Скасувати',
 'toast.saved':'Запис збережено.','toast.deleted':'Запис видалено.','toast.wiped':'Дані видалено.',
-'foot.text':'Метеощоденник {v}. Безкоштовно, без реєстрації, без реклами.',
+'foot.text':'Метеощоденник. Безкоштовно, без реєстрації, без реклами.',
 'print.title':'Метеощоденник','print.student':'Учень','print.class':'Клас','print.place':'Місце',
 'print.made':'Надруковано {date}','print.sheet':'Аркуш спостережень',
 'unit.c':'°C','unit.f':'°F','unit.ms':'м/с','unit.mph':'mph',
@@ -1227,18 +1182,15 @@ uk:{
 'dir.0':'Пн','dir.1':'ПнСх','dir.2':'Сх','dir.3':'ПдСх','dir.4':'Пд','dir.5':'ПдЗх','dir.6':'Зх','dir.7':'ПнЗх',
 'privacy.open':'Приватність','privacy.title':'Приватність',
 'privacy.local':'Записи, імена й клас зберігаються лише в цьому браузері. Ми не маємо сервера й не надсилаємо ці дані нікуди.',
-'privacy.network':'Єдині зовнішні запити — до Open-Meteo (пошук місця й погода). Вони містять лише координати, округлені до ~1 км. Ім’я, клас і нотатки не надсилаються.',
+'privacy.network':'Єдині зовнішні запити — до Open-Meteo (пошук місця, погода, визначення назви міста). Вони містять лише координати, округлені до ~1 км. Ім’я, клас і нотатки не надсилаються.',
 'privacy.children':'Застосунок не має реклами, трекерів, аналітики та акаунтів на сервері. Для шкіл США та ЄС він сумісний з COPPA та GDPR за замовчуванням.',
 'privacy.credits':'Дані погоди — Open-Meteo. Пошук місць — Open-Meteo Geocoding. Обидва сервіси безкоштовні для некомерційного використання.',
-'teacher.title':'Пакет учителя','teacher.intro':'Матеріали для уроку й підсумків. Нічого не надсилається назовні — усе друкується або зберігається локально.',
-'teacher.sheet':'Надрукувати аркуш спостережень','teacher.report':'Надрукувати звіт за місяць',
-'teacher.csv':'Зберегти дані класу як CSV',
 'onb.langTitle':'Обери мову','onb.langHint':'Мову можна змінити будь-коли.',
 'onb.nameTitle':'Як тебе звати?','onb.nameHint':'Напиши ім’я або псевдонім. Прізвище не потрібне.',
 'onb.nameLabel':'Ім’я або псевдонім','onb.classLabel':'Клас (необов’язково)',
 'onb.avatarTitle':'Обери аватар','onb.avatarHint':'Натисни на того, хто тобі подобається.',
 'onb.cityTitle':'Де ти спостерігаєш погоду?','onb.cityHint':'Напиши назву свого міста або села.',
-'onb.cityLabel':'Місто або село','onb.search':'Знайти','onb.geo':'📍 Визначити моє місце',
+'onb.cityLabel':'Місто або село','onb.search':'Знайти','onb.geo':'📍 Визначити моє місто',
 'onb.cityPrivacy':'Для порівняння з Open-Meteo надсилаються лише координати, округлені до ~1 км. Ім’я та клас не надсилаються.',
 'onb.back':'← Назад','onb.next':'Далі →','onb.finish':'Почати! 🌟',
 'onb.needName':'Будь ласка, введи ім’я.','onb.needCity':'Обери місто зі списку.'
@@ -1273,18 +1225,19 @@ en:{
 'cal.hintClass':'Class entries this month: {n}.',
 'legend.caption':'Cell colour = temperature, {unit}',
 'act.compare':'Compare with Open-Meteo','act.export':'Save file','act.import':'Open file',
-'act.print':'Print / PDF','act.teacher':'Teacher pack',
+'act.print':'Print / PDF',
 'chart.title':'Temperature this month','chart.empty':'Add entries and a chart will appear here.',
 'chart.mine':'Your observations','chart.real':'Open-Meteo (model)','chart.freeze':'Freezing point',
 'chart.table':'Data as a table','chart.alt':'Temperature chart, {month}. Entries: {n}, from {min} to {max}.',
 'th.day':'Day','th.time':'Time','th.temp':'Temperature','th.sky':'Sky','th.hum':'Humidity',
 'th.wind':'Wind','th.real':'Open-Meteo','th.notes':'Notes',
 'place.title':'Observation site','place.change':'Change place','place.label':'Name of a city or village',
-'place.search':'Search','place.geo':'Use my location','place.short':'Type at least 2 letters.',
+'place.search':'Search','place.geo':'📍 Find my city','place.short':'Type at least 2 letters.',
 'place.searching':'Searching…','place.none':'Nothing found. Try another name.',
 'place.err':'Could not search for places. Check your connection and try again.',
-'place.geoWait':'Finding your location…','place.geoErr':'Could not get your location. Allow location access or search by name.',
-'place.choose':'Choose a place from the list:','place.myLoc':'My location',
+'place.geoWait':'Finding your city…','place.geoErr':'Could not detect your city. Allow location access or search by name.',
+'place.geoNoName':'Could not get the city name. Search for it manually.',
+'place.choose':'Choose a place from the list:',
 'place.noCoords':'No coordinates yet. Choose a place to compare with Open-Meteo.',
 'place.privacy':'To compare with Open-Meteo, only the place’s coordinates, rounded to about 1 km, are sent. Your name and class are never sent.',
 'place.set':'Place changed: {name}.','coord.N':'N','coord.S':'S','coord.E':'E','coord.W':'W',
@@ -1323,13 +1276,13 @@ en:{
 'set.units':'Units','set.metric':'°C, m/s','set.imperial':'°F, mph',
 'set.a11y':'Reading comfort','set.contrast':'High contrast','set.large':'Large text',
 'set.readable':'Easy-to-read font','set.readable.hint':'A plain font with wider spacing',
-'set.simple':'Simple mode','set.simple.hint':'Hides the chart, statistics and wind rose',
+'set.hideChart':'Hide chart and statistics','set.hideChart.hint':'Leave only the calendar',
 'set.data':'Data','set.wipe':'Delete all data from this device',
 'set.wipeTitle':'Delete all data?',
 'set.wipeText':'All profiles and entries in this browser will be deleted. Save files first if you still need them.',
 'ui.ok':'Yes, delete','ui.cancel':'Cancel',
 'toast.saved':'Entry saved.','toast.deleted':'Entry deleted.','toast.wiped':'Data deleted.',
-'foot.text':'Weather Journal {v}. Free, no sign-up, no ads.',
+'foot.text':'Weather Journal. Free, no sign-up, no ads.',
 'print.title':'Weather Journal','print.student':'Student','print.class':'Class','print.place':'Place',
 'print.made':'Printed {date}','print.sheet':'Observation sheet',
 'unit.c':'°C','unit.f':'°F','unit.ms':'m/s','unit.mph':'mph',
@@ -1339,18 +1292,15 @@ en:{
 'dir.0':'N','dir.1':'NE','dir.2':'E','dir.3':'SE','dir.4':'S','dir.5':'SW','dir.6':'W','dir.7':'NW',
 'privacy.open':'Privacy','privacy.title':'Privacy',
 'privacy.local':'Entries, names and classes are stored only in this browser. There is no server; this data never leaves your device.',
-'privacy.network':'The only outbound requests go to Open-Meteo (place search and weather). They contain coordinates rounded to ~1 km. Names, classes and notes are never sent.',
+'privacy.network':'The only outbound requests go to Open-Meteo (place search, weather, city name lookup). They contain coordinates rounded to ~1 km. Names, classes and notes are never sent.',
 'privacy.children':'The app has no ads, trackers, analytics or server accounts. For US and EU schools it is COPPA- and GDPR-friendly by default.',
 'privacy.credits':'Weather data by Open-Meteo. Place search by Open-Meteo Geocoding. Both free for non-commercial use.',
-'teacher.title':'Teacher pack','teacher.intro':'Materials for a lesson and for monthly summaries. Nothing leaves the device — everything is printed or saved locally.',
-'teacher.sheet':'Print observation sheet','teacher.report':'Print monthly report',
-'teacher.csv':'Save class data as CSV',
 'onb.langTitle':'Choose your language','onb.langHint':'You can change it any time.',
 'onb.nameTitle':'What is your name?','onb.nameHint':'Type a first name or nickname. No surname needed.',
 'onb.nameLabel':'First name or nickname','onb.classLabel':'Class (optional)',
 'onb.avatarTitle':'Pick an avatar','onb.avatarHint':'Tap the one you like.',
 'onb.cityTitle':'Where do you watch the weather?','onb.cityHint':'Type the name of your city or village.',
-'onb.cityLabel':'City or village','onb.search':'Search','onb.geo':'📍 Use my location',
+'onb.cityLabel':'City or village','onb.search':'Search','onb.geo':'📍 Find my city',
 'onb.cityPrivacy':'To compare with Open-Meteo, only coordinates rounded to ~1 km are sent. Your name and class are never sent.',
 'onb.back':'← Back','onb.next':'Next →','onb.finish':'Start! 🌟',
 'onb.needName':'Please enter a name.','onb.needCity':'Choose a city from the list.'
@@ -1368,7 +1318,7 @@ const L10N = {
     weekdaysLong:['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'] }
 };
 
-/* ───────────── helpers ───────────── */
+/* ─── helpers ─── */
 
 const $  = (s,r=document)=>r.querySelector(s);
 const $$ = (s,r=document)=>Array.from(r.querySelectorAll(s));
@@ -1414,7 +1364,7 @@ function cleanText(v,max){
   return typeof v==='string'?v.replace(/[\u0000-\u0009\u000B-\u001F\u007F]/g,' ').trim().slice(0,max):'';
 }
 
-/* ───────────── state ───────────── */
+/* ─── state ─── */
 
 const state = {
   store: null,
@@ -1455,7 +1405,7 @@ function t(key,params={}){
   return v.replace(/\{(\w+)\}/g,(m,k)=>params[k]!==undefined?String(params[k]):m);
 }
 
-/* ───────────── units ───────────── */
+/* ─── units ─── */
 
 const toDispT    = c => imperial()?c*9/5+32:c;
 const fromDispT  = v => imperial()?(v-32)*5/9:v;
@@ -1479,7 +1429,7 @@ function fmtCoord(lat,lon){
   return `${fmtNum(Math.abs(lat),2)}° ${t(lat>=0?'coord.N':'coord.S')}, ${fmtNum(Math.abs(lon),2)}° ${t(lon>=0?'coord.E':'coord.W')}`;
 }
 
-/* ───────────── colors ───────────── */
+/* ─── colors ─── */
 
 function tempRGB(c){
   const first=TEMP_STOPS[0],last=TEMP_STOPS[TEMP_STOPS.length-1];
@@ -1508,7 +1458,7 @@ function readableOn(rgb){
   return contrastRatio(rgb,INK_RGB)>=contrastRatio(rgb,WHITE_RGB)?INK_RGB:WHITE_RGB;
 }
 
-/* ───────────── dates ───────────── */
+/* ─── dates ─── */
 
 const keyOf   = (y,m,d)=>`${y}-${pad(m+1)}-${pad(d)}`;
 const daysIn  = (y,m)=>new Date(y,m+1,0).getDate();
@@ -1532,7 +1482,7 @@ function shortDate(k){
 const monthTitle = (y,m)=>`${L10N[lang()].months[m]} ${y}`;
 function nowHHMM(){const n=new Date();return `${pad(n.getHours())}:${pad(n.getMinutes())}`;}
 
-/* ───────────── storage ───────────── */
+/* ─── storage ─── */
 
 function sanitizeCity(c){
   if(!c||typeof c!=='object')return null;
@@ -1596,13 +1546,13 @@ function sanitizeProfile(p,keepId){
 }
 function sanitizeA11y(a){
   a=a&&typeof a==='object'?a:{};
-  return {hc:a.hc===true,large:a.large===true,readable:a.readable===true,simple:a.simple===true};
+  return {hc:a.hc===true,large:a.large===true,readable:a.readable===true,hideChart:a.hideChart===true};
 }
 function defaultStore(){
   const prof=sanitizeProfile({name:'',cls:'',avatar:AVATARS[0],city:DEFAULT_CITY,records:{}});
   return {
-    v:4,lang:'uk',units:'metric',
-    a11y:sanitizeA11y({simple:true}),
+    v:5,lang:'uk',units:'metric',
+    a11y:sanitizeA11y({hideChart:false}),
     kidMode:true,
     onboarded:false,
     active:prof.id,
@@ -1613,10 +1563,8 @@ function sanitizeStore(x){
   if(!x||typeof x!=='object'||!Array.isArray(x.profiles))return null;
   const profiles=x.profiles.map(p=>sanitizeProfile(p,true)).filter(Boolean);
   if(!profiles.length)return null;
-  const v=Number(x.v);
-  if(v!==2&&v!==3&&v!==4)return null;
   return {
-    v:4,
+    v:5,
     lang:x.lang==='en'?'en':'uk',
     units:x.units==='imperial'?'imperial':'metric',
     a11y:sanitizeA11y(x.a11y),
@@ -1661,7 +1609,7 @@ function migrateV1(){
     if(l&&I18N[l])s.lang=l;
     try{
       const a=JSON.parse(localStorage.getItem('wl_a11y')||'null');
-      if(a)s.a11y=sanitizeA11y({hc:a.highContrast,large:a.largeText,readable:a.dyslexicFont,simple:a.simplified});
+      if(a)s.a11y=sanitizeA11y({hc:a.highContrast,large:a.largeText,readable:a.dyslexicFont,hideChart:a.simplified});
     }catch(e){}
     return s;
   }catch(e){return null;}
@@ -1681,7 +1629,7 @@ function saveStore(){
   const b=$('#banner-storage');if(b)b.hidden=state.storageOk;
 }
 
-/* ───────────── month computation ───────────── */
+/* ─── month computation ─── */
 
 function monthRecords(p,y,m){
   const prefix=`${y}-${pad(m+1)}-`;
@@ -1730,7 +1678,7 @@ function computeStats(list){
   };
 }
 
-/* ───────────── dialogs / toast ───────────── */
+/* ─── dialogs / toast ─── */
 
 function openDialog(d){ if(typeof d.showModal==='function')d.showModal(); else d.setAttribute('open',''); }
 function closeDialog(d){
@@ -1770,7 +1718,7 @@ function askConfirm(title,text,okLabel){
   });
 }
 
-/* ───────────── static apply ───────────── */
+/* ─── static apply ─── */
 
 function applyStatic(){
   const l=lang();
@@ -1784,7 +1732,7 @@ function applyStatic(){
     }
   }
   for(const b of $$('[data-lang]'))b.setAttribute('aria-pressed',String(b.dataset.lang===l));
-  const foot=$('#foot-text');if(foot)foot.textContent=t('foot.text',{v:APP_VERSION});
+  const foot=$('#foot-text');if(foot)foot.textContent=t('foot.text');
   const bm=$('#brand-mark');if(bm)bm.textContent=t('app.shortName');
   const onbTitle=$('#onb-title');if(onbTitle)onbTitle.textContent=t('app.shortName');
   const onbSub=$('#onb-sub');if(onbSub)onbSub.textContent=t('app.tagline');
@@ -1794,8 +1742,9 @@ function applyA11y(){
   root.classList.toggle('hc',a.hc);
   root.classList.toggle('lg',a.large);
   root.classList.toggle('rf',a.readable);
-  root.classList.toggle('simple',a.simple);
   root.classList.toggle('kid',kidMode());
+  // hideChart — додатковий клас, який ховає графік і статистику
+  root.classList.toggle('simple',a.hideChart===true);
 }
 function buildChips(){
   const chipGroup=(box,name,items,labelKey,required)=>{
@@ -1829,7 +1778,7 @@ function buildChips(){
   }
 }
 
-/* ───────────── rendering ───────────── */
+/* ─── rendering ─── */
 
 function renderHeader(){
   const p=P();
@@ -1953,7 +1902,6 @@ function renderMonth(){
       : (n?t('cal.hintSome',{n}):t('cal.hintEmpty'));
   }
 }
-
 function niceStep(range){
   const raw=range/4;
   for(const s of [1,2,5,10,20,50])if(s>=raw)return s;
@@ -2075,7 +2023,6 @@ function renderChart(){
 
   if(tableBox)tableBox.append(buildRecordsTable(list,false));
 }
-
 function buildRecordsTable(list,withNotes){
   const hasReal=list.some(r=>r.real);
   const head=[t('th.day'),t('th.time'),t('th.temp'),t('th.sky'),t('th.hum'),t('th.wind')];
@@ -2100,7 +2047,6 @@ function buildRecordsTable(list,withNotes){
     el('thead',null,el('tr',null,head.map(h=>el('th',{scope:'col',text:h})))),
     el('tbody',null,rows));
 }
-
 function buildStatsList(s){
   const dl=el('dl',{class:'stats'});
   const row=(label,value)=>dl.append(el('dt',{text:label}),el('dd',{text:value}));
@@ -2204,9 +2150,7 @@ function renderRose(){
   }
   box.append(s);
 }
-
 const BADGES=[{n:1,e:'🌱',k:'badge.b1'},{n:7,e:'⭐',k:'badge.b7'},{n:20,e:'👑',k:'badge.b20'}];
-
 function renderBadges(){
   const total=Object.keys(P().records).length;
   const ul=$('#badges');
@@ -2230,7 +2174,7 @@ function renderSettingsState(){
   const hc=$('#set-hc');if(hc)hc.checked=a.hc;
   const lg=$('#set-large');if(lg)lg.checked=a.large;
   const rd=$('#set-readable');if(rd)rd.checked=a.readable;
-  const sp=$('#set-simple');if(sp)sp.checked=a.simple;
+  const hideChart=$('#set-hideChart');if(hideChart)hideChart.checked=a.hideChart===true;
   const kd=$('#set-kid');if(kd)kd.checked=kidMode();
 }
 function renderViewSwitch(){
@@ -2251,15 +2195,14 @@ function renderAll(){
   renderSettingsState();
 }
 
-/* ───────────── числові поля зі стрілочками ▲▼ ───────────── */
+/* ─── числові поля ▲▼ ─── */
 
 const NUM_CONFIG = {
-  temp: { min:-60, max:60,  step:1, decimals:0, unitFn:()=>tempUnit(), toDisp:toDispT, fromDisp:fromDispT, start:0 },
-  hum:  { min:0,   max:100, step:5, decimals:0, unitFn:()=>'%',        toDisp:v=>v,     fromDisp:v=>v,       start:50 },
-  wind: { min:0,   max:60,  step:1, decimals:0, unitFn:()=>windUnit(), toDisp:toDispW,  fromDisp:fromDispW,  start:0 },
-  time: { min:0,   max:23,  step:1, decimals:0, unitFn:()=>'',          toDisp:v=>v,     fromDisp:v=>v,       start:9, isTime:true }
+  temp: { min:-60, max:60,  step:1, decimals:0, start:0 },
+  hum:  { min:0,   max:100, step:5, decimals:0, start:50 },
+  wind: { min:0,   max:60,  step:1, decimals:0, start:0 },
+  time: { min:0,   max:23,  step:1, decimals:0, start:9, isTime:true }
 };
-
 function numpadInput(target){
   return target==='temp' ? $('#f-temp')
        : target==='hum'  ? $('#f-hum')
@@ -2321,8 +2264,8 @@ function stepNum(target,dir){
   if(!cfg)return;
 
   if(target==='time'){
-    let t=$('#f-time').value;
-    let [h,m]=TIME_RE.test(t)?t.split(':').map(Number):[cfg.start,0];
+    let tv=$('#f-time').value;
+    let [h,m]=TIME_RE.test(tv)?tv.split(':').map(Number):[cfg.start,0];
     h=(h+dir+24)%24;
     $('#f-time').value=`${pad(h)}:${pad(m)}`;
     refreshNumpad('time');
@@ -2368,7 +2311,7 @@ function refreshAllNumpads(){
   const wu=$('#wind-unit');if(wu)wu.textContent=windUnit();
 }
 
-/* ───────────── компас напряму вітру ───────────── */
+/* ─── компас ─── */
 
 function buildCompass(){
   const box=$('#dir-compass');
@@ -2413,11 +2356,10 @@ function setDir(i){
   }
 }
 
-/* ───────────── day dialog ───────────── */
+/* ─── day dialog ─── */
 
 function fillDayLabels(){
   const lt=$('#lbl-temp'),lw=$('#lbl-wind'),lh=$('#lbl-hum');
-  if(lt)lt.textContent=t('day.tempHint')?lt.textContent:lt.textContent;
   if(lt)lt.textContent='Температура повітря';
   if(lw)lw.textContent=t('day.windPlain');
   if(lh)lh.textContent=t('day.humPlain');
@@ -2530,7 +2472,7 @@ function focusDay(key){
   if(b&&!b.disabled)b.focus();
 }
 
-/* ───────────── open-meteo ───────────── */
+/* ─── open-meteo ─── */
 
 async function getJson(url){
   const ctrl=new AbortController();
@@ -2627,7 +2569,48 @@ async function compareMonth(){
   finally{setBusy(false);}
 }
 
-/* ───────────── place ───────────── */
+/* ─── reverse geocoding ─── */
+
+/**
+ * Отримує назву міста за координатами.
+ * Open-Meteo не має справжнього reverse endpoint, тому:
+ *   1) запитуємо найближчі населені пункти через geocoding search з малою
+ *      точністю (обмеження API — 1 результат), пробуємо кілька варіантів.
+ *   2) якщо нічого не знайдено — повертаємо null, і UI покаже помилку.
+ */
+async function reverseGeocode(lat,lon){
+  // Open-Meteo Geocoding не має офіційного reverse API.
+  // Використовуємо Nominatim (OpenStreetMap) як резерв —
+  // безкоштовний, з політикою 1 запит/сек, тільки для визначення назви.
+  try{
+    const params=new URLSearchParams({
+      lat:String(round(lat,4)),
+      lon:String(round(lon,4)),
+      format:'json',
+      zoom:'10',
+      'accept-language':lang()
+    });
+    const res=await fetch(`https://nominatim.openstreetmap.org/reverse?${params}`,{
+      headers:{'Accept':'application/json'}
+    });
+    if(!res.ok)return null;
+    const data=await res.json();
+    const a=data&&data.address;
+    if(!a)return null;
+    const name=a.city||a.town||a.village||a.hamlet||a.municipality||a.county||a.state;
+    if(!name)return null;
+    return {
+      name: cleanStr(name,60),
+      admin: cleanStr(a.state||a.county||'',60),
+      country: cleanStr(a.country||'',60),
+      lat: round(lat,2),
+      lon: round(lon,2),
+      tz: null
+    };
+  }catch(e){return null;}
+}
+
+/* ─── place ─── */
 
 function openPlace(){
   $('#place-q').value='';
@@ -2665,17 +2648,47 @@ async function searchPlaces(e){
         el('small',{text:fmtCoord(c.lat,c.lon)})))));
   }catch(err){status.textContent=t('place.err');}
 }
-function useGeolocation(){
+async function useGeolocation(){
   const status=$('#place-status');
   if(!navigator.geolocation){status.textContent=t('place.geoErr');return;}
   status.textContent=t('place.geoWait');
   navigator.geolocation.getCurrentPosition(
-    pos=>setCity({name:t('place.myLoc'),admin:'',country:'',lat:pos.coords.latitude,lon:pos.coords.longitude,tz:null}),
+    async pos=>{
+      const lat=pos.coords.latitude,lon=pos.coords.longitude;
+      status.textContent=t('place.searching');
+      const city=await reverseGeocode(lat,lon);
+      if(city&&city.name){
+        setCity(city);
+        return;
+      }
+      // резерв — пробуємо знайти через geocoding за координатами як за назвою
+      const fallback=await reverseFallback(lat,lon);
+      if(fallback&&fallback.name){setCity(fallback);return;}
+      status.textContent=t('place.geoNoName');
+    },
     ()=>{status.textContent=t('place.geoErr');},
     {timeout:12000,maximumAge:600000});
 }
+async function reverseFallback(lat,lon){
+  // Спроба №2: інколи Nominatim не віддає назву, тоді шукаємо
+  // в geocoding Open-Meteo через координати. Це не завжди працює,
+  // але інколи дає результат.
+  try{
+    // Шукаємо за найближчим великим містом (по 1° сітці) — грубо
+    const params=new URLSearchParams({
+      latitude:String(round(lat,2)),
+      longitude:String(round(lon,2)),
+      count:'1',
+      language:lang(),
+      format:'json'
+    });
+    // Open-Meteo geocoding не має параметрів latitude/longitude —
+    // тому просто повертаємо null, щоб UI показав повідомлення.
+    return null;
+  }catch(e){return null;}
+}
 
-/* ───────────── profiles ───────────── */
+/* ─── profiles ─── */
 
 const profileLabel=p=>p.name||t('profile.default');
 
@@ -2741,7 +2754,7 @@ async function deleteProfile(){
   renderAll();
 }
 
-/* ───────────── settings ───────────── */
+/* ─── settings ─── */
 
 async function wipeAll(){
   const ok=await askConfirm(t('set.wipeTitle'),t('set.wipeText'),t('ui.ok'));
@@ -2758,7 +2771,7 @@ async function wipeAll(){
   showOnboarding();
 }
 
-/* ───────────── io ───────────── */
+/* ─── io ─── */
 
 const slug=s=>s.replace(/[^\p{L}\p{N}_-]+/gu,'_').replace(/^_+|_+$/g,'');
 
@@ -2771,7 +2784,7 @@ function downloadJSON(payload,name){
 function exportProfile(){
   const p=P();
   const payload={
-    app:'MeteoJournal',schema:4,version:APP_VERSION,exported:new Date().toISOString(),
+    app:'MeteoJournal',schema:5,version:'1.0',exported:new Date().toISOString(),
     profile:{name:p.name,cls:p.cls,avatar:p.avatar,city:p.city,records:p.records}
   };
   const name=`MeteoJournal_${slug(p.name)||'journal'}_${todayKey()}.weather`;
@@ -2780,7 +2793,7 @@ function exportProfile(){
 }
 function exportClass(){
   const payload={
-    app:'MeteoJournal',schema:4,version:APP_VERSION,exported:new Date().toISOString(),
+    app:'MeteoJournal',schema:5,version:'1.0',exported:new Date().toISOString(),
     class:{profiles:state.store.profiles.map(p=>({name:p.name,cls:p.cls,avatar:p.avatar,city:p.city,records:p.records}))}
   };
   const name=`MeteoJournal_class_${todayKey()}.weather`;
@@ -2847,7 +2860,7 @@ async function importFiles(files){
   if(messages.length)toast(messages.join(' '));
 }
 
-/* ───────────── print ───────────── */
+/* ─── print ─── */
 
 function renderPrint(){
   const box=$('#print-report'),p=P(),{y,m}=state.view;
@@ -2929,7 +2942,7 @@ function exportCsv(){
   toast(t('io.exported',{name}));
 }
 
-/* ───────────── onboarding ───────────── */
+/* ─── onboarding ─── */
 
 function renderOnbDots(){
   const box=$('#onb-dots');
@@ -2991,15 +3004,22 @@ async function searchOnbCity(){
         el('small',{text:fmtCoord(c.lat,c.lon)})))));
   }catch(err){status.textContent=t('place.err');}
 }
-function useOnbGeo(){
+async function useOnbGeo(){
   const status=$('#onb-city-status');
   if(!navigator.geolocation){status.textContent=t('place.geoErr');return;}
   status.textContent=t('place.geoWait');
   navigator.geolocation.getCurrentPosition(
-    pos=>{
-      state.onbCity={name:t('place.myLoc'),admin:'',country:'',lat:round(pos.coords.latitude,2),lon:round(pos.coords.longitude,2),tz:null};
-      $('#onb-city').value=state.onbCity.name;
-      status.textContent='✓ '+state.onbCity.name;
+    async pos=>{
+      const lat=pos.coords.latitude,lon=pos.coords.longitude;
+      status.textContent=t('place.searching');
+      const city=await reverseGeocode(lat,lon);
+      if(city&&city.name){
+        state.onbCity=city;
+        $('#onb-city').value=city.name;
+        status.textContent='✓ '+city.name;
+        return;
+      }
+      status.textContent=t('place.geoNoName');
     },
     ()=>{status.textContent=t('place.geoErr');},
     {timeout:12000,maximumAge:600000});
@@ -3039,7 +3059,7 @@ function finalizeOnboarding(city){
   toast(t('place.set',{name:p.city.name}));
 }
 
-/* ───────────── events ───────────── */
+/* ─── events ─── */
 
 function setLang(l){
   if(!I18N[l])return;
@@ -3069,7 +3089,7 @@ function bindEvents(){
   for(const b of $$('[data-close]'))
     b.addEventListener('click',()=>closeDialog(b.closest('dialog')));
 
-  for(const id of ['dlg-place','dlg-profile','dlg-settings','dlg-privacy','dlg-teacher']){
+  for(const id of ['dlg-place','dlg-profile','dlg-settings','dlg-privacy']){
     const d=$('#'+id);
     if(!d)continue;
     d.addEventListener('click',e=>{if(e.target===d)closeDialog(d);});
@@ -3134,11 +3154,16 @@ function bindEvents(){
       renderAll();
       if($('#dlg-day').open){refreshAllNumpads();}
     });
-  const toggles={'set-hc':'hc','set-large':'large','set-readable':'readable','set-simple':'simple'};
+  const toggles={'set-hc':'hc','set-large':'large','set-readable':'readable'};
   for(const[id,key]of Object.entries(toggles)){
     const n=$('#'+id);
     if(n)n.addEventListener('change',e=>{state.store.a11y[key]=e.target.checked;saveStore();applyA11y();});
   }
+  const hideChart=$('#set-hideChart');
+  if(hideChart)hideChart.addEventListener('change',e=>{
+    state.store.a11y.hideChart=e.target.checked;
+    saveStore();applyA11y();
+  });
   const kd=$('#set-kid');
   if(kd)kd.addEventListener('change',e=>{
     state.store.kidMode=e.target.checked;
@@ -3147,25 +3172,11 @@ function bindEvents(){
   $('#btn-wipe').addEventListener('click',wipeAll);
   $('#btn-privacy').addEventListener('click',()=>openDialog($('#dlg-privacy')));
 
-  $('#btn-teacher').addEventListener('click',()=>openDialog($('#dlg-teacher')));
-  $('#btn-teacher-sheet').addEventListener('click',()=>{
-    closeDialog($('#dlg-teacher'));
-    state.printMode='sheet';renderPrint();window.print();
-  });
-  $('#btn-teacher-report').addEventListener('click',()=>{
-    closeDialog($('#dlg-teacher'));
-    state.printMode='report';renderPrint();window.print();
-  });
-  $('#btn-teacher-csv').addEventListener('click',()=>{
-    closeDialog($('#dlg-teacher'));
-    exportCsv();
-  });
-
   for(const b of $$('[data-lang]'))
     b.addEventListener('click',()=>setLang(b.dataset.lang));
 }
 
-/* ───────────── PWA manifest + icon ───────────── */
+/* ─── PWA manifest ─── */
 
 function installManifest(){
   const icon = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">'
@@ -3197,7 +3208,7 @@ function installManifest(){
   if(mLink)mLink.href='data:application/manifest+json,'+encodeURIComponent(JSON.stringify(manifest));
 }
 
-/* ───────────── init ───────────── */
+/* ─── init ─── */
 
 function init(){
   state.store=loadStore();
