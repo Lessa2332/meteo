@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#16212B">
-<meta name="description" content="Метеощоденник — шкільний щоденник погоди. Безкоштовно, без реєстрації, працює офлайн, дані залишаються на пристрої.">
+<meta name="description" content="Метеощоденник — шкільний щоденник погоди. Безкоштовно, працює офлайн, дані залишаються на пристрої.">
 <meta name="color-scheme" content="light">
 <title>Метеощоденник</title>
 <link id="manifest" rel="manifest">
@@ -75,7 +75,7 @@ html.hc .card,html.hc .topbar,html.hc dialog{border:1px solid #000}
 html.rf{letter-spacing:.035em;word-spacing:.12em;line-height:1.75}
 html.simple .chart-card,html.simple .stats-card,html.simple .rose-card{display:none}
 
-/* ─────────── ДИТЯЧИЙ РЕЖИМ (типово увімкнено) ─────────── */
+/* ─────────── ДИТЯЧИЙ РЕЖИМ (типово) ─────────── */
 html.kid{font-size:17px}
 html.kid .brand-sub,
 html.kid .coords,
@@ -85,10 +85,7 @@ html.kid .rose-hint,
 html.kid details.data-details,
 html.kid .legend-ticks,
 html.kid .tech-only{display:none}
-html.kid .cal .day{
-  min-height:78px;aspect-ratio:auto;
-  border-radius:14px;padding:10px;
-}
+html.kid .cal .day{min-height:78px;aspect-ratio:auto;border-radius:14px;padding:10px}
 html.kid .cal .day .d{font-size:1.15rem}
 html.kid .cal .day .s{font-size:1.7rem;right:10px;top:8px}
 html.kid .cal .day .v{font-size:1.05rem;font-weight:800}
@@ -123,7 +120,6 @@ html.kid .card h2{font-size:.85rem;letter-spacing:.08em}
   display:flex;align-items:center;gap:12px;flex-wrap:wrap;
 }
 .banner[hidden]{display:none}
-.banner .spacer{margin-left:auto}
 
 /* ─────────── topbar ─────────── */
 .topbar{
@@ -192,10 +188,7 @@ html.kid .card h2{font-size:.85rem;letter-spacing:.08em}
 .place-strip .coords{font-family:var(--mono);font-size:.78rem;color:var(--ink-3)}
 
 /* ─────────── calendar card ─────────── */
-.cal-card{
-  background:var(--surface);border-radius:var(--r-lg);
-  padding:16px;box-shadow:var(--sh-1);margin-bottom:14px;
-}
+.cal-card{background:var(--surface);border-radius:var(--r-lg);padding:16px;box-shadow:var(--sh-1);margin-bottom:14px}
 .cal-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
 .cal-title{font-size:1.5rem;font-weight:800;letter-spacing:-.02em;margin-right:auto}
 @media (min-width:720px){.cal-title{font-size:1.75rem}}
@@ -212,10 +205,7 @@ html.kid .card h2{font-size:.85rem;letter-spacing:.08em}
 
 .cal-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
 .cal{min-width:320px;border-spacing:4px;border-collapse:separate}
-.cal th{
-  font-size:.72rem;font-weight:600;color:var(--ink-3);
-  letter-spacing:.04em;padding:4px 0;
-}
+.cal th{font-size:.72rem;font-weight:600;color:var(--ink-3);letter-spacing:.04em;padding:4px 0}
 .cal th abbr{text-decoration:none;cursor:help}
 .cal td{padding:0}
 .cal .day{
@@ -239,15 +229,9 @@ html.kid .card h2{font-size:.85rem;letter-spacing:.08em}
 
 .legend{margin-top:14px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
 .legend-caption{font-size:.78rem;color:var(--ink-3);letter-spacing:.02em}
-.legend-bar{
-  flex:1;min-width:180px;height:10px;border-radius:5px;
-  position:relative;border:1px solid var(--line);
-}
+.legend-bar{flex:1;min-width:180px;height:10px;border-radius:5px;position:relative;border:1px solid var(--line)}
 .legend-ticks{position:relative;height:18px;flex:1;min-width:180px;margin-top:-4px}
-.legend-ticks span{
-  position:absolute;transform:translateX(-50%);
-  font-family:var(--mono);font-size:.7rem;color:var(--ink-3);
-}
+.legend-ticks span{position:absolute;transform:translateX(-50%);font-family:var(--mono);font-size:.7rem;color:var(--ink-3)}
 .cal-hint{font-size:.82rem;color:var(--ink-3);margin-top:10px}
 
 /* ─────────── action bar ─────────── */
@@ -256,17 +240,9 @@ html.kid .card h2{font-size:.85rem;letter-spacing:.08em}
 
 /* ─────────── two column ─────────── */
 .two{display:grid;gap:14px;grid-template-columns:1fr}
-@media (min-width:960px){
-  .two{grid-template-columns:minmax(0,1.35fr) minmax(280px,340px)}
-}
-.card{
-  background:var(--surface);border-radius:var(--r-lg);
-  padding:16px;box-shadow:var(--sh-1);
-}
-.card h2{
-  font-size:.72rem;font-weight:700;letter-spacing:.14em;
-  text-transform:uppercase;color:var(--ink-3);margin-bottom:12px;
-}
+@media (min-width:960px){.two{grid-template-columns:minmax(0,1.35fr) minmax(280px,340px)}}
+.card{background:var(--surface);border-radius:var(--r-lg);padding:16px;box-shadow:var(--sh-1)}
+.card h2{font-size:.72rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:12px}
 .stack > * + *{margin-top:14px}
 
 /* ─────────── chart ─────────── */
@@ -279,10 +255,7 @@ html.kid .card h2{font-size:.85rem;letter-spacing:.08em}
 .ch-dot{stroke:#fff;stroke-width:1.6}
 .ch-real{fill:none;stroke:#C25A12;stroke-width:2;stroke-dasharray:5 4;stroke-linejoin:round}
 .ch-real-dot{fill:#C25A12;stroke:#fff;stroke-width:1.4}
-.chart-legend{
-  display:flex;gap:16px;flex-wrap:wrap;
-  font-size:.78rem;color:var(--ink-2);margin-top:10px;
-}
+.chart-legend{display:flex;gap:16px;flex-wrap:wrap;font-size:.78rem;color:var(--ink-2);margin-top:10px}
 .chart-legend li{display:inline-flex;align-items:center;gap:7px}
 .lg-line{width:20px;height:2px;background:var(--ink);border-radius:1px}
 .lg-dash{width:20px;height:0;border-top:2px dashed #C25A12}
@@ -290,21 +263,14 @@ html.kid .card h2{font-size:.85rem;letter-spacing:.08em}
 .chart-empty{font-size:.9rem;color:var(--ink-3);padding:40px 0;text-align:center}
 
 details.data-details{margin-top:14px;border-top:1px solid var(--line-2);padding-top:10px}
-details.data-details summary{
-  cursor:pointer;font-size:.82rem;color:var(--ink-2);font-weight:600;list-style:none;
-}
+details.data-details summary{cursor:pointer;font-size:.82rem;color:var(--ink-2);font-weight:600;list-style:none}
 details.data-details summary::-webkit-details-marker{display:none}
 details.data-details summary::before{content:"▸ ";display:inline-block;transition:transform .15s}
 details.data-details[open] summary::before{content:"▾ "}
 
 table.data{font-size:.82rem;margin-top:10px}
-table.data th,table.data td{
-  padding:6px 8px;text-align:left;border-bottom:1px solid var(--line-2);vertical-align:top;
-}
-table.data th{
-  font-weight:600;font-size:.72rem;letter-spacing:.05em;
-  text-transform:uppercase;color:var(--ink-3);
-}
+table.data th,table.data td{padding:6px 8px;text-align:left;border-bottom:1px solid var(--line-2);vertical-align:top}
+table.data th{font-weight:600;font-size:.72rem;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-3)}
 table.data tbody tr:hover{background:var(--surface-2)}
 
 /* ─────────── stats ─────────── */
@@ -365,10 +331,10 @@ dialog.wide{max-width:min(720px,calc(100vw - 24px))}
 }
 .dlg-foot .spacer{margin-left:auto}
 
-.field{margin-bottom:14px}
+.field{margin-bottom:16px}
 .field:last-child{margin-bottom:0}
 .field label{display:block;font-size:.88rem;font-weight:600;color:var(--ink-2);margin-bottom:6px}
-.field .hint{font-size:.78rem;color:var(--ink-3);font-weight:400;margin-top:4px}
+.field .hint{font-size:.78rem;color:var(--ink-3);font-weight:400;margin-top:6px}
 .field input[type=text],.field input[type=number],.field input[type=time],
 .field select,.field textarea{
   width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:var(--r-md);
@@ -435,14 +401,8 @@ dialog.wide{max-width:min(720px,calc(100vw - 24px))}
 
 .settings-group{margin-bottom:20px}
 .settings-group:last-child{margin-bottom:0}
-.settings-group h3{
-  font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;
-  color:var(--ink-3);margin-bottom:10px;
-}
-.switch-row{
-  display:flex;align-items:flex-start;gap:12px;
-  padding:10px 0;border-bottom:1px solid var(--line-2);
-}
+.settings-group h3{font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-bottom:10px}
+.switch-row{display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:1px solid var(--line-2)}
 .switch-row:last-child{border-bottom:0}
 .switch-row input{flex:0 0 auto;margin-top:4px;width:20px;height:20px}
 .switch-row label{flex:1;font-size:.9rem;cursor:pointer}
@@ -473,10 +433,7 @@ dialog.wide{max-width:min(720px,calc(100vw - 24px))}
   border-radius:20px;box-shadow:var(--sh-2);
   padding:28px 24px;
 }
-.onb-logo{
-  display:flex;align-items:center;gap:12px;justify-content:center;
-  margin-bottom:8px;
-}
+.onb-logo{display:flex;align-items:center;gap:12px;justify-content:center;margin-bottom:8px}
 .onb-logo .dot{
   width:14px;height:14px;border-radius:50%;
   background:linear-gradient(135deg,#E0603A,#F3E27B 55%,#3B6FC4);
@@ -487,9 +444,7 @@ dialog.wide{max-width:min(720px,calc(100vw - 24px))}
 .onb-step.active{display:block}
 .onb-step h2{font-size:1.15rem;font-weight:700;margin-bottom:6px}
 .onb-step p.hint{font-size:.88rem;color:var(--ink-2);margin-bottom:16px}
-.onb-foot{
-  display:flex;gap:10px;margin-top:22px;
-}
+.onb-foot{display:flex;gap:10px;margin-top:22px}
 .onb-foot .btn{flex:1;justify-content:center;min-height:52px}
 .onb-dots{display:flex;gap:6px;justify-content:center;margin-top:16px}
 .onb-dots span{width:8px;height:8px;border-radius:50%;background:var(--line)}
@@ -518,15 +473,13 @@ dialog.wide{max-width:min(720px,calc(100vw - 24px))}
   #print-report .pmeta{font-size:9pt;color:#333;margin-bottom:12pt}
   #print-report .chart-svg{width:100%;height:auto;max-height:70mm;margin:6pt 0}
   #print-report table.data{font-size:9pt;margin-top:8pt}
-  #print-report table.data th,#print-report table.data td{
-    border-bottom:1px solid #999;padding:3pt 5pt;
-  }
+  #print-report table.data th,#print-report table.data td{border-bottom:1px solid #999;padding:3pt 5pt}
   #print-report dl.stats{font-size:9.5pt;margin-top:8pt}
 }
 
 /* ─────────── touch ─────────── */
 html{-webkit-tap-highlight-color:transparent}
-button,a,.day,.chip-face,.result,label,summary{touch-action:manipulation}
+button,a,.day,.chip-face,.result,label,summary,.np-btn,.dir-btn{touch-action:manipulation}
 
 @media (max-width:640px){
   .shell{padding:10px}
@@ -568,6 +521,115 @@ button,a,.day,.chip-face,.result,label,summary{touch-action:manipulation}
   .btn-icon{width:48px;height:48px}
 }
 
+/* ─────────── Числові поля зі стрілочками ▲▼ ─────────── */
+.numpad{
+  display:grid;
+  grid-template-columns:64px 1fr 64px auto;
+  align-items:center;
+  gap:8px;
+  background:var(--surface-2);
+  border:2px solid var(--line);
+  border-radius:18px;
+  padding:10px;
+  margin-top:4px;
+  transition:border-color .15s;
+}
+.numpad:focus-within{border-color:var(--focus)}
+
+.np-value{
+  font-family:var(--mono);
+  font-size:2.4rem;
+  font-weight:800;
+  letter-spacing:-.02em;
+  text-align:center;
+  line-height:1;
+  padding:8px 4px;
+  border-radius:12px;
+  background:var(--surface);
+  color:var(--ink);
+  min-height:64px;
+  display:flex;align-items:center;justify-content:center;
+  user-select:none;
+  cursor:pointer;
+}
+.np-value.negative{color:#1F5FA8}
+.np-value.positive{color:#B24C10}
+.np-value.zero{color:var(--ink-2)}
+.np-value.empty{color:var(--ink-3)}
+.np-value-time{font-size:2rem}
+
+.np-unit{
+  font-family:var(--mono);
+  font-size:1.1rem;
+  font-weight:700;
+  color:var(--ink-2);
+  padding-right:6px;
+  min-width:44px;
+  text-align:left;
+}
+
+.np-btn{
+  width:64px;height:64px;
+  border:1px solid var(--line);
+  background:var(--surface);
+  border-radius:14px;
+  cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.4rem;
+  color:var(--ink);
+  transition:background .1s,transform .06s,border-color .1s;
+  padding:0;line-height:1;
+  font-family:var(--mono);font-weight:800;
+}
+.np-btn:hover{background:var(--surface-3);border-color:#B9C4CE}
+.np-btn:active{transform:scale(.94)}
+.np-btn:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.np-up{color:#B24C10}
+.np-down{color:#1F5FA8}
+
+.np-hidden{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+
+/* ─────────── Компас напряму вітру ─────────── */
+.compass{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:4px}
+.dir-btn{
+  min-height:56px;
+  border:2px solid var(--line);
+  background:var(--surface);
+  border-radius:14px;
+  font-size:1rem;font-weight:700;color:var(--ink);
+  cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+  transition:background .1s,border-color .1s,transform .06s;
+  padding:6px 4px;
+}
+.dir-btn .arrow{font-size:1.4rem;line-height:1}
+.dir-btn .lbl{font-size:.78rem;font-weight:600;color:var(--ink-2)}
+.dir-btn:hover{background:var(--surface-2);border-color:#B9C4CE}
+.dir-btn:active{transform:scale(.97)}
+.dir-btn.active{border-color:var(--ink);background:var(--surface-2);box-shadow:inset 0 0 0 1px var(--ink)}
+.dir-btn.calm{grid-column:span 4;min-height:46px;flex-direction:row;gap:8px;font-size:.95rem}
+.dir-btn.calm .arrow{font-size:1.2rem}
+
+@media (max-width:640px){
+  .numpad{grid-template-columns:72px 1fr 72px auto;padding:12px;gap:10px}
+  .np-btn{width:72px;height:72px;font-size:1.6rem}
+  .np-value{font-size:2.8rem;min-height:72px}
+  .np-value-time{font-size:2.2rem}
+  .np-unit{font-size:1.2rem}
+  .dir-btn{min-height:64px}
+  .dir-btn .arrow{font-size:1.7rem}
+  .dir-btn .lbl{font-size:.85rem}
+}
+
+html.kid .numpad{grid-template-columns:80px 1fr 80px auto;padding:14px;border-radius:20px;border-width:3px}
+html.kid .np-btn{width:80px;height:80px;font-size:1.9rem;border-radius:18px}
+html.kid .np-value{font-size:3.2rem;min-height:84px;border-radius:16px}
+html.kid .np-value-time{font-size:2.6rem}
+html.kid .np-unit{font-size:1.35rem;font-weight:800}
+html.kid .dir-btn{min-height:70px;border-radius:16px}
+html.kid .dir-btn .arrow{font-size:2rem}
+html.kid .dir-btn .lbl{font-size:.92rem}
+
 @media (prefers-reduced-motion: reduce){
   *{transition-duration:.01ms !important;animation-duration:.01ms !important}
 }
@@ -577,7 +639,7 @@ button,a,.day,.chip-face,.result,label,summary{touch-action:manipulation}
 
 <a class="skip" href="#main" data-i18n="skip">Skip to content</a>
 
-<!-- ═══════════ ONBOARDING (створення акаунта) ═══════════ -->
+<!-- ═══════════ ONBOARDING ═══════════ -->
 <div id="onboard" hidden>
   <div class="onb-card">
     <div class="onb-logo">
@@ -586,7 +648,6 @@ button,a,.day,.chip-face,.result,label,summary{touch-action:manipulation}
     </div>
     <p class="onb-sub" id="onb-sub">Твій щоденник погоди</p>
 
-    <!-- Крок 1: мова -->
     <div class="onb-step active" data-step="0">
       <h2 data-i18n="onb.langTitle">Обери мову</h2>
       <p class="hint" data-i18n="onb.langHint">Мову можна змінити будь-коли.</p>
@@ -596,28 +657,25 @@ button,a,.day,.chip-face,.result,label,summary{touch-action:manipulation}
       </div>
     </div>
 
-    <!-- Крок 2: ім'я -->
     <div class="onb-step" data-step="1">
       <h2 data-i18n="onb.nameTitle">Як тебе звати?</h2>
-      <p class="hint" data-i18n="onb.nameHint">Напиши ім’я або псевдонім. Прізвище не потрібне.</p>
+      <p class="hint" data-i18n="onb.nameHint">Напиши ім'я або псевдонім. Прізвище не потрібне.</p>
       <div class="field">
-        <label for="onb-name" data-i18n="onb.nameLabel">Ім’я або псевдонім</label>
+        <label for="onb-name" data-i18n="onb.nameLabel">Ім'я або псевдонім</label>
         <input type="text" id="onb-name" maxlength="40" autocomplete="off" placeholder="Марійка">
       </div>
       <div class="field">
-        <label for="onb-class" data-i18n="onb.classLabel">Клас (необов’язково)</label>
+        <label for="onb-class" data-i18n="onb.classLabel">Клас (необов'язково)</label>
         <input type="text" id="onb-class" maxlength="10" autocomplete="off" placeholder="3-А">
       </div>
     </div>
 
-    <!-- Крок 3: аватар -->
     <div class="onb-step" data-step="2">
       <h2 data-i18n="onb.avatarTitle">Обери аватар</h2>
       <p class="hint" data-i18n="onb.avatarHint">Натисни на того, хто тобі подобається.</p>
       <div class="chips" id="onb-avatar-chips" role="radiogroup" aria-label="Avatar"></div>
     </div>
 
-    <!-- Крок 4: місто -->
     <div class="onb-step" data-step="3">
       <h2 data-i18n="onb.cityTitle">Де ти спостерігаєш погоду?</h2>
       <p class="hint" data-i18n="onb.cityHint">Напиши назву свого міста або села.</p>
@@ -654,7 +712,6 @@ button,a,.day,.chip-face,.result,label,summary{touch-action:manipulation}
       <span class="brand-mark" id="brand-mark">Метеощоденник</span>
       <span class="brand-sub" id="brand-sub" data-i18n="app.author"></span>
     </div>
-
     <div class="top-actions">
       <div class="lang-switch" role="group" data-i18n-attr="aria-label:lang.label">
         <button type="button" data-lang="uk" aria-pressed="false">UK</button>
@@ -773,44 +830,76 @@ button,a,.day,.chip-face,.result,label,summary{touch-action:manipulation}
       <button type="button" class="btn btn-icon btn-ghost" data-close aria-label="Close">✕</button>
     </div>
     <div class="dlg-body">
-      <div class="row">
-        <div class="field">
-          <label for="f-temp" id="lbl-temp">Temperature</label>
-          <input type="number" id="f-temp" step="0.5" required inputmode="decimal" autocomplete="off">
+
+      <!-- ТЕМПЕРАТУРА -->
+      <div class="field">
+        <label id="lbl-temp" for="f-temp">Температура повітря</label>
+        <div class="numpad" data-target="temp">
+          <button type="button" class="np-btn np-down" data-dir="-1" aria-label="Менше"><span aria-hidden="true">▼</span></button>
+          <div class="np-value" id="temp-value" aria-live="polite">0</div>
+          <button type="button" class="np-btn np-up" data-dir="1" aria-label="Більше"><span aria-hidden="true">▲</span></button>
+          <span class="np-unit" id="temp-unit">°C</span>
         </div>
-        <div class="field">
-          <label for="f-time" data-i18n="day.time"></label>
-          <input type="time" id="f-time" autocomplete="off">
-          <p class="hint" data-i18n="day.timeHint"></p>
-        </div>
+        <input type="number" id="f-temp" step="1" required inputmode="decimal" autocomplete="off" class="np-hidden" aria-hidden="true" tabindex="-1">
+        <p class="hint" data-i18n="day.tempHint"></p>
       </div>
 
+      <!-- ЧАС -->
+      <div class="field">
+        <label id="lbl-time" for="f-time" data-i18n="day.time"></label>
+        <div class="numpad" data-target="time">
+          <button type="button" class="np-btn np-down" data-dir="-1" aria-label="Раніше"><span aria-hidden="true">▼</span></button>
+          <div class="np-value np-value-time" id="time-value" aria-live="polite">09:00</div>
+          <button type="button" class="np-btn np-up" data-dir="1" aria-label="Пізніше"><span aria-hidden="true">▲</span></button>
+        </div>
+        <input type="time" id="f-time" autocomplete="off" class="np-hidden" aria-hidden="true" tabindex="-1">
+        <p class="hint" data-i18n="day.timeHint"></p>
+      </div>
+
+      <!-- НЕБО -->
       <div class="field">
         <label id="lbl-sky" data-i18n="day.sky"></label>
         <div class="chips" id="sky-chips" role="radiogroup" aria-labelledby="lbl-sky"></div>
       </div>
 
-      <div class="row">
-        <div class="field">
-          <label for="f-hum" data-i18n="day.hum"></label>
-          <input type="number" id="f-hum" min="0" max="100" step="1" inputmode="numeric" autocomplete="off">
-        </div>
-        <div class="field">
-          <label for="f-wind" id="lbl-wind">Wind</label>
-          <input type="number" id="f-wind" min="0" step="0.1" inputmode="decimal" autocomplete="off">
-        </div>
-      </div>
-
+      <!-- ВОЛОГІСТЬ -->
       <div class="field">
-        <label for="f-dir" data-i18n="day.dir"></label>
-        <select id="f-dir"></select>
+        <label id="lbl-hum" for="f-hum" data-i18n="day.humPlain"></label>
+        <div class="numpad" data-target="hum">
+          <button type="button" class="np-btn np-down" data-dir="-1" aria-label="Менше"><span aria-hidden="true">▼</span></button>
+          <div class="np-value" id="hum-value" aria-live="polite">—</div>
+          <button type="button" class="np-btn np-up" data-dir="1" aria-label="Більше"><span aria-hidden="true">▲</span></button>
+          <span class="np-unit">%</span>
+        </div>
+        <input type="number" id="f-hum" min="0" max="100" step="1" inputmode="numeric" autocomplete="off" class="np-hidden" aria-hidden="true" tabindex="-1">
       </div>
 
+      <!-- ВІТЕР -->
+      <div class="field">
+        <label id="lbl-wind" for="f-wind" data-i18n="day.windPlain"></label>
+        <div class="numpad" data-target="wind">
+          <button type="button" class="np-btn np-down" data-dir="-1" aria-label="Менше"><span aria-hidden="true">▼</span></button>
+          <div class="np-value" id="wind-value" aria-live="polite">—</div>
+          <button type="button" class="np-btn np-up" data-dir="1" aria-label="Більше"><span aria-hidden="true">▲</span></button>
+          <span class="np-unit" id="wind-unit">м/с</span>
+        </div>
+        <input type="number" id="f-wind" min="0" max="60" step="1" inputmode="decimal" autocomplete="off" class="np-hidden" aria-hidden="true" tabindex="-1">
+      </div>
+
+      <!-- НАПРЯМ ВІТРУ -->
+      <div class="field">
+        <label id="lbl-dir" data-i18n="day.dir"></label>
+        <div class="compass" id="dir-compass" role="radiogroup" aria-labelledby="lbl-dir"></div>
+        <select id="f-dir" class="np-hidden" aria-hidden="true" tabindex="-1"></select>
+      </div>
+
+      <!-- НАСТРІЙ -->
       <div class="field">
         <label id="lbl-mood" data-i18n="day.mood"></label>
         <div class="chips" id="mood-chips" role="radiogroup" aria-labelledby="lbl-mood"></div>
       </div>
 
+      <!-- НОТАТКИ -->
       <div class="field">
         <label for="f-notes" data-i18n="day.notes"></label>
         <textarea id="f-notes" maxlength="500" rows="2"></textarea>
@@ -906,10 +995,7 @@ button,a,.day,.chip-face,.result,label,summary{touch-action:manipulation}
       <h3 data-i18n="set.mode"></h3>
       <div class="switch-row">
         <input type="checkbox" id="set-kid">
-        <label for="set-kid">
-          <strong data-i18n="set.kid"></strong>
-          <small data-i18n="set.kid.hint"></small>
-        </label>
+        <label for="set-kid"><strong data-i18n="set.kid"></strong><small data-i18n="set.kid.hint"></small></label>
       </div>
     </div>
 
@@ -996,13 +1082,13 @@ button,a,.day,.chip-face,.result,label,summary{touch-action:manipulation}
 /* ═════════════════════════════════════════════════════════════
    Метеощоденник / Weather Journal
    Авторка: Олеся Бохонок
-   Безкоштовно, без реклами, без акаунтів на сервері.
+   Безкоштовно, без реклами, без серверних акаунтів.
    Дані — лише в localStorage цього браузера.
    Зовнішні запити: Open-Meteo (пошук місця та погода).
    ═════════════════════════════════════════════════════════════ */
 
-const APP_VERSION = '3.0.0';
-const STORE_KEY = 'meteojournal.v3';
+const APP_VERSION = '4.0.0';
+const STORE_KEY = 'meteojournal.v4';
 const MAX_RECORDS = 4000;
 const MAX_FILE_BYTES = 2 * 1024 * 1024;
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
@@ -1028,6 +1114,8 @@ const SKY_KEYS  = SKY.map(s => s.k);
 const MOOD_KEYS = MOOD.map(s => s.k);
 const WET_SKY = new Set(['rain','storm','snow']);
 
+const DIR_ARROWS = ['↓','↙','←','↖','↑','↗','→','↘'];
+
 const DEFAULT_CITY = { name:'Київ', admin:'', country:'Україна', lat:50.45, lon:30.52, tz:'Europe/Kyiv' };
 
 const TEMP_STOPS = [
@@ -1040,7 +1128,7 @@ const WHITE_RGB = [255,255,255];
 
 const PROFILE_HUES = ['#1F5FA8','#B24C10','#2E6B45','#8A2A6B','#7A5A0F','#365B8A','#0F6B6B','#8A2A2A'];
 
-/* ───────────── i18n (uk + en) ───────────── */
+/* ───────────── i18n ───────────── */
 
 const I18N = {
 uk:{
@@ -1062,15 +1150,15 @@ uk:{
 'profile.deleteText':'Профіль «{name}» і всі його записи буде видалено з цього пристрою. Це не можна скасувати.',
 'profile.switch':'Обрати','profile.active':'Поточний',
 'class.import':'Додати файли учнів','class.export':'Зберегти клас одним файлом',
-'class.title':'Клас','class.hint':'Записів у класі: {n}, учнів: {p}.',
+'class.title':'Клас',
 'month.prev':'Попередній місяць','month.next':'Наступний місяць','month.today':'Сьогодні',
 'cal.caption':'Календар спостережень, {month}',
 'cal.cellEmpty':'{date}: запису немає','cal.cellFilled':'{date}: {temp}, {sky}',
 'cal.cellFuture':'{date}: цей день ще не настав',
 'cal.cellClass':'{date}: {n} записів, середня {temp}',
-'cal.hintEmpty':'Натисни на день, щоб записати погоду. Клітинка забарвиться за температурою.',
-'cal.hintSome':'Записів цього місяця: {n}. Натисни на день, щоб додати або змінити запис.',
-'cal.hintClass':'Класних записів цього місяця: {n}. Натисни на день, щоб побачити деталі.',
+'cal.hintEmpty':'Натисни на день, щоб записати погоду.',
+'cal.hintSome':'Записів цього місяця: {n}.',
+'cal.hintClass':'Класних записів цього місяця: {n}.',
 'legend.caption':'Колір клітинки — температура, {unit}',
 'act.compare':'Порівняти з Open-Meteo','act.export':'Зберегти файл','act.import':'Відкрити файл',
 'act.print':'Друк / PDF','act.teacher':'Пакет учителя',
@@ -1098,16 +1186,17 @@ uk:{
 'badge.locked':'ще не відкрито',
 'badge.next':['До наступного досягнення: ще {n} запис','До наступного досягнення: ще {n} записи','До наступного досягнення: ще {n} записів'],
 'badge.done':'Усі досягнення відкрито!',
-'day.time':'Час спостереження','day.timeHint':'Не знаєш часу — залиш порожнім: для порівняння візьмемо 09:00.',
-'day.temp':'Температура повітря, {unit}','day.sky':'Небо','day.hum':'Вологість повітря, %',
-'day.wind':'Швидкість вітру, {unit}','day.dir':'Вітер дме з','day.dirNone':'Штиль або не знаю',
+'day.time':'Час спостереження','day.timeHint':'Крок — 1 година. Не знаєш часу — залиш 09:00.',
+'day.tempHint':'Натисни ▲ або ▼. Можна ввести число вручну.',
+'day.sky':'Небо','day.humPlain':'Вологість повітря','day.windPlain':'Швидкість вітру',
+'day.dir':'Вітер дме з','day.dirNone':'Штиль або не знаю',
 'day.mood':'Настрій (необов’язково)','day.notes':'Нотатки','day.save':'Зберегти',
 'day.delete':'Видалити запис','day.deleteTitle':'Видалити запис?',
 'day.deleteText':'Запис за {date} буде видалено.',
 'real.title':'Порівняння з Open-Meteo','real.param':'Що','real.mine':'Ти','real.model':'Модель',
 'real.diff':'Різниця','real.temp':'Температура','real.hum':'Вологість','real.wind':'Швидкість вітру',
 'real.dir':'Вітер з','real.sky':'Небо',
-'real.note':'Модель дає значення для клітинки сітки ~10 км. Розбіжність 1–2 °C — це нормально, і це привід подумати, чому вона виникла.',
+'real.note':'Модель дає значення для клітинки сітки ~10 км. Розбіжність 1–2 °C — це нормально.',
 'cmp.running':'Отримую дані Open-Meteo…',
 'cmp.done':['Порівняно {n} запис.','Порівняно {n} записи.','Порівняно {n} записів.'],
 'cmp.missing':['Для {m} запису даних немає.','Для {m} записів даних немає.','Для {m} записів даних немає.'],
@@ -1144,7 +1233,6 @@ uk:{
 'teacher.title':'Пакет учителя','teacher.intro':'Матеріали для уроку й підсумків. Нічого не надсилається назовні — усе друкується або зберігається локально.',
 'teacher.sheet':'Надрукувати аркуш спостережень','teacher.report':'Надрукувати звіт за місяць',
 'teacher.csv':'Зберегти дані класу як CSV',
-/* онбординг */
 'onb.langTitle':'Обери мову','onb.langHint':'Мову можна змінити будь-коли.',
 'onb.nameTitle':'Як тебе звати?','onb.nameHint':'Напиши ім’я або псевдонім. Прізвище не потрібне.',
 'onb.nameLabel':'Ім’я або псевдонім','onb.classLabel':'Клас (необов’язково)',
@@ -1174,15 +1262,15 @@ en:{
 'profile.deleteText':'The profile “{name}” and all its entries will be deleted from this device. This cannot be undone.',
 'profile.switch':'Select','profile.active':'Current',
 'class.import':'Add student files','class.export':'Save class as one file',
-'class.title':'Class','class.hint':'Class entries: {n}; students: {p}.',
+'class.title':'Class',
 'month.prev':'Previous month','month.next':'Next month','month.today':'Today',
 'cal.caption':'Observation calendar, {month}',
 'cal.cellEmpty':'{date}: no entry','cal.cellFilled':'{date}: {temp}, {sky}',
 'cal.cellFuture':'{date}: this day has not come yet',
 'cal.cellClass':'{date}: {n} entries, mean {temp}',
-'cal.hintEmpty':'Tap a day to record the weather. The cell will be coloured by temperature.',
-'cal.hintSome':'Entries this month: {n}. Tap a day to add or edit an entry.',
-'cal.hintClass':'Class entries this month: {n}. Tap a day to see details.',
+'cal.hintEmpty':'Tap a day to record the weather.',
+'cal.hintSome':'Entries this month: {n}.',
+'cal.hintClass':'Class entries this month: {n}.',
 'legend.caption':'Cell colour = temperature, {unit}',
 'act.compare':'Compare with Open-Meteo','act.export':'Save file','act.import':'Open file',
 'act.print':'Print / PDF','act.teacher':'Teacher pack',
@@ -1210,16 +1298,17 @@ en:{
 'badge.locked':'not unlocked yet',
 'badge.next':['Next achievement: {n} more entry','Next achievement: {n} more entries'],
 'badge.done':'All achievements unlocked!',
-'day.time':'Time of observation','day.timeHint':'Not sure of the time? Leave it empty; 09:00 will be used.',
-'day.temp':'Air temperature, {unit}','day.sky':'Sky','day.hum':'Relative humidity, %',
-'day.wind':'Wind speed, {unit}','day.dir':'Wind blows from','day.dirNone':'Calm or not sure',
+'day.time':'Time of observation','day.timeHint':'Step is 1 hour. Not sure? Leave 09:00.',
+'day.tempHint':'Tap ▲ or ▼. You can also type a number.',
+'day.sky':'Sky','day.humPlain':'Relative humidity','day.windPlain':'Wind speed',
+'day.dir':'Wind blows from','day.dirNone':'Calm or not sure',
 'day.mood':'Mood (optional)','day.notes':'Notes','day.save':'Save',
 'day.delete':'Delete entry','day.deleteTitle':'Delete this entry?',
 'day.deleteText':'The entry for {date} will be deleted.',
 'real.title':'Comparison with Open-Meteo','real.param':'What','real.mine':'You','real.model':'Model',
 'real.diff':'Difference','real.temp':'Temperature','real.hum':'Humidity','real.wind':'Wind speed',
 'real.dir':'Wind from','real.sky':'Sky',
-'real.note':'The model gives a value for a grid cell about 10 km wide. A difference of 1–2 °C is normal, and a good reason to think about why it appears.',
+'real.note':'The model gives a value for a grid cell about 10 km wide. A difference of 1–2 °C is normal.',
 'cmp.running':'Getting Open-Meteo data…',
 'cmp.done':['Compared {n} entry.','Compared {n} entries.'],
 'cmp.missing':['No data for {m} entry.','No data for {m} entries.'],
@@ -1256,7 +1345,6 @@ en:{
 'teacher.title':'Teacher pack','teacher.intro':'Materials for a lesson and for monthly summaries. Nothing leaves the device — everything is printed or saved locally.',
 'teacher.sheet':'Print observation sheet','teacher.report':'Print monthly report',
 'teacher.csv':'Save class data as CSV',
-/* onboarding */
 'onb.langTitle':'Choose your language','onb.langHint':'You can change it any time.',
 'onb.nameTitle':'What is your name?','onb.nameHint':'Type a first name or nickname. No surname needed.',
 'onb.nameLabel':'First name or nickname','onb.classLabel':'Class (optional)',
@@ -1513,7 +1601,7 @@ function sanitizeA11y(a){
 function defaultStore(){
   const prof=sanitizeProfile({name:'',cls:'',avatar:AVATARS[0],city:DEFAULT_CITY,records:{}});
   return {
-    v:3,lang:'uk',units:'metric',
+    v:4,lang:'uk',units:'metric',
     a11y:sanitizeA11y({simple:true}),
     kidMode:true,
     onboarded:false,
@@ -1526,9 +1614,9 @@ function sanitizeStore(x){
   const profiles=x.profiles.map(p=>sanitizeProfile(p,true)).filter(Boolean);
   if(!profiles.length)return null;
   const v=Number(x.v);
-  if(v!==2&&v!==3)return null;
+  if(v!==2&&v!==3&&v!==4)return null;
   return {
-    v:3,
+    v:4,
     lang:x.lang==='en'?'en':'uk',
     units:x.units==='imperial'?'imperial':'metric',
     a11y:sanitizeA11y(x.a11y),
@@ -1538,11 +1626,9 @@ function sanitizeStore(x){
     profiles
   };
 }
-
 const V1_SKY = {'☀️':'clear','🌤️':'partly','☁️':'cloudy','🌧️':'rain','⛈️':'storm','❄️':'snow','🌫️':'fog'};
 const V1_MOOD= {'😀':'joy','😐':'ok','😢':'sad','🤩':'wow','😴':'sleepy'};
 const V1_DIR = {'Пн':0,'Сх':2,'Пд':4,'Зх':6};
-
 function convertV1({records,meta}){
   meta=meta&&typeof meta==='object'?meta:{};
   const out={};
@@ -1620,7 +1706,6 @@ function classMonthRecords(y,m){
     return {key:d.key,day:d.day,entries:d.entries,temp:mean,meanTemp:mean,sky,n:d.entries.length};
   });
 }
-
 function computeStats(list){
   if(!list.length)return null;
   const temps=list.map(r=>r.temp);
@@ -1779,7 +1864,6 @@ function renderLegend(){
     }
   }
 }
-
 function renderMonth(){
   const p=P(),{y,m}=state.view,L=L10N[lang()];
   const dim=daysIn(y,m),today=todayParts(),tk=keyOf(today.y,today.m,today.d);
@@ -1875,7 +1959,6 @@ function niceStep(range){
   for(const s of [1,2,5,10,20,50])if(s>=raw)return s;
   return 100;
 }
-
 function renderChart(){
   const p=P(),{y,m}=state.view;
   const dim=daysIn(y,m);
@@ -2030,7 +2113,6 @@ function buildStatsList(s){
   if(s.mae!==null)row(t('stats.mae'),`${fmtNum(toDispDelta(s.mae))} ${tempUnit()}`);
   return dl;
 }
-
 function renderStats(){
   const p=P(),{y,m}=state.view;
   const box=$('#stats');
@@ -2056,7 +2138,6 @@ function renderStats(){
   mean.style.setProperty('--fg-cell',rgbCss(readableOn(rgb)));
   box.append(mean,buildStatsList(s));
 }
-
 function renderRose(){
   const p=P(),{y,m}=state.view;
   const box=$('#rose');
@@ -2100,20 +2181,17 @@ function renderRose(){
       'stroke-linecap':'round',opacity:.85
     }));
   }
-
   if(nonZero>=3){
     s.append(svgEl('polygon',{
       points:counts.map((c,i)=>pt(i,R*c/max).join(',')).join(' '),
       class:'rose-shape'
     }));
   }
-
   for(let i=0;i<8;i++){
     if(counts[i]===0)continue;
     const[x,yy]=pt(i,R*counts[i]/max);
     s.append(svgEl('circle',{cx:x,cy:yy,r:4,fill:'#1F5FA8',stroke:'#fff','stroke-width':1.8}));
   }
-
   for(let i=0;i<8;i++){
     if(counts[i]===0)continue;
     const lr=R*counts[i]/max+13;
@@ -2124,7 +2202,6 @@ function renderRose(){
       class:'rose-count'
     },String(counts[i])));
   }
-
   box.append(s);
 }
 
@@ -2147,7 +2224,6 @@ function renderBadges(){
   const nx=$('#badges-next');
   if(nx)nx.textContent=next?t('badge.next',{n:next.n-total}):t('badge.done');
 }
-
 function renderSettingsState(){
   for(const r of $$('input[name="units"]'))r.checked=r.value===state.store.units;
   const a=state.store.a11y;
@@ -2157,13 +2233,11 @@ function renderSettingsState(){
   const sp=$('#set-simple');if(sp)sp.checked=a.simple;
   const kd=$('#set-kid');if(kd)kd.checked=kidMode();
 }
-
 function renderViewSwitch(){
   const my=$('#view-my'),cl=$('#view-class');
   if(my)my.setAttribute('aria-pressed',String(!state.classView));
   if(cl)cl.setAttribute('aria-pressed',String(state.classView));
 }
-
 function renderAll(){
   renderHeader();
   renderPlace();
@@ -2177,15 +2251,181 @@ function renderAll(){
   renderSettingsState();
 }
 
+/* ───────────── числові поля зі стрілочками ▲▼ ───────────── */
+
+const NUM_CONFIG = {
+  temp: { min:-60, max:60,  step:1, decimals:0, unitFn:()=>tempUnit(), toDisp:toDispT, fromDisp:fromDispT, start:0 },
+  hum:  { min:0,   max:100, step:5, decimals:0, unitFn:()=>'%',        toDisp:v=>v,     fromDisp:v=>v,       start:50 },
+  wind: { min:0,   max:60,  step:1, decimals:0, unitFn:()=>windUnit(), toDisp:toDispW,  fromDisp:fromDispW,  start:0 },
+  time: { min:0,   max:23,  step:1, decimals:0, unitFn:()=>'',          toDisp:v=>v,     fromDisp:v=>v,       start:9, isTime:true }
+};
+
+function numpadInput(target){
+  return target==='temp' ? $('#f-temp')
+       : target==='hum'  ? $('#f-hum')
+       : target==='wind' ? $('#f-wind')
+       : target==='time' ? $('#f-time')
+       : null;
+}
+function numpadDisplay(target){
+  return target==='temp' ? $('#temp-value')
+       : target==='hum'  ? $('#hum-value')
+       : target==='wind' ? $('#wind-value')
+       : target==='time' ? $('#time-value')
+       : null;
+}
+function readNum(target){
+  const inp=numpadInput(target);
+  if(!inp)return null;
+  const raw=inp.value;
+  if(raw===''||raw===null)return null;
+  const n=Number(raw);
+  return Number.isFinite(n)?n:null;
+}
+function writeNum(target,value){
+  const inp=numpadInput(target);
+  if(!inp)return;
+  if(value===null||value===undefined||!Number.isFinite(value)){
+    inp.value='';
+  }else{
+    const cfg=NUM_CONFIG[target];
+    inp.value=cfg&&cfg.decimals?round(value,cfg.decimals).toString():String(Math.round(value));
+  }
+  refreshNumpad(target);
+}
+function refreshNumpad(target){
+  const cfg=NUM_CONFIG[target];
+  const disp=numpadDisplay(target);
+  if(!cfg||!disp)return;
+
+  if(target==='time'){
+    const tv=$('#f-time').value;
+    disp.textContent=TIME_RE.test(tv)?tv:'—';
+    disp.className='np-value np-value-time'+(TIME_RE.test(tv)?'':' empty');
+    return;
+  }
+  const val=readNum(target);
+  if(val===null){disp.textContent='—';disp.className='np-value empty';return;}
+  let shown;
+  if(target==='temp'){
+    const sign=val>0?'+':'';
+    shown=sign+fmtNum(val,0);
+  }else{
+    shown=fmtNum(val,0);
+  }
+  disp.textContent=shown;
+  disp.className='np-value '+(val<0?'negative':val>0?'positive':'zero');
+}
+function stepNum(target,dir){
+  const cfg=NUM_CONFIG[target];
+  if(!cfg)return;
+
+  if(target==='time'){
+    let t=$('#f-time').value;
+    let [h,m]=TIME_RE.test(t)?t.split(':').map(Number):[cfg.start,0];
+    h=(h+dir+24)%24;
+    $('#f-time').value=`${pad(h)}:${pad(m)}`;
+    refreshNumpad('time');
+    return;
+  }
+  const cur=readNum(target);
+  let base=cur===null?cfg.start:cur;
+  let next=base+dir*cfg.step;
+  if(next<cfg.min)next=cfg.min;
+  if(next>cfg.max)next=cfg.max;
+  writeNum(target,next);
+}
+function bindNumpads(){
+  for(const np of $$('.numpad')){
+    const target=np.dataset.target;
+    for(const btn of $$('.np-btn',np)){
+      btn.addEventListener('click',()=>stepNum(target,Number(btn.dataset.dir)));
+    }
+    const disp=numpadDisplay(target);
+    if(disp){
+      disp.addEventListener('click',()=>{
+        const inp=numpadInput(target);
+        if(!inp)return;
+        if(target==='time'&&typeof inp.showPicker==='function'){
+          try{inp.showPicker();return;}catch(e){}
+        }
+        inp.style.pointerEvents='auto';
+        inp.focus();
+        if(inp.select)inp.select();
+        inp.style.pointerEvents='none';
+      });
+    }
+    const inp=numpadInput(target);
+    if(inp){
+      inp.addEventListener('input',()=>refreshNumpad(target));
+      inp.addEventListener('change',()=>refreshNumpad(target));
+    }
+  }
+}
+function refreshAllNumpads(){
+  for(const target of Object.keys(NUM_CONFIG))refreshNumpad(target);
+  const tu=$('#temp-unit');if(tu)tu.textContent=tempUnit();
+  const wu=$('#wind-unit');if(wu)wu.textContent=windUnit();
+}
+
+/* ───────────── компас напряму вітру ───────────── */
+
+function buildCompass(){
+  const box=$('#dir-compass');
+  const sel=$('#f-dir');
+  if(!box)return;
+  const current=sel?sel.value:'';
+  const buttons=[];
+  for(let i=0;i<8;i++){
+    buttons.push(el('button',{
+      type:'button',
+      class:'dir-btn'+(String(i)===current?' active':''),
+      dataset:{dir:String(i)},
+      role:'radio',
+      'aria-checked':String(i)===current?'true':'false',
+      onclick:()=>setDir(i)
+    },
+      el('span',{class:'arrow','aria-hidden':'true',text:DIR_ARROWS[i]}),
+      el('span',{class:'lbl',text:dirName(i)})
+    ));
+  }
+  const calm=el('button',{
+    type:'button',
+    class:'dir-btn calm'+(current===''?' active':''),
+    dataset:{dir:''},
+    role:'radio',
+    'aria-checked':current===''?'true':'false',
+    onclick:()=>setDir(null)
+  },
+    el('span',{class:'arrow','aria-hidden':'true',text:'●'}),
+    el('span',{class:'lbl',text:t('day.dirNone')})
+  );
+  box.replaceChildren(...buttons,calm);
+}
+function setDir(i){
+  const sel=$('#f-dir');
+  if(sel)sel.value=i===null?'':String(i);
+  for(const b of $$('#dir-compass .dir-btn')){
+    const v=b.dataset.dir;
+    const on=(i===null&&v==='')||(i!==null&&v===String(i));
+    b.classList.toggle('active',on);
+    b.setAttribute('aria-checked',String(on));
+  }
+}
+
 /* ───────────── day dialog ───────────── */
 
 function fillDayLabels(){
-  const lt=$('#lbl-temp'),lw=$('#lbl-wind');
-  if(lt)lt.textContent=t('day.temp',{unit:tempUnit()});
-  if(lw)lw.textContent=t('day.wind',{unit:windUnit()});
+  const lt=$('#lbl-temp'),lw=$('#lbl-wind'),lh=$('#lbl-hum');
+  if(lt)lt.textContent=t('day.tempHint')?lt.textContent:lt.textContent;
+  if(lt)lt.textContent='Температура повітря';
+  if(lw)lw.textContent=t('day.windPlain');
+  if(lh)lh.textContent=t('day.humPlain');
   const temp=$('#f-temp'),wind=$('#f-wind');
   if(temp){temp.min=String(round(toDispT(-60),1));temp.max=String(round(toDispT(60),1));}
-  if(wind){wind.max=String(Math.floor(toDispW(60)*10)/10);}
+  if(wind){wind.min='0';wind.max=String(Math.floor(toDispW(60)*10)/10);}
+  const tu=$('#temp-unit');if(tu)tu.textContent=tempUnit();
+  const wu=$('#wind-unit');if(wu)wu.textContent=windUnit();
 }
 function setRadio(name,value){
   for(const r of $$(`input[name="${name}"]`,$('#day-form')))r.checked=r.value===value;
@@ -2226,14 +2466,16 @@ function openDay(key){
   state.activeKey=key;
   $('#day-title').textContent=longDate(key);
   fillDayLabels();
-  $('#f-temp').value=rec?String(round(toDispT(rec.temp),1)):'';
+  $('#f-temp').value=rec?String(round(toDispT(rec.temp),0)):'';
   $('#f-time').value=rec?(rec.t||''):(key===todayKey()?nowHHMM():'09:00');
   $('#f-hum').value=rec&&rec.hum!==null?String(rec.hum):'';
-  $('#f-wind').value=rec&&rec.wind!==null?String(round(toDispW(rec.wind),1)):'';
+  $('#f-wind').value=rec&&rec.wind!==null?String(round(toDispW(rec.wind),0)):'';
   $('#f-dir').value=rec&&rec.dir!==null?String(rec.dir):'';
   $('#f-notes').value=rec?rec.notes:'';
   setRadio('sky',rec?rec.sky:'');
   setRadio('mood',rec&&rec.mood?rec.mood:'');
+  refreshAllNumpads();
+  buildCompass();
   $('#btn-day-delete').hidden=!rec;
   renderRealTable(rec);
   openDialog($('#dlg-day'));
@@ -2529,7 +2771,7 @@ function downloadJSON(payload,name){
 function exportProfile(){
   const p=P();
   const payload={
-    app:'MeteoJournal',schema:3,version:APP_VERSION,exported:new Date().toISOString(),
+    app:'MeteoJournal',schema:4,version:APP_VERSION,exported:new Date().toISOString(),
     profile:{name:p.name,cls:p.cls,avatar:p.avatar,city:p.city,records:p.records}
   };
   const name=`MeteoJournal_${slug(p.name)||'journal'}_${todayKey()}.weather`;
@@ -2538,7 +2780,7 @@ function exportProfile(){
 }
 function exportClass(){
   const payload={
-    app:'MeteoJournal',schema:3,version:APP_VERSION,exported:new Date().toISOString(),
+    app:'MeteoJournal',schema:4,version:APP_VERSION,exported:new Date().toISOString(),
     class:{profiles:state.store.profiles.map(p=>({name:p.name,cls:p.cls,avatar:p.avatar,city:p.city,records:p.records}))}
   };
   const name=`MeteoJournal_class_${todayKey()}.weather`;
@@ -2588,7 +2830,6 @@ async function importFiles(files){
         messages.push(t('io.imported',{name:f.name,n:added}));
         continue;
       }
-
       const prof=profileFromFile(data);
       if(!prof){messages.push(t('io.fail',{file:f.name,reason:t('io.notWl')}));continue;}
       const n=Object.keys(prof.records).length;
@@ -2643,7 +2884,6 @@ function renderPrint(){
     );
     return;
   }
-
   const list=monthRecords(p,y,m);
   const meta=[`${t('print.student')}: ${profileLabel(p)}`];
   if(p.cls)meta.push(`${t('print.class')}: ${p.cls}`);
@@ -2661,7 +2901,6 @@ function renderPrint(){
     el('p',{class:'pmeta',text:t('print.made',{date:longDate(todayKey())})})
   );
 }
-
 function exportCsv(){
   const p=P(),{y,m}=state.view;
   const list=monthRecords(p,y,m);
@@ -2744,7 +2983,7 @@ async function searchOnbCity(){
       el('button',{type:'button',class:'result',onclick:()=>{
         state.onbCity=c;
         $('#onb-city').value=c.name;
-        status.textContent=`✓ ${c.name}`;
+        status.textContent='✓ '+c.name;
         list.replaceChildren();
       }},
         el('strong',{text:c.name}),
@@ -2760,7 +2999,7 @@ function useOnbGeo(){
     pos=>{
       state.onbCity={name:t('place.myLoc'),admin:'',country:'',lat:round(pos.coords.latitude,2),lon:round(pos.coords.longitude,2),tz:null};
       $('#onb-city').value=state.onbCity.name;
-      status.textContent=`✓ ${state.onbCity.name}`;
+      status.textContent='✓ '+state.onbCity.name;
     },
     ()=>{status.textContent=t('place.geoErr');},
     {timeout:12000,maximumAge:600000});
@@ -2778,12 +3017,7 @@ function onbNext(){
   if(state.onbStep===3){
     const raw=$('#onb-city').value.trim();
     let city=state.onbCity;
-    if(!city&&raw.length>=2){
-      // Спроба швидкого пошуку, якщо користувач не натиснув «Знайти»
-      toast(t('onb.needCity'));
-      $('#onb-city').focus();
-      return;
-    }
+    if(!city&&raw.length>=2){toast(t('onb.needCity'));$('#onb-city').focus();return;}
     if(!city&&!raw){city=DEFAULT_CITY;}
     finalizeOnboarding(city||DEFAULT_CITY);
     return;
@@ -2818,7 +3052,9 @@ function setLang(l){
     for(const b of $$('[data-lang]'))b.setAttribute('aria-pressed',String(b.dataset.lang===l));
     showOnbStep(state.onbStep);
   }else{
+    fillDayLabels();
     renderAll();
+    if($('#dlg-day').open){refreshAllNumpads();buildCompass();}
   }
 }
 function changeMonth(delta){
@@ -2841,15 +3077,12 @@ function bindEvents(){
   const dday=$('#dlg-day');
   if(dday)dday.addEventListener('close',()=>{const k=state.activeKey;setTimeout(()=>focusDay(k),0);});
 
-  /* Онбординг */
   $('#onb-next').addEventListener('click',onbNext);
   $('#onb-back').addEventListener('click',()=>showOnbStep(state.onbStep-1));
   $('#onb-city-search').addEventListener('click',searchOnbCity);
   $('#onb-city').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();searchOnbCity();}});
   $('#onb-geo').addEventListener('click',useOnbGeo);
-  $('#onb-city-results').addEventListener('click',()=>{});
 
-  /* Календар */
   $('#btn-prev').addEventListener('click',()=>changeMonth(-1));
   $('#btn-next').addEventListener('click',()=>changeMonth(1));
   $('#btn-today').addEventListener('click',()=>{const n=todayParts();state.view={y:n.y,m:n.m};renderAll();});
@@ -2862,6 +3095,7 @@ function bindEvents(){
   $('#view-class').addEventListener('click',()=>{state.classView=true;renderAll();});
 
   $('#day-form').addEventListener('submit',saveDay);
+  bindNumpads();
   $('#btn-day-delete').addEventListener('click',deleteDay);
 
   $('#btn-compare').addEventListener('click',compareMonth);
@@ -2894,7 +3128,12 @@ function bindEvents(){
 
   $('#btn-settings').addEventListener('click',()=>{renderSettingsState();openDialog($('#dlg-settings'));});
   for(const r of $$('input[name="units"]'))
-    r.addEventListener('change',()=>{state.store.units=r.value;saveStore();renderAll();});
+    r.addEventListener('change',()=>{
+      state.store.units=r.value;
+      saveStore();
+      renderAll();
+      if($('#dlg-day').open){refreshAllNumpads();}
+    });
   const toggles={'set-hc':'hc','set-large':'large','set-readable':'readable','set-simple':'simple'};
   for(const[id,key]of Object.entries(toggles)){
     const n=$('#'+id);
