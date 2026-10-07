@@ -185,16 +185,6 @@ html.kid .card h2{font-size:.85rem;letter-spacing:.08em}
 .cal-title{font-size:1.5rem;font-weight:800;letter-spacing:-.02em;margin-right:auto}
 @media (min-width:720px){.cal-title{font-size:1.75rem}}
 
-.view-switch{
-  display:inline-flex;background:var(--surface-2);border-radius:var(--r-md);
-  padding:3px;gap:3px;margin-right:auto;
-}
-.view-switch button{
-  border:0;background:transparent;border-radius:8px;padding:8px 14px;
-  font-size:.85rem;font-weight:600;color:var(--ink-2);cursor:pointer;min-height:38px;
-}
-.view-switch button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:var(--sh-1)}
-
 .cal-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
 .cal{min-width:320px;border-spacing:4px;border-collapse:separate}
 .cal th{font-size:.72rem;font-weight:600;color:var(--ink-3);letter-spacing:.04em;padding:4px 0}
@@ -501,7 +491,7 @@ button,a,.day,.chip-face,.result,label,summary,.np-btn,.dir-btn{touch-action:man
   .btn-icon{width:48px;height:48px}
 }
 
-/* ─── Числові поля ▲▼ ─── */
+/* ─── Числові поля ▲▼ (з можливістю ручного вводу) ─── */
 .numpad{
   display:grid;
   grid-template-columns:64px 1fr 64px auto;
@@ -530,13 +520,44 @@ button,a,.day,.chip-face,.result,label,summary,.np-btn,.dir-btn{touch-action:man
   min-height:64px;
   display:flex;align-items:center;justify-content:center;
   user-select:none;
-  cursor:pointer;
+  cursor:text;
+  border:2px solid transparent;
+  transition:border-color .12s,background .12s;
 }
+.np-value:hover{background:#FAFCFE}
 .np-value.negative{color:#1F5FA8}
 .np-value.positive{color:#B24C10}
 .np-value.zero{color:var(--ink-2)}
 .np-value.empty{color:var(--ink-3)}
 .np-value-time{font-size:2rem}
+
+/* режим редагування — показуємо справжній input замість дисплея */
+.numpad.editing .np-value{display:none}
+.numpad.editing .np-edit{display:flex}
+.np-edit{
+  display:none;
+  font-family:var(--mono);
+  font-size:2.4rem;
+  font-weight:800;
+  letter-spacing:-.02em;
+  text-align:center;
+  line-height:1;
+  padding:8px 4px;
+  border-radius:12px;
+  background:var(--surface);
+  color:var(--ink);
+  min-height:64px;
+  align-items:center;justify-content:center;
+  width:100%;
+  border:2px solid var(--focus);
+  outline:none;
+  -moz-appearance:textfield;
+}
+.np-edit::-webkit-outer-spin-button,
+.np-edit::-webkit-inner-spin-button{
+  -webkit-appearance:none;margin:0;
+}
+.np-edit.np-value-time{font-size:2rem}
 
 .np-unit{
   font-family:var(--mono);
@@ -593,8 +614,8 @@ button,a,.day,.chip-face,.result,label,summary,.np-btn,.dir-btn{touch-action:man
 @media (max-width:640px){
   .numpad{grid-template-columns:72px 1fr 72px auto;padding:12px;gap:10px}
   .np-btn{width:72px;height:72px;font-size:1.6rem}
-  .np-value{font-size:2.8rem;min-height:72px}
-  .np-value-time{font-size:2.2rem}
+  .np-value,.np-edit{font-size:2.8rem;min-height:72px}
+  .np-value-time,.np-edit.np-value-time{font-size:2.2rem}
   .np-unit{font-size:1.2rem}
   .dir-btn{min-height:64px}
   .dir-btn .arrow{font-size:1.7rem}
@@ -603,8 +624,8 @@ button,a,.day,.chip-face,.result,label,summary,.np-btn,.dir-btn{touch-action:man
 
 html.kid .numpad{grid-template-columns:80px 1fr 80px auto;padding:14px;border-radius:20px;border-width:3px}
 html.kid .np-btn{width:80px;height:80px;font-size:1.9rem;border-radius:18px}
-html.kid .np-value{font-size:3.2rem;min-height:84px;border-radius:16px}
-html.kid .np-value-time{font-size:2.6rem}
+html.kid .np-value,html.kid .np-edit{font-size:3.2rem;min-height:84px;border-radius:16px}
+html.kid .np-value-time,html.kid .np-edit.np-value-time{font-size:2.6rem}
 html.kid .np-unit{font-size:1.35rem;font-weight:800}
 html.kid .dir-btn{min-height:70px;border-radius:16px}
 html.kid .dir-btn .arrow{font-size:2rem}
@@ -717,10 +738,6 @@ html.kid .dir-btn .lbl{font-size:.92rem}
 
     <section class="cal-card" aria-labelledby="month-title">
       <div class="cal-head">
-        <div class="view-switch" role="group" aria-label="View">
-          <button type="button" id="view-my" aria-pressed="true" data-i18n="view.mine"></button>
-          <button type="button" id="view-class" aria-pressed="false" data-i18n="view.class"></button>
-        </div>
         <button type="button" class="btn btn-icon" id="btn-prev" data-i18n-attr="aria-label:month.prev">←</button>
         <h2 class="cal-title" id="month-title">—</h2>
         <button type="button" class="btn btn-icon" id="btn-next" data-i18n-attr="aria-label:month.next">→</button>
@@ -814,10 +831,10 @@ html.kid .dir-btn .lbl{font-size:.92rem}
         <div class="numpad" data-target="temp">
           <button type="button" class="np-btn np-down" data-dir="-1" aria-label="Менше"><span aria-hidden="true">▼</span></button>
           <div class="np-value" id="temp-value" aria-live="polite">0</div>
+          <input type="number" id="f-temp" step="1" required inputmode="decimal" autocomplete="off" class="np-edit" aria-label="Температура">
           <button type="button" class="np-btn np-up" data-dir="1" aria-label="Більше"><span aria-hidden="true">▲</span></button>
           <span class="np-unit" id="temp-unit">°C</span>
         </div>
-        <input type="number" id="f-temp" step="1" required inputmode="decimal" autocomplete="off" class="np-hidden" aria-hidden="true" tabindex="-1">
         <p class="hint" data-i18n="day.tempHint"></p>
       </div>
 
@@ -826,9 +843,9 @@ html.kid .dir-btn .lbl{font-size:.92rem}
         <div class="numpad" data-target="time">
           <button type="button" class="np-btn np-down" data-dir="-1" aria-label="Раніше"><span aria-hidden="true">▼</span></button>
           <div class="np-value np-value-time" id="time-value" aria-live="polite">09:00</div>
+          <input type="time" id="f-time" autocomplete="off" class="np-edit np-value-time" aria-label="Час">
           <button type="button" class="np-btn np-up" data-dir="1" aria-label="Пізніше"><span aria-hidden="true">▲</span></button>
         </div>
-        <input type="time" id="f-time" autocomplete="off" class="np-hidden" aria-hidden="true" tabindex="-1">
         <p class="hint" data-i18n="day.timeHint"></p>
       </div>
 
@@ -842,10 +859,10 @@ html.kid .dir-btn .lbl{font-size:.92rem}
         <div class="numpad" data-target="hum">
           <button type="button" class="np-btn np-down" data-dir="-1" aria-label="Менше"><span aria-hidden="true">▼</span></button>
           <div class="np-value" id="hum-value" aria-live="polite">—</div>
+          <input type="number" id="f-hum" min="0" max="100" step="1" inputmode="numeric" autocomplete="off" class="np-edit" aria-label="Вологість">
           <button type="button" class="np-btn np-up" data-dir="1" aria-label="Більше"><span aria-hidden="true">▲</span></button>
           <span class="np-unit">%</span>
         </div>
-        <input type="number" id="f-hum" min="0" max="100" step="1" inputmode="numeric" autocomplete="off" class="np-hidden" aria-hidden="true" tabindex="-1">
       </div>
 
       <div class="field">
@@ -853,10 +870,10 @@ html.kid .dir-btn .lbl{font-size:.92rem}
         <div class="numpad" data-target="wind">
           <button type="button" class="np-btn np-down" data-dir="-1" aria-label="Менше"><span aria-hidden="true">▼</span></button>
           <div class="np-value" id="wind-value" aria-live="polite">—</div>
+          <input type="number" id="f-wind" min="0" max="60" step="1" inputmode="decimal" autocomplete="off" class="np-edit" aria-label="Вітер">
           <button type="button" class="np-btn np-up" data-dir="1" aria-label="Більше"><span aria-hidden="true">▲</span></button>
           <span class="np-unit" id="wind-unit">м/с</span>
         </div>
-        <input type="number" id="f-wind" min="0" max="60" step="1" inputmode="decimal" autocomplete="off" class="np-hidden" aria-hidden="true" tabindex="-1">
       </div>
 
       <div class="field">
@@ -924,8 +941,6 @@ html.kid .dir-btn .lbl{font-size:.92rem}
     <div class="profiles" id="profile-list"></div>
     <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">
       <button type="button" class="btn btn-primary" id="btn-profile-new" data-i18n="profile.new"></button>
-      <button type="button" class="btn" id="btn-class-import" data-i18n="class.import"></button>
-      <button type="button" class="btn" id="btn-class-export" data-i18n="class.export"></button>
     </div>
 
     <form id="profile-form" hidden method="dialog" style="margin-top:16px;padding-top:16px;border-top:1px solid var(--line-2)">
@@ -1038,10 +1053,11 @@ html.kid .dir-btn .lbl{font-size:.92rem}
    Авторка: Олеся Бохонок
    Безкоштовно, без реклами, без серверних акаунтів.
    Дані — лише в localStorage цього браузера.
-   Зовнішні запити: Open-Meteo (пошук місця, погода, реверс-геокодинг).
+   Зовнішні запити: Open-Meteo (пошук місця, погода) та
+   Nominatim (визначення назви міста за координатами).
    ═════════════════════════════════════════════════════════════ */
 
-const STORE_KEY = 'meteojournal.v5';
+const STORE_KEY = 'meteojournal.v6';
 const MAX_RECORDS = 4000;
 const MAX_FILE_BYTES = 2 * 1024 * 1024;
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
@@ -1052,8 +1068,7 @@ const RECENT_DAYS = 85;
 const API = {
   forecast: 'https://api.open-meteo.com/v1/forecast',
   archive:  'https://archive-api.open-meteo.com/v1/archive',
-  geocode:  'https://geocoding-api.open-meteo.com/v1/search',
-  reverse:  'https://geocoding-api.open-meteo.com/v1/search'
+  geocode:  'https://geocoding-api.open-meteo.com/v1/search'
 };
 
 const SKY = [
@@ -1080,8 +1095,6 @@ const TEMP_STOPS = [
 const INK_RGB = [22,33,43];
 const WHITE_RGB = [255,255,255];
 
-const PROFILE_HUES = ['#1F5FA8','#B24C10','#2E6B45','#8A2A6B','#7A5A0F','#365B8A','#0F6B6B','#8A2A2A'];
-
 /* ─── i18n ─── */
 
 const I18N = {
@@ -1092,7 +1105,6 @@ uk:{
 'app.author':'Авторка: Олеся Бохонок',
 'skip':'Перейти до вмісту','lang.label':'Мова','settings.open':'Налаштування',
 'banner.storage':'Браузер не дозволяє зберігати дані. Збережи файл, інакше записи зникнуть після закриття вкладки.',
-'view.mine':'Мій щоденник','view.class':'Клас',
 'profile.btnLabel':'Профілі. Зараз: {name}','profile.default':'Мій щоденник',
 'profile.title':'Профілі на цьому пристрої',
 'profile.hint':'У кожного учня свій щоденник. Краще вказувати ім’я або псевдонім, без прізвища.',
@@ -1103,16 +1115,12 @@ uk:{
 'profile.delete':'Видалити профіль','profile.deleteTitle':'Видалити профіль?',
 'profile.deleteText':'Профіль «{name}» і всі його записи буде видалено з цього пристрою. Це не можна скасувати.',
 'profile.switch':'Обрати','profile.active':'Поточний',
-'class.import':'Додати файли учнів','class.export':'Зберегти клас одним файлом',
-'class.title':'Клас',
 'month.prev':'Попередній місяць','month.next':'Наступний місяць','month.today':'Сьогодні',
 'cal.caption':'Календар спостережень, {month}',
 'cal.cellEmpty':'{date}: запису немає','cal.cellFilled':'{date}: {temp}, {sky}',
 'cal.cellFuture':'{date}: цей день ще не настав',
-'cal.cellClass':'{date}: {n} записів, середня {temp}',
 'cal.hintEmpty':'Натисни на день, щоб записати погоду.',
 'cal.hintSome':'Записів цього місяця: {n}.',
-'cal.hintClass':'Класних записів цього місяця: {n}.',
 'legend.caption':'Колір клітинки — температура, {unit}',
 'act.compare':'Порівняти з Open-Meteo','act.export':'Зберегти файл','act.import':'Відкрити файл',
 'act.print':'Друк / PDF',
@@ -1132,7 +1140,7 @@ uk:{
 'place.privacy':'Для порівняння на сервер Open-Meteo надсилаються лише координати місця, округлені до ~1 км. Ім’я та клас нікуди не надсилаються.',
 'place.set':'Місце змінено: {name}.','coord.N':'пн. ш.','coord.S':'пд. ш.','coord.E':'сх. д.','coord.W':'зх. д.',
 'stats.title':'Місяць у цифрах','stats.empty':'Підсумок з’явиться, коли буде перший запис.',
-'stats.records':'Записів','stats.mean':'Середня температура','stats.max':'Найтепіший день',
+'stats.records':'Записів','stats.mean':'Середня температура','stats.max':'Найтепліший день',
 'stats.min':'Найхолодніший день','stats.amp':'Амплітуда температур','stats.wet':'Днів з опадами',
 'stats.wind':'Вітер найчастіше з','stats.mae':'Розбіжність з Open-Meteo',
 'rose.title':'Роза вітрів','rose.hint':'Скільки разів вітер дув з кожного напрямку.',
@@ -1142,7 +1150,7 @@ uk:{
 'badge.next':['До наступного досягнення: ще {n} запис','До наступного досягнення: ще {n} записи','До наступного досягнення: ще {n} записів'],
 'badge.done':'Усі досягнення відкрито!',
 'day.time':'Час спостереження','day.timeHint':'Крок — 1 година. Не знаєш часу — залиш 09:00.',
-'day.tempHint':'Натисни ▲ або ▼. Можна ввести число вручну.',
+'day.tempHint':'Натисни ▲ або ▼. Або натисни на число й введи його вручну.',
 'day.sky':'Небо','day.humPlain':'Вологість повітря','day.windPlain':'Швидкість вітру',
 'day.dir':'Вітер дме з','day.dirNone':'Штиль або не знаю',
 'day.mood':'Настрій (необов’язково)','day.notes':'Нотатки','day.save':'Зберегти',
@@ -1182,9 +1190,9 @@ uk:{
 'dir.0':'Пн','dir.1':'ПнСх','dir.2':'Сх','dir.3':'ПдСх','dir.4':'Пд','dir.5':'ПдЗх','dir.6':'Зх','dir.7':'ПнЗх',
 'privacy.open':'Приватність','privacy.title':'Приватність',
 'privacy.local':'Записи, імена й клас зберігаються лише в цьому браузері. Ми не маємо сервера й не надсилаємо ці дані нікуди.',
-'privacy.network':'Єдині зовнішні запити — до Open-Meteo (пошук місця, погода, визначення назви міста). Вони містять лише координати, округлені до ~1 км. Ім’я, клас і нотатки не надсилаються.',
+'privacy.network':'Єдині зовнішні запити — до Open-Meteo (пошук місця, погода) та Nominatim (визначення назви міста за координатами). Вони містять лише координати, округлені до ~1 км. Ім’я, клас і нотатки не надсилаються.',
 'privacy.children':'Застосунок не має реклами, трекерів, аналітики та акаунтів на сервері. Для шкіл США та ЄС він сумісний з COPPA та GDPR за замовчуванням.',
-'privacy.credits':'Дані погоди — Open-Meteo. Пошук місць — Open-Meteo Geocoding. Обидва сервіси безкоштовні для некомерційного використання.',
+'privacy.credits':'Дані погоди — Open-Meteo. Пошук місць — Open-Meteo Geocoding. Назви міст — OpenStreetMap Nominatim. Усі сервіси безкоштовні для некомерційного використання.',
 'onb.langTitle':'Обери мову','onb.langHint':'Мову можна змінити будь-коли.',
 'onb.nameTitle':'Як тебе звати?','onb.nameHint':'Напиши ім’я або псевдонім. Прізвище не потрібне.',
 'onb.nameLabel':'Ім’я або псевдонім','onb.classLabel':'Клас (необов’язково)',
@@ -1202,7 +1210,6 @@ en:{
 'app.author':'Created by Olesya Bokhonok',
 'skip':'Skip to content','lang.label':'Language','settings.open':'Settings',
 'banner.storage':'This browser does not allow saving data. Save a file, otherwise your entries will disappear when the tab is closed.',
-'view.mine':'My journal','view.class':'Class',
 'profile.btnLabel':'Profiles. Current: {name}','profile.default':'My journal',
 'profile.title':'Profiles on this device',
 'profile.hint':'Each student has their own journal. A first name or nickname is better than a full name.',
@@ -1213,16 +1220,12 @@ en:{
 'profile.delete':'Delete profile','profile.deleteTitle':'Delete this profile?',
 'profile.deleteText':'The profile “{name}” and all its entries will be deleted from this device. This cannot be undone.',
 'profile.switch':'Select','profile.active':'Current',
-'class.import':'Add student files','class.export':'Save class as one file',
-'class.title':'Class',
 'month.prev':'Previous month','month.next':'Next month','month.today':'Today',
 'cal.caption':'Observation calendar, {month}',
 'cal.cellEmpty':'{date}: no entry','cal.cellFilled':'{date}: {temp}, {sky}',
 'cal.cellFuture':'{date}: this day has not come yet',
-'cal.cellClass':'{date}: {n} entries, mean {temp}',
 'cal.hintEmpty':'Tap a day to record the weather.',
 'cal.hintSome':'Entries this month: {n}.',
-'cal.hintClass':'Class entries this month: {n}.',
 'legend.caption':'Cell colour = temperature, {unit}',
 'act.compare':'Compare with Open-Meteo','act.export':'Save file','act.import':'Open file',
 'act.print':'Print / PDF',
@@ -1252,7 +1255,7 @@ en:{
 'badge.next':['Next achievement: {n} more entry','Next achievement: {n} more entries'],
 'badge.done':'All achievements unlocked!',
 'day.time':'Time of observation','day.timeHint':'Step is 1 hour. Not sure? Leave 09:00.',
-'day.tempHint':'Tap ▲ or ▼. You can also type a number.',
+'day.tempHint':'Tap ▲ or ▼. Or tap the number and type it in.',
 'day.sky':'Sky','day.humPlain':'Relative humidity','day.windPlain':'Wind speed',
 'day.dir':'Wind blows from','day.dirNone':'Calm or not sure',
 'day.mood':'Mood (optional)','day.notes':'Notes','day.save':'Save',
@@ -1292,9 +1295,9 @@ en:{
 'dir.0':'N','dir.1':'NE','dir.2':'E','dir.3':'SE','dir.4':'S','dir.5':'SW','dir.6':'W','dir.7':'NW',
 'privacy.open':'Privacy','privacy.title':'Privacy',
 'privacy.local':'Entries, names and classes are stored only in this browser. There is no server; this data never leaves your device.',
-'privacy.network':'The only outbound requests go to Open-Meteo (place search, weather, city name lookup). They contain coordinates rounded to ~1 km. Names, classes and notes are never sent.',
+'privacy.network':'The only outbound requests go to Open-Meteo (place search, weather) and Nominatim (city name lookup by coordinates). They contain coordinates rounded to ~1 km. Names, classes and notes are never sent.',
 'privacy.children':'The app has no ads, trackers, analytics or server accounts. For US and EU schools it is COPPA- and GDPR-friendly by default.',
-'privacy.credits':'Weather data by Open-Meteo. Place search by Open-Meteo Geocoding. Both free for non-commercial use.',
+'privacy.credits':'Weather data by Open-Meteo. Place search by Open-Meteo Geocoding. City names by OpenStreetMap Nominatim. All free for non-commercial use.',
 'onb.langTitle':'Choose your language','onb.langHint':'You can change it any time.',
 'onb.nameTitle':'What is your name?','onb.nameHint':'Type a first name or nickname. No surname needed.',
 'onb.nameLabel':'First name or nickname','onb.classLabel':'Class (optional)',
@@ -1370,7 +1373,6 @@ const state = {
   store: null,
   view: { y:2000, m:0 },
   activeKey: null,
-  classView: false,
   storageOk: true,
   busy: false,
   toastTimer: null,
@@ -1379,7 +1381,8 @@ const state = {
   onboarding: false,
   onbStep: 0,
   onbAvatar: AVATARS[0],
-  onbCity: null
+  onbCity: null,
+  editingNumpad: null
 };
 
 const lang = ()=>state.store.lang;
@@ -1551,7 +1554,7 @@ function sanitizeA11y(a){
 function defaultStore(){
   const prof=sanitizeProfile({name:'',cls:'',avatar:AVATARS[0],city:DEFAULT_CITY,records:{}});
   return {
-    v:5,lang:'uk',units:'metric',
+    v:6,lang:'uk',units:'metric',
     a11y:sanitizeA11y({hideChart:false}),
     kidMode:true,
     onboarded:false,
@@ -1564,7 +1567,7 @@ function sanitizeStore(x){
   const profiles=x.profiles.map(p=>sanitizeProfile(p,true)).filter(Boolean);
   if(!profiles.length)return null;
   return {
-    v:5,
+    v:6,
     lang:x.lang==='en'?'en':'uk',
     units:x.units==='imperial'?'imperial':'metric',
     a11y:sanitizeA11y(x.a11y),
@@ -1629,7 +1632,7 @@ function saveStore(){
   const b=$('#banner-storage');if(b)b.hidden=state.storageOk;
 }
 
-/* ─── month computation ─── */
+/* ─── month records ─── */
 
 function monthRecords(p,y,m){
   const prefix=`${y}-${pad(m+1)}-`;
@@ -1637,22 +1640,6 @@ function monthRecords(p,y,m){
     .filter(k=>k.startsWith(prefix))
     .sort()
     .map(k=>Object.assign({key:k,day:Number(k.slice(8))},p.records[k]));
-}
-function classMonthRecords(y,m){
-  const byDay={};
-  for(const p of state.store.profiles){
-    for(const r of monthRecords(p,y,m)){
-      if(!byDay[r.key])byDay[r.key]={key:r.key,day:r.day,entries:[]};
-      byDay[r.key].entries.push(Object.assign({profile:p.id},r));
-    }
-  }
-  return Object.values(byDay).sort((a,b)=>a.day-b.day).map(d=>{
-    const temps=d.entries.map(e=>e.temp);
-    const mean=temps.reduce((a,b)=>a+b,0)/temps.length;
-    const skyCount={};for(const e of d.entries)skyCount[e.sky]=(skyCount[e.sky]||0)+1;
-    const sky=Object.keys(skyCount).sort((a,b)=>skyCount[b]-skyCount[a])[0];
-    return {key:d.key,day:d.day,entries:d.entries,temp:mean,meanTemp:mean,sky,n:d.entries.length};
-  });
 }
 function computeStats(list){
   if(!list.length)return null;
@@ -1743,7 +1730,6 @@ function applyA11y(){
   root.classList.toggle('lg',a.large);
   root.classList.toggle('rf',a.readable);
   root.classList.toggle('kid',kidMode());
-  // hideChart — додатковий клас, який ховає графік і статистику
   root.classList.toggle('simple',a.hideChart===true);
 }
 function buildChips(){
@@ -1835,32 +1821,16 @@ function renderMonth(){
   const cells=[];
   for(let i=0;i<offset;i++)cells.push(el('td',{'aria-hidden':'true'}));
 
-  const classData=state.classView?classMonthRecords(y,m):null;
-  const classByDay=classData?Object.fromEntries(classData.map(d=>[d.key,d])):null;
-
   for(let d=1;d<=dim;d++){
     const key=keyOf(y,m,d);
     const rec=p.records[key];
-    const cls=classByDay?classByDay[key]:null;
     const future=key>tk;
 
-    let temp,sky,n;
     let ariaLabel;
-
-    if(state.classView){
-      if(cls){
-        temp=cls.temp;sky=cls.sky;n=cls.n;
-        ariaLabel=t('cal.cellClass',{date:longDate(key),n,temp:fmtTemp(temp)});
-      }else{
-        ariaLabel=future?t('cal.cellFuture',{date:longDate(key)}):t('cal.cellEmpty',{date:longDate(key)});
-      }
+    if(rec){
+      ariaLabel=t('cal.cellFilled',{date:longDate(key),temp:fmtTemp(rec.temp),sky:t('sky.'+rec.sky)});
     }else{
-      if(rec){
-        temp=rec.temp;sky=rec.sky;
-        ariaLabel=t('cal.cellFilled',{date:longDate(key),temp:fmtTemp(temp),sky:t('sky.'+sky)});
-      }else{
-        ariaLabel=future?t('cal.cellFuture',{date:longDate(key)}):t('cal.cellEmpty',{date:longDate(key)});
-      }
+      ariaLabel=future?t('cal.cellFuture',{date:longDate(key)}):t('cal.cellEmpty',{date:longDate(key)});
     }
 
     const btn=el('button',{
@@ -1871,15 +1841,15 @@ function renderMonth(){
     },el('span',{class:'d','aria-hidden':'true',text:d}));
 
     if(key===tk)btn.classList.add('today');
-    if(temp!==undefined&&temp!==null){
-      const rgb=tempRGB(temp);
+    if(rec){
+      const rgb=tempRGB(rec.temp);
       btn.classList.add('has');
       btn.style.setProperty('--bg-cell',rgbCss(rgb));
       btn.style.setProperty('--fg-cell',rgbCss(readableOn(rgb)));
-      const skyObj=SKY.find(s=>s.k===sky);
+      const skyObj=SKY.find(s=>s.k===rec.sky);
       btn.append(
         el('span',{class:'s','aria-hidden':'true',text:skyObj?skyObj.e:''}),
-        el('span',{class:'v','aria-hidden':'true',text:`${fmtNum(toDispT(temp))}°`})
+        el('span',{class:'v','aria-hidden':'true',text:`${fmtNum(toDispT(rec.temp))}°`})
       );
     }
     cells.push(el('td',null,btn));
@@ -1892,15 +1862,9 @@ function renderMonth(){
   const isCurrent=y>today.y||(y===today.y&&m>=today.m);
   $('#btn-next').disabled=isCurrent;
 
-  const n=state.classView
-    ? classMonthRecords(y,m).reduce((a,d)=>a+d.n,0)
-    : monthRecords(p,y,m).length;
+  const n=monthRecords(p,y,m).length;
   const hint=$('#cal-hint');
-  if(hint){
-    hint.textContent=state.classView
-      ? t('cal.hintClass',{n})
-      : (n?t('cal.hintSome',{n}):t('cal.hintEmpty'));
-  }
+  if(hint)hint.textContent=n?t('cal.hintSome',{n}):t('cal.hintEmpty');
 }
 function niceStep(range){
   const raw=range/4;
@@ -1918,27 +1882,12 @@ function renderChart(){
   const tableBox=$('#chart-table');
   if(tableBox)tableBox.replaceChildren();
 
-  let list, series;
-  if(state.classView){
-    const cls=classMonthRecords(y,m);
-    if(!cls.length){$('#chart-empty').hidden=false;return;}
-    $('#chart-empty').hidden=true;
-    list=cls.map(d=>({key:d.key,day:d.day,temp:d.temp,sky:d.sky,entries:d.entries,n:d.n}));
-    series=state.store.profiles
-      .map((prof,i)=>{
-        const recs=monthRecords(prof,y,m);
-        return recs.length?{profile:prof,recs,hue:PROFILE_HUES[i%PROFILE_HUES.length]}:null;
-      }).filter(Boolean);
-  }else{
-    list=monthRecords(p,y,m);
-    if(!list.length){$('#chart-empty').hidden=false;return;}
-    $('#chart-empty').hidden=true;
-    series=null;
-  }
+  const list=monthRecords(p,y,m);
+  if(!list.length){$('#chart-empty').hidden=false;return;}
+  $('#chart-empty').hidden=true;
 
   const vals=[];
   for(const r of list){vals.push(toDispT(r.temp));if(r.real)vals.push(toDispT(r.real.temp));}
-  if(series)for(const s of series)for(const r of s.recs)vals.push(toDispT(r.temp));
 
   let lo=Math.min(...vals),hi=Math.max(...vals);
   const step=niceStep(hi-lo||10);
@@ -1976,21 +1925,6 @@ function renderChart(){
 
   const line=pts=>pts.map(([d,v])=>`${round(X(d),1)},${round(Y(v),1)}`).join(' ');
 
-  if(series){
-    for(const ser of series){
-      if(ser.recs.length>1){
-        s.append(svgEl('polyline',{
-          points:line(ser.recs.map(r=>[r.day,toDispT(r.temp)])),
-          fill:'none',stroke:ser.hue,'stroke-width':1.6,'stroke-linejoin':'round',opacity:.55
-        }));
-      }
-      for(const r of ser.recs){
-        s.append(svgEl('circle',{cx:round(X(r.day),1),cy:round(Y(toDispT(r.temp)),1),r:3,fill:ser.hue,opacity:.7},
-          svgEl('title',null,`${shortDate(r.key)} · ${ser.profile.name||t('profile.default')}: ${fmtTemp(r.temp)}`)));
-      }
-    }
-  }
-
   if(list.length>1){
     s.append(svgEl('polyline',{points:line(list.map(r=>[r.day,toDispT(r.temp)])),class:'ch-mine'}));
   }
@@ -2004,9 +1938,7 @@ function renderChart(){
   }
 
   for(const r of list){
-    const title=state.classView
-      ? `${shortDate(r.key)}: ${t('class.title')} × ${r.n}, ${fmtTemp(r.temp)}`
-      : `${shortDate(r.key)}: ${fmtTemp(r.temp)}`;
+    const title=`${shortDate(r.key)}: ${fmtTemp(r.temp)}`;
     s.append(svgEl('circle',{
       cx:round(X(r.day),1),cy:round(Y(toDispT(r.temp)),1),r:5.5,class:'ch-dot',
       fill:rgbCss(tempRGB(r.temp))
@@ -2015,8 +1947,7 @@ function renderChart(){
   box.append(s);
 
   if(legendBox){
-    legendBox.append(el('li',null,el('span',{class:'lg-line','aria-hidden':'true'}),
-      state.classView?t('view.class'):t('chart.mine')));
+    legendBox.append(el('li',null,el('span',{class:'lg-line','aria-hidden':'true'}),t('chart.mine')));
     if(real.length)legendBox.append(el('li',null,el('span',{class:'lg-dash','aria-hidden':'true'}),t('chart.real')));
     if(fz>lo&&fz<hi)legendBox.append(el('li',null,el('span',{class:'lg-freeze','aria-hidden':'true'}),t('chart.freeze')));
   }
@@ -2065,16 +1996,9 @@ function renderStats(){
   if(!box)return;
   box.replaceChildren();
 
-  let list,s;
-  if(state.classView){
-    const cls=classMonthRecords(y,m);
-    if(!cls.length){box.append(el('p',{class:'hint',text:t('stats.empty')}));return;}
-    list=cls.flatMap(d=>d.entries);s=computeStats(list);
-  }else{
-    list=monthRecords(p,y,m);
-    if(!list.length){box.append(el('p',{class:'hint',text:t('stats.empty')}));return;}
-    s=computeStats(list);
-  }
+  const list=monthRecords(p,y,m);
+  if(!list.length){box.append(el('p',{class:'hint',text:t('stats.empty')}));return;}
+  const s=computeStats(list);
 
   const rgb=tempRGB(s.mean);
   const mean=el('div',{class:'mean'},
@@ -2091,10 +2015,7 @@ function renderRose(){
   if(!box)return;
   box.replaceChildren();
 
-  let list;
-  if(state.classView)list=classMonthRecords(y,m).flatMap(d=>d.entries);
-  else list=monthRecords(p,y,m);
-
+  const list=monthRecords(p,y,m);
   const counts=new Array(8).fill(0);
   for(const r of list)if(r.dir!==null&&r.dir!==undefined)counts[r.dir]++;
   const max=Math.max(...counts);
@@ -2177,16 +2098,10 @@ function renderSettingsState(){
   const hideChart=$('#set-hideChart');if(hideChart)hideChart.checked=a.hideChart===true;
   const kd=$('#set-kid');if(kd)kd.checked=kidMode();
 }
-function renderViewSwitch(){
-  const my=$('#view-my'),cl=$('#view-class');
-  if(my)my.setAttribute('aria-pressed',String(!state.classView));
-  if(cl)cl.setAttribute('aria-pressed',String(state.classView));
-}
 function renderAll(){
   renderHeader();
   renderPlace();
   renderLegend();
-  renderViewSwitch();
   renderMonth();
   renderChart();
   renderStats();
@@ -2195,7 +2110,7 @@ function renderAll(){
   renderSettingsState();
 }
 
-/* ─── числові поля ▲▼ ─── */
+/* ─── числові поля ▲▼ + ручний ввід ─── */
 
 const NUM_CONFIG = {
   temp: { min:-60, max:60,  step:1, decimals:0, start:0 },
@@ -2203,6 +2118,7 @@ const NUM_CONFIG = {
   wind: { min:0,   max:60,  step:1, decimals:0, start:0 },
   time: { min:0,   max:23,  step:1, decimals:0, start:9, isTime:true }
 };
+
 function numpadInput(target){
   return target==='temp' ? $('#f-temp')
        : target==='hum'  ? $('#f-hum')
@@ -2278,30 +2194,108 @@ function stepNum(target,dir){
   if(next>cfg.max)next=cfg.max;
   writeNum(target,next);
 }
+
+/* ─── режим ручного вводу ─── */
+
+function enterEditMode(target){
+  const np=$(`.numpad[data-target="${target}"]`);
+  const inp=numpadInput(target);
+  if(!np||!inp)return;
+
+  // виходимо з попереднього режиму редагування
+  if(state.editingNumpad&&state.editingNumpad!==target){
+    exitEditMode(state.editingNumpad,false);
+  }
+  state.editingNumpad=target;
+  np.classList.add('editing');
+
+  // синхронізуємо значення input з поточним
+  const cfg=NUM_CONFIG[target];
+  const cur=readNum(target);
+  if(target==='time'){
+    inp.value=TIME_RE.test(inp.value)?inp.value:(cur!==null?`${pad(Math.round(cur))}:00`:'09:00');
+  }else{
+    inp.value=cur===null?'':String(round(cur,cfg.decimals));
+  }
+
+  setTimeout(()=>{
+    inp.focus();
+    if(inp.select)try{inp.select();}catch(e){}
+    if(target==='time'&&typeof inp.showPicker==='function'){
+      try{inp.showPicker();}catch(e){}
+    }
+  },10);
+}
+function exitEditMode(target,apply){
+  const np=$(`.numpad[data-target="${target}"]`);
+  const inp=numpadInput(target);
+  if(!np||!inp)return;
+  if(apply){
+    const cfg=NUM_CONFIG[target];
+    if(target==='time'){
+      const v=inp.value;
+      if(TIME_RE.test(v)){
+        // ok
+      }else if(v!==''){
+        const h=parseInt(v,10);
+        if(Number.isFinite(h))inp.value=`${pad(Math.max(0,Math.min(23,h)))}:00`;
+        else inp.value='';
+      }
+    }else{
+      const v=inp.value.trim();
+      if(v==='' ){
+        inp.value='';
+      }else{
+        const n=Number(v.replace(',','.'));
+        if(Number.isFinite(n)){
+          let clamped=n;
+          if(clamped<cfg.min)clamped=cfg.min;
+          if(clamped>cfg.max)clamped=cfg.max;
+          inp.value=cfg.decimals?String(round(clamped,cfg.decimals)):String(Math.round(clamped));
+        }else{
+          inp.value=readNum(target)===null?'':String(readNum(target));
+        }
+      }
+    }
+  }
+  np.classList.remove('editing');
+  state.editingNumpad=null;
+  refreshNumpad(target);
+}
 function bindNumpads(){
   for(const np of $$('.numpad')){
     const target=np.dataset.target;
+
+    // стрілочки
     for(const btn of $$('.np-btn',np)){
       btn.addEventListener('click',()=>stepNum(target,Number(btn.dataset.dir)));
     }
+
+    // клік на дисплей — вхід у режим редагування
     const disp=numpadDisplay(target);
     if(disp){
-      disp.addEventListener('click',()=>{
-        const inp=numpadInput(target);
-        if(!inp)return;
-        if(target==='time'&&typeof inp.showPicker==='function'){
-          try{inp.showPicker();return;}catch(e){}
-        }
-        inp.style.pointerEvents='auto';
-        inp.focus();
-        if(inp.select)inp.select();
-        inp.style.pointerEvents='none';
+      disp.addEventListener('click',()=>enterEditMode(target));
+      disp.setAttribute('role','button');
+      disp.setAttribute('tabindex','0');
+      disp.addEventListener('keydown',e=>{
+        if(e.key==='Enter'||e.key===' '){e.preventDefault();enterEditMode(target);}
       });
     }
+
+    // input — події
     const inp=numpadInput(target);
     if(inp){
-      inp.addEventListener('input',()=>refreshNumpad(target));
-      inp.addEventListener('change',()=>refreshNumpad(target));
+      inp.addEventListener('input',()=>{
+        // оновлюємо маленький дисплей поки не в режимі редагування
+        if(state.editingNumpad!==target)refreshNumpad(target);
+      });
+      inp.addEventListener('blur',()=>{
+        if(state.editingNumpad===target)exitEditMode(target,true);
+      });
+      inp.addEventListener('keydown',e=>{
+        if(e.key==='Enter'){e.preventDefault();exitEditMode(target,true);}
+        else if(e.key==='Escape'){e.preventDefault();exitEditMode(target,false);}
+      });
     }
   }
 }
@@ -2416,6 +2410,9 @@ function openDay(key){
   $('#f-notes').value=rec?rec.notes:'';
   setRadio('sky',rec?rec.sky:'');
   setRadio('mood',rec&&rec.mood?rec.mood:'');
+  // виходимо з режиму редагування, якщо був
+  state.editingNumpad=null;
+  for(const np of $$('.numpad'))np.classList.remove('editing');
   refreshAllNumpads();
   buildCompass();
   $('#btn-day-delete').hidden=!rec;
@@ -2423,8 +2420,12 @@ function openDay(key){
   openDialog($('#dlg-day'));
 }
 function readDayForm(){
+  // якщо відкрито режим редагування — зафіксуємо значення
+  if(state.editingNumpad){
+    exitEditMode(state.editingNumpad,true);
+  }
   const p=P(),key=state.activeKey,prev=p.records[key]||null;
-  const tempDisp=parseFloat($('#f-temp').value);
+  const tempDisp=parseFloat($('#f-temp').value.replace(',','.'));
   if(!Number.isFinite(tempDisp))return null;
   const skyEl=$('input[name="sky"]:checked',$('#day-form'));
   if(!skyEl)return null;
@@ -2435,8 +2436,8 @@ function readDayForm(){
     temp:fromDispT(tempDisp),
     sky:skyEl.value,
     t:TIME_RE.test(time)?time:null,
-    hum:humRaw===''?null:Number(humRaw),
-    wind:windRaw===''?null:fromDispW(Number(windRaw)),
+    hum:humRaw===''?null:Number(humRaw.replace(',','.')),
+    wind:windRaw===''?null:fromDispW(Number(windRaw.replace(',','.'))),
     dir:dirRaw===''?null:Number(dirRaw),
     mood:moodEl?moodEl.value:null,
     notes:$('#f-notes').value
@@ -2571,17 +2572,7 @@ async function compareMonth(){
 
 /* ─── reverse geocoding ─── */
 
-/**
- * Отримує назву міста за координатами.
- * Open-Meteo не має справжнього reverse endpoint, тому:
- *   1) запитуємо найближчі населені пункти через geocoding search з малою
- *      точністю (обмеження API — 1 результат), пробуємо кілька варіантів.
- *   2) якщо нічого не знайдено — повертаємо null, і UI покаже помилку.
- */
 async function reverseGeocode(lat,lon){
-  // Open-Meteo Geocoding не має офіційного reverse API.
-  // Використовуємо Nominatim (OpenStreetMap) як резерв —
-  // безкоштовний, з політикою 1 запит/сек, тільки для визначення назви.
   try{
     const params=new URLSearchParams({
       lat:String(round(lat,4)),
@@ -2661,31 +2652,10 @@ async function useGeolocation(){
         setCity(city);
         return;
       }
-      // резерв — пробуємо знайти через geocoding за координатами як за назвою
-      const fallback=await reverseFallback(lat,lon);
-      if(fallback&&fallback.name){setCity(fallback);return;}
       status.textContent=t('place.geoNoName');
     },
     ()=>{status.textContent=t('place.geoErr');},
     {timeout:12000,maximumAge:600000});
-}
-async function reverseFallback(lat,lon){
-  // Спроба №2: інколи Nominatim не віддає назву, тоді шукаємо
-  // в geocoding Open-Meteo через координати. Це не завжди працює,
-  // але інколи дає результат.
-  try{
-    // Шукаємо за найближчим великим містом (по 1° сітці) — грубо
-    const params=new URLSearchParams({
-      latitude:String(round(lat,2)),
-      longitude:String(round(lon,2)),
-      count:'1',
-      language:lang(),
-      format:'json'
-    });
-    // Open-Meteo geocoding не має параметрів latitude/longitude —
-    // тому просто повертаємо null, щоб UI показав повідомлення.
-    return null;
-  }catch(e){return null;}
 }
 
 /* ─── profiles ─── */
@@ -2784,19 +2754,10 @@ function downloadJSON(payload,name){
 function exportProfile(){
   const p=P();
   const payload={
-    app:'MeteoJournal',schema:5,version:'1.0',exported:new Date().toISOString(),
+    app:'MeteoJournal',schema:6,exported:new Date().toISOString(),
     profile:{name:p.name,cls:p.cls,avatar:p.avatar,city:p.city,records:p.records}
   };
   const name=`MeteoJournal_${slug(p.name)||'journal'}_${todayKey()}.weather`;
-  downloadJSON(payload,name);
-  toast(t('io.exported',{name}));
-}
-function exportClass(){
-  const payload={
-    app:'MeteoJournal',schema:5,version:'1.0',exported:new Date().toISOString(),
-    class:{profiles:state.store.profiles.map(p=>({name:p.name,cls:p.cls,avatar:p.avatar,city:p.city,records:p.records}))}
-  };
-  const name=`MeteoJournal_class_${todayKey()}.weather`;
   downloadJSON(payload,name);
   toast(t('io.exported',{name}));
 }
@@ -2815,12 +2776,6 @@ function profileFromFile(data){
   if(data.records&&data.meta)return convertV1(data);
   return null;
 }
-function classFromFile(data){
-  if(!data||typeof data!=='object')return null;
-  if((data.app==='MeteoJournal'||data.app==='WeatherLab')&&data.class&&Array.isArray(data.class.profiles))
-    return data.class.profiles.map(p=>sanitizeProfile(p,false)).filter(Boolean);
-  return null;
-}
 async function importFiles(files){
   const messages=[];
   for(const f of files){
@@ -2830,19 +2785,6 @@ async function importFiles(files){
       try{data=JSON.parse(await readFile(f));}
       catch(e){messages.push(t('io.fail',{file:f.name,reason:t('io.notWl')}));continue;}
 
-      const cls=classFromFile(data);
-      if(cls){
-        let added=0;
-        for(const prof of cls){
-          const n=Object.keys(prof.records).length;
-          if(!n)continue;
-          state.store.profiles.push(prof);
-          state.store.active=prof.id;
-          added+=n;
-        }
-        messages.push(t('io.imported',{name:f.name,n:added}));
-        continue;
-      }
       const prof=profileFromFile(data);
       if(!prof){messages.push(t('io.fail',{file:f.name,reason:t('io.notWl')}));continue;}
       const n=Object.keys(prof.records).length;
@@ -2913,33 +2855,6 @@ function renderPrint(){
     buildStatsList(computeStats(list)),
     el('p',{class:'pmeta',text:t('print.made',{date:longDate(todayKey())})})
   );
-}
-function exportCsv(){
-  const p=P(),{y,m}=state.view;
-  const list=monthRecords(p,y,m);
-  const sep=';';
-  const q=v=>{
-    const s=String(v==null?'':v);
-    return /[";\n\r]/.test(s)?`"${s.replace(/"/g,'""')}"`:s;
-  };
-  const head=['date','time','temp_c','sky','humidity_pct','wind_ms','wind_dir','notes'];
-  const lines=[head.join(sep)];
-  for(const r of list){
-    lines.push([
-      r.key,r.t||'',r.temp.toFixed(2),r.sky,
-      r.hum==null?'':r.hum,
-      r.wind==null?'':r.wind.toFixed(1),
-      r.dir==null?'':r.dir,
-      q(r.notes||'')
-    ].join(sep));
-  }
-  const csv='\uFEFF'+lines.join('\r\n');
-  const name=`MeteoJournal_${slug(profileLabel(p))||'journal'}_${y}-${pad(m+1)}.csv`;
-  const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
-  const a=el('a',{href:url,download:name});
-  document.body.append(a);a.click();a.remove();
-  setTimeout(()=>URL.revokeObjectURL(url),2000);
-  toast(t('io.exported',{name}));
 }
 
 /* ─── onboarding ─── */
@@ -3111,9 +3026,6 @@ function bindEvents(){
     if(b&&!b.disabled)openDay(b.dataset.date);
   });
 
-  $('#view-my').addEventListener('click',()=>{state.classView=false;renderAll();});
-  $('#view-class').addEventListener('click',()=>{state.classView=true;renderAll();});
-
   $('#day-form').addEventListener('submit',saveDay);
   bindNumpads();
   $('#btn-day-delete').addEventListener('click',deleteDay);
@@ -3140,11 +3052,6 @@ function bindEvents(){
   $('#btn-profile-cancel').addEventListener('click',()=>{$('#profile-form').hidden=true;});
   $('#profile-form').addEventListener('submit',saveProfile);
   $('#btn-profile-delete').addEventListener('click',deleteProfile);
-  $('#btn-class-import').addEventListener('click',()=>{
-    closeDialog($('#dlg-profile'));
-    $('#file-import').click();
-  });
-  $('#btn-class-export').addEventListener('click',exportClass);
 
   $('#btn-settings').addEventListener('click',()=>{renderSettingsState();openDialog($('#dlg-settings'));});
   for(const r of $$('input[name="units"]'))
