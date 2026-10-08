@@ -1,0 +1,6 @@
+{
+  "name": "Метеощоденник — Дитяча метеолабораторія",
+  "description": "Світового рівня дитячий вебзастосунок для спостережень за погодою (7-10 років): квести, інтерактивний термометр і роза вітрів, офлайн-режим, PWA та порівняння з супутниками Open-Meteo.",
+  "requestFramePermissions": ["geolocation"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
