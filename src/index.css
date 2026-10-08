@@ -1,0 +1,61 @@
+@import "tailwindcss";
+
+:root {
+  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+body {
+  font-family: var(--font-sans);
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+/* Safe Area Inset Support for iPhone & Android */
+.pt-safe {
+  padding-top: max(env(safe-area-inset-top, 0px), 12px);
+}
+.pb-safe {
+  padding-bottom: max(env(safe-area-inset-bottom, 0px), 16px);
+}
+.px-safe {
+  padding-left: max(env(safe-area-inset-left, 0px), 16px);
+  padding-right: max(env(safe-area-inset-right, 0px), 16px);
+}
+
+/* Accessibility / Dyslexia friendly font mode */
+html.rf {
+  letter-spacing: 0.04em;
+  word-spacing: 0.12em;
+  line-height: 1.75;
+}
+
+/* High contrast mode */
+html.hc {
+  filter: contrast(1.25);
+}
+
+/* Kid Mode enhancements */
+html.kid .touch-target {
+  min-height: 52px;
+  min-width: 52px;
+}
+
+/* Print Styles */
+@media print {
+  @page {
+    margin: 10mm;
+    size: portrait;
+  }
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .print-only {
+    display: block !important;
+  }
+}
+
