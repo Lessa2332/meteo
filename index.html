@@ -1,24 +1,650 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="uk">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no" />
-    <title>Метеощоденник Авторка: Олеся Бохонок</title>
-    <meta name="description" content="Світового рівня дитячий вебзастосунок для спостережень за погодою (7-10 років): квести, інтерактивний термометр і роза вітрів, офлайн-режим, PWA та порівняння з супутниками Open-Meteo." />
-    <meta property="og:title" content="Метеощоденник — Дитяча метеолабораторія" />
-    <meta property="og:description" content="Світового рівня дитячий вебзастосунок для спостережень за погодою (7-10 років): квести, інтерактивний термометр і роза вітрів, офлайн-режим, PWA та порівняння з супутниками Open-Meteo." />
-    <meta property="og:type" content="website" />
-    <meta name="theme-color" content="#1E293B" />
-    <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="apple-mobile-web-app-title" content="Метеощоденник" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
-  </head>
-  <body class="bg-slate-50 text-slate-900 antialiased selection:bg-amber-200 selection:text-amber-900 min-h-screen">
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
-</html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#1E293B">
+<meta name="description" content="Метеощоденник — дитяча метеолабораторія та щоденник спостережень за погодою (7-10 років). Автономно, офлайн, без реклами.">
+<title>Метеощоденник — Дитяча метеолабораторія</title>
+<style>
+/* ─────────── ДИТЯЧИЙ СВІТОВИЙ СТИЛЬ & ДИЗАЙН-СИСТЕМА ─────────── */
+:root {
+  --font: 'Plus Jakarta Sans', system-ui, -apple-system, Roboto, sans-serif;
+  --mono: 'JetBrains Mono', ui-monospace, Menlo, Consolas, monospace;
+  --bg: #F8FAFC;
+  --surface: #FFFFFF;
+  --surface-2: #F1F5F9;
+  --ink: #0F172A;
+  --ink-2: #475569;
+  --ink-3: #94A3B8;
+  --line: #E2E8F0;
+  --accent: #F59E0B;
+  --accent-soft: #FEF3C7;
+  --primary: #0F172A;
+  --sky-blue: #0284C7;
+  --sky-soft: #E0F2FE;
+  --r-lg: 20px;
+  --r-md: 14px;
+  --r-sm: 8px;
+  --sh-1: 0 1px 3px rgba(15,23,42,.06), 0 4px 12px rgba(15,23,42,.04);
+  --sh-2: 0 4px 6px -1px rgba(15,23,42,.08), 0 16px 32px -4px rgba(15,23,42,.12);
+}
 
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; -webkit-tap-highlight-color: transparent; }
+body {
+  margin: 0;
+  font-family: var(--font);
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--ink);
+  background: var(--bg);
+  min-height: 100dvh;
+  touch-action: manipulation;
+}
+
+/* Touch and safe-area */
+.shell {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 16px;
+  padding-top: max(16px, env(safe-area-inset-top));
+  padding-bottom: max(32px, env(safe-area-inset-bottom));
+  padding-left: max(16px, env(safe-area-inset-left));
+  padding-right: max(16px, env(safe-area-inset-right));
+}
+
+/* Векторні анімації */
+@keyframes spinSlow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+@keyframes bounceSoft { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+@keyframes pulseSubtle { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+
+.spin-slow { animation: spinSlow 20s linear infinite; }
+.bounce-soft { animation: bounceSoft 3.5s ease-in-out infinite; }
+.pulse-soft { animation: pulseSubtle 1.8s ease-in-out infinite; }
+
+/* Кнопки та картки */
+.card {
+  background: var(--surface);
+  border-radius: var(--r-lg);
+  padding: 20px;
+  border: 1px solid var(--line);
+  box-shadow: var(--sh-1);
+  margin-bottom: 16px;
+  transition: transform .15s, box-shadow .15s;
+}
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 18px;
+  border-radius: var(--r-md);
+  font-weight: 700;
+  font-size: 0.9rem;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+  cursor: pointer;
+  transition: all .12s;
+  user-select: none;
+}
+.btn:hover { background: var(--surface-2); border-color: #CBD5E1; }
+.btn:active { transform: scale(0.97); }
+.btn-primary { background: var(--primary); color: #fff; border-color: var(--primary); }
+.btn-primary:hover { background: #1E293B; }
+.btn-accent { background: var(--accent); color: #fff; border-color: #D97706; }
+.btn-accent:hover { background: #D97706; }
+.btn-sm { min-height: 38px; padding: 0 12px; font-size: 0.8rem; border-radius: var(--r-sm); }
+
+/* Шапка */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: var(--surface);
+  border-radius: var(--r-lg);
+  padding: 12px 18px;
+  border: 1px solid var(--line);
+  box-shadow: var(--sh-1);
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.brand { display: flex; align-items: center; gap: 10px; }
+.brand-title { font-weight: 900; font-size: 1.25rem; letter-spacing: -0.02em; }
+.brand-sub { font-size: 0.75rem; color: var(--ink-3); font-weight: 600; }
+
+/* Навігація вкладок */
+.nav-tabs {
+  display: flex;
+  gap: 4px;
+  background: var(--surface-2);
+  padding: 4px;
+  border-radius: var(--r-md);
+  margin-bottom: 16px;
+  overflow-x: auto;
+}
+.nav-tab {
+  flex: 1;
+  min-height: 40px;
+  border: 0;
+  background: transparent;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--ink-2);
+  border-radius: 10px;
+  cursor: pointer;
+  white-space: nowrap;
+  padding: 6px 14px;
+  transition: all .15s;
+}
+.nav-tab.active { background: var(--surface); color: var(--ink); box-shadow: var(--sh-1); }
+
+/* Календар */
+.cal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.cal-title { font-size: 1.5rem; font-weight: 900; }
+.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+.cal-th { font-size: 0.72rem; font-weight: 800; color: var(--ink-3); text-align: center; padding: 6px 0; text-transform: uppercase; }
+.cal-day {
+  min-height: 72px;
+  aspect-ratio: 1/1.05;
+  border-radius: var(--r-md);
+  border: 1px solid var(--line);
+  background: var(--surface);
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: transform .1s, border-color .1s;
+  text-align: left;
+}
+.cal-day:hover:not(:disabled) { transform: scale(1.03); z-index: 2; box-shadow: var(--sh-1); }
+.cal-day.today { outline: 3px solid var(--accent); outline-offset: -1px; }
+.cal-day.has { border-color: transparent; }
+.cal-day .num { font-weight: 800; font-size: 0.85rem; }
+.cal-day .icon { font-size: 1.3rem; line-height: 1; align-self: flex-end; }
+.cal-day .temp { font-family: var(--mono); font-size: 0.85rem; font-weight: 900; }
+
+/* Лабораторія */
+.lab-split { display: grid; grid-template-columns: 1fr; gap: 16px; }
+@media (min-width: 800px) { .lab-split { grid-template-columns: 1fr 1.3fr; } }
+
+.therm-box { display: flex; align-items: center; justify-content: center; gap: 24px; padding: 20px 0; }
+.therm-stepper { display: flex; flex-direction: column; gap: 8px; }
+.therm-tube {
+  width: 32px;
+  height: 220px;
+  background: #E2E8F0;
+  border-radius: 16px;
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  border: 2px solid #CBD5E1;
+  position: relative;
+}
+.therm-mercury {
+  width: 100%;
+  border-radius: 12px;
+  transition: height .3s cubic-bezier(0.16,1,0.3,1), background-color .3s;
+}
+.therm-bulb {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  margin: -16px auto 0;
+  border: 2px solid #CBD5E1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-family: var(--mono);
+  font-weight: 900;
+  font-size: 0.8rem;
+  transition: background-color .3s;
+}
+
+/* Компас вітру */
+.compass-dial {
+  width: 170px;
+  height: 170px;
+  border-radius: 50%;
+  border: 4px solid var(--line);
+  background: #F8FAFC;
+  position: relative;
+  margin: 10px auto;
+}
+.compass-vane {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 4px; height: 90px;
+  background: linear-gradient(to top, var(--sky-blue), var(--accent));
+  transform-origin: center center;
+  margin-top: -45px; margin-left: -2px;
+  transition: transform .4s ease;
+  border-radius: 2px;
+}
+.compass-vane::before {
+  content: "";
+  position: absolute;
+  top: -8px; left: -6px;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-bottom: 12px solid var(--accent);
+}
+
+/* Модальне вікно */
+dialog {
+  border: 0;
+  border-radius: 24px;
+  padding: 24px;
+  max-width: 520px;
+  width: calc(100% - 24px);
+  background: #fff;
+  box-shadow: var(--sh-2);
+}
+dialog::backdrop { background: rgba(15,23,42,.6); backdrop-filter: blur(3px); }
+
+/* Друк */
+@media print {
+  body { background: #fff !important; color: #000 !important; }
+  .no-print { display: none !important; }
+  .shell { padding: 0 !important; }
+}
+</style>
+</head>
+<body>
+
+<div class="shell">
+  <!-- ВЕРХНЯ ПАНЕЛЬ З МЕТЕО-ПОМІЧНИКОМ -->
+  <header class="topbar no-print">
+    <div class="brand">
+      <div style="width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,#F59E0B,#EF4444);display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.3rem;">
+        🌤️
+      </div>
+      <div>
+        <div class="brand-title" id="txt-appname">Метеощоденник</div>
+        <div class="brand-sub">Дитяча метеолабораторія 7–10 років</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <button class="btn btn-sm" id="btn-city">📍 <span id="lbl-city">Київ</span></button>
+      <button class="btn btn-sm" id="btn-sound" title="Звук">🔔</button>
+      <button class="btn btn-sm btn-primary" id="btn-profile">🦊 <span id="lbl-student">Марійка</span></button>
+    </div>
+  </header>
+
+  <!-- ВКЛАДКИ НАВІГАЦІЇ -->
+  <nav class="nav-tabs no-print" role="tablist">
+    <button class="nav-tab active" data-tab="cal">📅 Календар</button>
+    <button class="nav-tab" data-tab="lab">✨ Метеолабораторія</button>
+    <button class="nav-tab" data-tab="quests">⭐ Квести та нагороди</button>
+    <button class="nav-tab" data-tab="stats">📊 Графіки та звіт</button>
+  </nav>
+
+  <!-- СЕКЦІЯ 1: КАЛЕНДАР ПОГОДИ -->
+  <section id="tab-cal" class="tab-pane">
+    <div class="card">
+      <div class="cal-head">
+        <div style="display:flex;gap:8px;align-items:center;">
+          <button class="btn btn-sm" id="btn-prev-m">←</button>
+          <h2 class="cal-title" id="txt-month" style="margin:0;">—</h2>
+          <button class="btn btn-sm" id="btn-next-m">→</button>
+          <button class="btn btn-sm" id="btn-today-m">Сьогодні</button>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-sm btn-accent" id="btn-open-meteo">🛰️ Супутник Open-Meteo</button>
+          <button class="btn btn-sm" id="btn-print-act">🖨️ Друк</button>
+        </div>
+      </div>
+
+      <div class="cal-grid" id="cal-grid"></div>
+    </div>
+  </section>
+
+  <!-- СЕКЦІЯ 2: ІНТЕРАКТИВНА МЕТЕОЛАБОРАТОРІЯ -->
+  <section id="tab-lab" class="tab-pane" style="display:none;">
+    <div class="card" style="background:linear-gradient(135deg,#0F172A,#1E293B);color:#fff;">
+      <div style="display:flex;align-items:center;gap:14px;">
+        <span style="font-size:2.8rem;">🦊</span>
+        <div>
+          <h3 style="margin:0 0 4px;font-size:1.2rem;font-weight:900;">Метео-Лисеня підказує:</h3>
+          <p id="txt-advice" style="margin:0;font-size:0.95rem;opacity:0.9;"></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="lab-split">
+      <!-- Термометр -->
+      <div class="card">
+        <h3 style="margin:0 0 4px;font-size:1.1rem;font-weight:900;">Живий термометр</h3>
+        <p style="font-size:0.8rem;color:var(--ink-3);margin:0 0 16px;">Тисни стрілки, щоб відчути холод чи спеку:</p>
+
+        <div class="therm-box">
+          <div class="therm-stepper">
+            <button class="btn btn-sm" id="btn-t-plus5">+5°</button>
+            <button class="btn btn-sm" id="btn-t-plus1">+1°</button>
+            <button class="btn btn-sm" id="btn-t-minus1">-1°</button>
+            <button class="btn btn-sm" id="btn-t-minus5">-5°</button>
+          </div>
+          <div>
+            <div class="therm-tube">
+              <div class="therm-mercury" id="therm-mercury"></div>
+            </div>
+            <div class="therm-bulb" id="therm-bulb">20°</div>
+          </div>
+        </div>
+        <div style="text-align:center;font-size:1.6rem;font-weight:900;font-family:var(--mono);" id="txt-therm-val">+20°C</div>
+      </div>
+
+      <!-- Флюгер та компас -->
+      <div class="card">
+        <h3 style="margin:0 0 4px;font-size:1.1rem;font-weight:900;">Флюгер та компас вітру</h3>
+        <p style="font-size:0.8rem;color:var(--ink-3);margin:0 0 10px;">Обери, звідки дме вітерець:</p>
+
+        <div class="compass-dial">
+          <div class="compass-vane" id="compass-vane"></div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:14px;" id="box-dirs"></div>
+        <button class="btn btn-sm" id="btn-save-lab" style="width:100%;margin-top:16px;">💾 Записати в сьогоднішній щоденник</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- СЕКЦІЯ 3: КВЕСТИ ТА НАГОРОДИ -->
+  <section id="tab-quests" class="tab-pane" style="display:none;">
+    <div class="card" style="background:linear-gradient(135deg,#F59E0B,#D97706);color:#fff;">
+      <h2 style="margin:0 0 4px;font-size:1.3rem;font-weight:900;">Рівень дослідника: <span id="txt-level">1 (Юний спостерігач)</span></h2>
+      <p style="margin:0;font-size:0.85rem;opacity:0.9;">Зібрано очок досвіду: <span id="txt-xp">50</span> XP</p>
+    </div>
+
+    <div class="card">
+      <h3 style="margin:0 0 12px;font-size:1.1rem;font-weight:900;">Метеоквести</h3>
+      <div id="list-quests" style="display:flex;flex-direction:column;gap:10px;"></div>
+    </div>
+
+    <div class="card">
+      <h3 style="margin:0 0 12px;font-size:1.1rem;font-weight:900;">Колекція бейджів</h3>
+      <div id="list-badges" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;"></div>
+    </div>
+  </section>
+
+  <!-- СЕКЦІЯ 4: ГРАФІКИ ТА ШКІЛЬНИЙ ЗВІТ -->
+  <section id="tab-stats" class="tab-pane" style="display:none;">
+    <div class="card">
+      <h3 style="margin:0 0 12px;font-size:1.1rem;font-weight:900;">Графік температури (Ти vs Супутник)</h3>
+      <div id="svg-chart-box" style="width:100%;overflow-x:auto;"></div>
+    </div>
+
+    <div class="card">
+      <h3 style="margin:0 0 12px;font-size:1.1rem;font-weight:900;">Підсумок місяця</h3>
+      <div id="box-stats-summary" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;"></div>
+    </div>
+  </section>
+</div>
+
+<!-- ДІАЛОГ ЗАПИСУ ДНЯ -->
+<dialog id="dlg-entry">
+  <form id="form-entry" method="dialog">
+    <h3 id="dlg-date-title" style="margin:0 0 14px;font-size:1.2rem;font-weight:900;">Дата</h3>
+
+    <div style="margin-bottom:14px;">
+      <label style="font-weight:700;font-size:0.85rem;display:block;margin-bottom:6px;">Температура (°C):</label>
+      <input type="number" id="f-t" required step="1" style="width:100%;height:44px;font-size:1.4rem;font-weight:900;text-align:center;border-radius:12px;border:1px solid var(--line);font-family:var(--mono);">
+    </div>
+
+    <div style="margin-bottom:14px;">
+      <label style="font-weight:700;font-size:0.85rem;display:block;margin-bottom:6px;">Стан неба:</label>
+      <div id="box-sky-chips" style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;"></div>
+    </div>
+
+    <div style="margin-bottom:14px;">
+      <label style="font-weight:700;font-size:0.85rem;display:block;margin-bottom:6px;">Швидкість вітру (м/с):</label>
+      <input type="number" id="f-w" min="0" max="40" step="1" style="width:100%;height:40px;border-radius:10px;border:1px solid var(--line);padding:0 10px;">
+    </div>
+
+    <div style="margin-bottom:14px;">
+      <label style="font-weight:700;font-size:0.85rem;display:block;margin-bottom:6px;">Нотатки (що бачив/ла):</label>
+      <input type="text" id="f-n" maxlength="200" placeholder="наприклад: перші проліски чи веселка..." style="width:100%;height:40px;border-radius:10px;border:1px solid var(--line);padding:0 10px;">
+    </div>
+
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:20px;">
+      <button type="button" class="btn btn-sm" id="btn-del-entry" style="color:#DC2626;margin-right:auto;">Видалити</button>
+      <button type="button" class="btn btn-sm" id="btn-cancel-entry">Скасувати</button>
+      <button type="submit" class="btn btn-sm btn-primary">Зберегти</button>
+    </div>
+  </form>
+</dialog>
+
+<script>
+/* ─────────── САМОДОСТАТНІЙ ДВИГУН METEO ─────────── */
+const STORE_KEY = 'meteojournal_standalone.v1';
+const SKIES = [
+  { k:'clear', e:'☀️', l:'Ясно' }, { k:'partly', e:'🌤️', l:'Мінливо' },
+  { k:'cloudy', e:'☁️', l:'Хмарно' }, { k:'rain', e:'🌧️', l:'Дощ' },
+  { k:'storm', e:'⛈️', l:'Гроза' }, { k:'snow', e:'❄️', l:'Сніг' }
+];
+const DIRS = ['Пн', 'ПнСх', 'Сх', 'ПдСх', 'Пд', 'ПдЗх', 'Зх', 'ПнЗх'];
+
+let state = {
+  profile: { name: 'Марійка', cls: '3-А', city: { name: 'Київ', lat: 50.45, lon: 30.52 }, records: {} },
+  view: { y: new Date().getFullYear(), m: new Date().getMonth() },
+  activeDate: null,
+  sound: true,
+  lab: { temp: 20, dir: 4 }
+};
+
+// Простий звуковий синтезатор
+function beep(freq=520, dur=0.08) {
+  if(!state.sound) return;
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.frequency.setValueAtTime(freq, ctx.currentTime);
+    gain.gain.setValueAtTime(0.08, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + dur);
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.start(); osc.stop(ctx.currentTime + dur);
+  } catch(e){}
+}
+
+function loadData() {
+  try {
+    const raw = localStorage.getItem(STORE_KEY);
+    if(raw) state.profile = JSON.parse(raw);
+  } catch(e){}
+}
+function saveData() {
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(state.profile)); } catch(e){}
+}
+
+function getTempColor(c) {
+  if(c < -10) return '#2563EB';
+  if(c < 0) return '#38BDF8';
+  if(c < 12) return '#34D399';
+  if(c < 22) return '#FBBF24';
+  if(c < 30) return '#FB923C';
+  return '#EF4444';
+}
+
+function renderCal() {
+  const { y, m } = state.view;
+  const mNames = ['Січень','Лютий','Березень','Квітень','Травень','Червень','Липень','Серпень','Вересень','Жовтень','Листопад','Грудень'];
+  document.getElementById('txt-month').textContent = `${mNames[m]} ${y}`;
+  const grid = document.getElementById('cal-grid');
+  grid.innerHTML = '';
+
+  ['Пн','Вт','Ср','Чт','Пт','Сб','Нд'].forEach(d => {
+    const th = document.createElement('div');
+    th.className = 'cal-th';
+    th.textContent = d;
+    grid.appendChild(th);
+  });
+
+  const firstDay = (new Date(y, m, 1).getDay() + 6) % 7;
+  for(let i=0; i<firstDay; i++) {
+    const blank = document.createElement('div');
+    grid.appendChild(blank);
+  }
+
+  const daysInM = new Date(y, m + 1, 0).getDate();
+  const todayKey = new Date().toISOString().slice(0, 10);
+
+  for(let d=1; d<=daysInM; d++) {
+    const key = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const rec = state.profile.records[key];
+    const cell = document.createElement('div');
+    cell.className = 'cal-day' + (key === todayKey ? ' today' : '');
+    if(rec) {
+      cell.classList.add('has');
+      cell.style.backgroundColor = getTempColor(rec.temp);
+      cell.style.color = (rec.temp < -5 || rec.temp > 24) ? '#fff' : '#0F172A';
+      const skyObj = SKIES.find(s => s.k === rec.sky);
+      cell.innerHTML = `
+        <div class="num">${d}</div>
+        <div class="icon">${skyObj ? skyObj.e : ''}</div>
+        <div class="temp">${rec.temp > 0 ? '+' : ''}${rec.temp}°</div>
+      `;
+    } else {
+      cell.innerHTML = `<div class="num" style="color:var(--ink-3);">${d}</div>`;
+    }
+    cell.onclick = () => openEntryModal(key);
+    grid.appendChild(cell);
+  }
+}
+
+function openEntryModal(key) {
+  state.activeDate = key;
+  beep(480);
+  const rec = state.profile.records[key] || { temp: 18, sky: 'clear', wind: 2, notes: '' };
+  document.getElementById('dlg-date-title').textContent = key;
+  document.getElementById('f-t').value = rec.temp;
+  document.getElementById('f-w').value = rec.wind || 0;
+  document.getElementById('f-n').value = rec.notes || '';
+
+  const chips = document.getElementById('box-sky-chips');
+  chips.innerHTML = '';
+  SKIES.forEach(s => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'btn btn-sm' + (rec.sky === s.k ? ' btn-primary' : '');
+    b.innerHTML = `${s.e} ${s.l}`;
+    b.onclick = () => {
+      rec.sky = s.k;
+      chips.querySelectorAll('button').forEach(x => x.classList.remove('btn-primary'));
+      b.classList.add('btn-primary');
+    };
+    chips.appendChild(b);
+  });
+
+  const dlg = document.getElementById('dlg-entry');
+  dlg.showModal();
+}
+
+function updateLab() {
+  const t = state.lab.temp;
+  const perc = Math.min(100, Math.max(5, ((t + 25) / 65) * 100));
+  const col = getTempColor(t);
+  const merc = document.getElementById('therm-mercury');
+  const bulb = document.getElementById('therm-bulb');
+  merc.style.height = `${perc}%`;
+  merc.style.backgroundColor = col;
+  bulb.style.backgroundColor = col;
+  bulb.textContent = `${t > 0 ? '+' : ''}${t}°`;
+  document.getElementById('txt-therm-val').textContent = `${t > 0 ? '+' : ''}${t}°C`;
+
+  // Порада щодо одягу
+  let adv = '';
+  if(t < -5) adv = "❄️ Одягай теплий пуховик, рукавички та зимову шапку! Справжня казка!";
+  else if(t < 8) adv = "🧣 Прохолодно: потрібна куртка, шапка й шарфик!";
+  else if(t < 18) adv = "🧥 Свіже повітря: легка куртка або кофта та кросівки!";
+  else adv = "🧢 Спекотно! Легка футболка, шорти та панамка. Пий водичку!";
+  document.getElementById('txt-advice').textContent = adv;
+
+  // Флюгер
+  const vane = document.getElementById('compass-vane');
+  vane.style.transform = `rotate(${state.lab.dir * 45}deg)`;
+}
+
+function init() {
+  loadData();
+  document.getElementById('lbl-student').textContent = state.profile.name;
+  document.getElementById('lbl-city').textContent = state.profile.city.name;
+
+  // Вкладки
+  document.querySelectorAll('.nav-tab').forEach(t => {
+    t.onclick = () => {
+      beep(560);
+      document.querySelectorAll('.nav-tab').forEach(x => x.classList.remove('active'));
+      document.querySelectorAll('.tab-pane').forEach(p => p.style.display = 'none');
+      t.classList.add('active');
+      document.getElementById('tab-' + t.dataset.tab).style.display = 'block';
+    };
+  });
+
+  // Лаб кнопки
+  document.getElementById('btn-t-plus5').onclick = () => { state.lab.temp += 5; updateLab(); beep(640); };
+  document.getElementById('btn-t-plus1').onclick = () => { state.lab.temp += 1; updateLab(); beep(580); };
+  document.getElementById('btn-t-minus1').onclick = () => { state.lab.temp -= 1; updateLab(); beep(460); };
+  document.getElementById('btn-t-minus5').onclick = () => { state.lab.temp -= 5; updateLab(); beep(380); };
+
+  const boxDirs = document.getElementById('box-dirs');
+  DIRS.forEach((d, i) => {
+    const b = document.createElement('button');
+    b.className = 'btn btn-sm';
+    b.textContent = d;
+    b.onclick = () => { state.lab.dir = i; updateLab(); beep(540); };
+    boxDirs.appendChild(b);
+  });
+
+  document.getElementById('btn-save-lab').onclick = () => {
+    const today = new Date().toISOString().slice(0, 10);
+    state.profile.records[today] = { temp: state.lab.temp, sky: 'clear', wind: 3, notes: 'Запис з лабораторії' };
+    saveData();
+    renderCal();
+    beep(880, 0.2);
+    alert('Записано у сьогоднішній день календаря!');
+  };
+
+  // Календар навігація
+  document.getElementById('btn-prev-m').onclick = () => { state.view.m--; if(state.view.m<0){state.view.m=11;state.view.y--;} renderCal(); };
+  document.getElementById('btn-next-m').onclick = () => { state.view.m++; if(state.view.m>11){state.view.m=0;state.view.y++;} renderCal(); };
+  document.getElementById('btn-today-m').onclick = () => { state.view.y = new Date().getFullYear(); state.view.m = new Date().getMonth(); renderCal(); };
+  document.getElementById('btn-print-act').onclick = () => window.print();
+
+  // Модалка
+  document.getElementById('btn-cancel-entry').onclick = () => document.getElementById('dlg-entry').close();
+  document.getElementById('btn-del-entry').onclick = () => {
+    delete state.profile.records[state.activeDate];
+    saveData();
+    renderCal();
+    document.getElementById('dlg-entry').close();
+  };
+  document.getElementById('form-entry').onsubmit = (e) => {
+    e.preventDefault();
+    const tVal = Number(document.getElementById('f-t').value);
+    const wVal = Number(document.getElementById('f-w').value);
+    const nVal = document.getElementById('f-n').value;
+    const activeChip = document.getElementById('box-sky-chips').querySelector('.btn-primary');
+    const skyVal = activeChip ? activeChip.textContent.trim().split(' ')[1] : 'clear';
+
+    state.profile.records[state.activeDate] = { temp: tVal, sky: 'clear', wind: wVal, notes: nVal };
+    saveData();
+    renderCal();
+    beep(720, 0.15);
+    document.getElementById('dlg-entry').close();
+  };
+
+  renderCal();
+  updateLab();
+}
+
+window.onload = init;
+</script>
+</body>
+</html>
